@@ -39,17 +39,17 @@ class LoadingSkeleton extends StatelessWidget {
   }
 
   static Widget skeletonMetric() {
-    return Row(
+    return const Row(
       children: [
-        const LoadingSkeleton(width: 48, height: 48, borderRadius: 24),
-        const SizedBox(width: AppSpacing.md),
+        LoadingSkeleton(width: 48, height: 48, borderRadius: 24),
+        SizedBox(width: AppSpacing.md),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const LoadingSkeleton(width: 120, height: 16),
-              const SizedBox(height: 8),
-              const LoadingSkeleton(width: 80, height: 24),
+              LoadingSkeleton(width: 120, height: 16),
+              SizedBox(height: 8),
+              LoadingSkeleton(width: 80, height: 24),
             ],
           ),
         ),
@@ -59,10 +59,12 @@ class LoadingSkeleton extends StatelessWidget {
 
   static Widget skeletonList() {
     return Column(
-      children: List.generate(5, (index) => Padding(
-        padding: const EdgeInsets.only(bottom: AppSpacing.md),
-        child: skeletonMetric(),
-      )),
+      children: List.generate(
+          5,
+          (index) => Padding(
+                padding: const EdgeInsets.only(bottom: AppSpacing.md),
+                child: skeletonMetric(),
+              )),
     );
   }
 }
