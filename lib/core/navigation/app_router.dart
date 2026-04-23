@@ -1,13 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import '../../shared/providers/app_state_provider.dart';
+
+// Imports for features
 import '../../features/splash/splash_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/onboarding/farm_setup_screen.dart';
 
+// Imports for data/shared
+import '../../shared/providers/app_state_provider.dart';
+import '../../data/models/farm_model.dart';
+
+final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
+
+// Custom transitions helper
+class AppTransitions {
+  static CustomTransitionPage fade({
+    required LocalKey key,
+    required Widget child,
+    int durationMs = 150,
+  }) {
+    return CustomTransitionPage(
+      key: key,
+      child: child,
+      transitionDuration: Duration(milliseconds: durationMs),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(opacity: animation, child: child);
+      },
+    );
+  }
+
+  static CustomTransitionPage slideRight({
+    required LocalKey key,
+    required Widget child,
+    int durationMs = 200,
+  }) {
+    return CustomTransitionPage(
+      key: key,
+      child: child,
+      transitionDuration: Duration(milliseconds: durationMs),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(1.0, 0.0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
+          child: child,
+        );
+      },
+    );
+  }
+
+  static CustomTransitionPage slideBottom({
+    required LocalKey key,
+    required Widget child,
+    int durationMs = 300,
+  }) {
+    return CustomTransitionPage(
+      key: key,
+      child: child,
+      transitionDuration: Duration(milliseconds: durationMs),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0.0, 1.0),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+          child: child,
+        );
+      },
+    );
+  }
+}
+
 class AgroBottomNav extends StatelessWidget {
   final Widget child;
+
   const AgroBottomNav({super.key, required this.child});
 
   int _getSelectedIndex(BuildContext context) {
@@ -44,157 +113,73 @@ class AgroBottomNav extends StatelessWidget {
     return Scaffold(
       body: child,
       bottomNavigationBar: NavigationBar(
+        elevation: 0,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         selectedIndex: _getSelectedIndex(context),
         onDestinationSelected: (index) => _onItemTapped(index, context),
         destinations: const [
           NavigationDestination(
-              icon: Icon(Icons.dashboard), label: 'Dashboard'),
-          NavigationDestination(icon: Icon(Icons.inventory), label: 'Batches'),
-          NavigationDestination(icon: Icon(Icons.task), label: 'Tasks'),
-          NavigationDestination(icon: Icon(Icons.bar_chart), label: 'Reports'),
-          NavigationDestination(icon: Icon(Icons.settings), label: 'Settings'),
+            icon: Icon(Icons.dashboard_outlined),
+            selectedIcon: Icon(Icons.dashboard),
+            label: 'Dashboard',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.inventory_2_outlined),
+            selectedIcon: Icon(Icons.inventory_2),
+            label: 'Batches',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.assignment_outlined),
+            selectedIcon: Icon(Icons.assignment),
+            label: 'Tasks',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.analytics_outlined),
+            selectedIcon: Icon(Icons.analytics),
+            label: 'Reports',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
       ),
     );
   }
 }
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Dashboard'));
-}
-
-class BatchListScreen extends StatelessWidget {
-  const BatchListScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Batch List'));
-}
-
-class BatchDetailScreen extends StatelessWidget {
-  const BatchDetailScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Batch Detail'));
-}
-
-class CreateBatchScreen extends StatelessWidget {
-  const CreateBatchScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Create Batch'));
-}
-
-class AddExpenseScreen extends StatelessWidget {
-  const AddExpenseScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Add Expense'));
-}
-
-class AddMortalityScreen extends StatelessWidget {
-  const AddMortalityScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Add Mortality'));
-}
-
-class AddGrowthScreen extends StatelessWidget {
-  const AddGrowthScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Add Growth'));
-}
-
-class AddSaleScreen extends StatelessWidget {
-  const AddSaleScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Add Sale'));
-}
-
-class TasksScreen extends StatelessWidget {
-  const TasksScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Tasks'));
-}
-
-class ReportsScreen extends StatelessWidget {
-  const ReportsScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Reports'));
-}
-
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Settings'));
-}
-
-class FarmProfileScreen extends StatelessWidget {
-  const FarmProfileScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Farm Profile'));
-}
-
-class ShedManagementScreen extends StatelessWidget {
-  const ShedManagementScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Shed Management'));
-}
-
-class AlertPreferencesScreen extends StatelessWidget {
-  const AlertPreferencesScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Alert Preferences'));
-}
-
-class DataExportScreen extends StatelessWidget {
-  const DataExportScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Center(child: Text('Data Export'));
-}
-
-class BackupScreen extends StatelessWidget {
-  const BackupScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Center(child: Text('Backup'));
-}
-
-// Router configuration
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final farmAsync = ref.watch(currentFarmProvider);
+  final farm = ref.watch(currentFarmProvider);
 
   return GoRouter(
+    navigatorKey: _rootNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) {
-      // For async operations, we need to handle this differently
-      // For now, assume farm is loaded synchronously
-      final farm = farmAsync;
       final location = state.matchedLocation;
 
-      // If no farm exists and not on onboarding/setup, redirect to onboarding
+      // If no farm exists and not on onboarding, redirect to onboarding
       if (farm == null && !location.startsWith('/onboarding')) {
         return '/onboarding';
       }
 
-      // If farm exists and on root, redirect to home
-      if (farm != null && location == '/') {
+      // If farm exists and on root or onboarding, redirect to dashboard
+      if (farm != null && (location == '/' || location.startsWith('/onboarding'))) {
+        return '/home/dashboard';
+      }
+
+      // Basic redirect for /home
+      if (location == '/home') {
         return '/home/dashboard';
       }
 
       return null;
     },
     routes: [
-      // Splash route
       GoRoute(
         path: '/',
         builder: (context, state) => const SplashScreen(),
       ),
-
-      // Onboarding routes
       GoRoute(
         path: '/onboarding',
         builder: (context, state) => const OnboardingScreen(),
@@ -205,299 +190,134 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-
-      // Shell route for bottom navigation
       ShellRoute(
+        navigatorKey: _shellNavigatorKey,
         builder: (context, state, child) => AgroBottomNav(child: child),
         routes: [
           // Dashboard
           GoRoute(
             path: '/home/dashboard',
-            builder: (context, state) => const DashboardScreen(),
-            pageBuilder: (context, state) => CustomTransitionPage(
+            pageBuilder: (context, state) => AppTransitions.fade(
               key: state.pageKey,
               child: const DashboardScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              transitionDuration: const Duration(milliseconds: 150),
             ),
           ),
-
           // Batches
           GoRoute(
             path: '/home/batches',
-            builder: (context, state) => const BatchListScreen(),
-            pageBuilder: (context, state) => CustomTransitionPage(
+            pageBuilder: (context, state) => AppTransitions.fade(
               key: state.pageKey,
               child: const BatchListScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              transitionDuration: const Duration(milliseconds: 150),
             ),
             routes: [
-              // Batch detail with tabs
+              GoRoute(
+                path: 'new',
+                parentNavigatorKey: _rootNavigatorKey, // Above bottom nav
+                pageBuilder: (context, state) => AppTransitions.slideRight(
+                  key: state.pageKey,
+                  child: const CreateBatchScreen(),
+                ),
+              ),
               GoRoute(
                 path: ':batchId',
-                builder: (context, state) => const BatchDetailScreen(),
-                pageBuilder: (context, state) => CustomTransitionPage(
+                pageBuilder: (context, state) => AppTransitions.slideRight(
                   key: state.pageKey,
                   child: const BatchDetailScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1.0, 0.0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  transitionDuration: const Duration(milliseconds: 200),
                 ),
                 routes: [
                   GoRoute(
                     path: 'add-expense',
-                    builder: (context, state) => const AddExpenseScreen(),
-                    pageBuilder: (context, state) => CustomTransitionPage(
+                    parentNavigatorKey: _rootNavigatorKey, // Above bottom nav
+                    pageBuilder: (context, state) => AppTransitions.slideBottom(
                       key: state.pageKey,
                       child: const AddExpenseScreen(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0.0, 1.0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      transitionDuration: const Duration(milliseconds: 300),
                     ),
                   ),
                   GoRoute(
                     path: 'add-mortality',
-                    builder: (context, state) => const AddMortalityScreen(),
-                    pageBuilder: (context, state) => CustomTransitionPage(
+                    parentNavigatorKey: _rootNavigatorKey,
+                    pageBuilder: (context, state) => AppTransitions.slideBottom(
                       key: state.pageKey,
                       child: const AddMortalityScreen(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0.0, 1.0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      transitionDuration: const Duration(milliseconds: 300),
                     ),
                   ),
                   GoRoute(
                     path: 'add-growth',
-                    builder: (context, state) => const AddGrowthScreen(),
-                    pageBuilder: (context, state) => CustomTransitionPage(
+                    parentNavigatorKey: _rootNavigatorKey,
+                    pageBuilder: (context, state) => AppTransitions.slideBottom(
                       key: state.pageKey,
                       child: const AddGrowthScreen(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0.0, 1.0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      transitionDuration: const Duration(milliseconds: 300),
                     ),
                   ),
                   GoRoute(
                     path: 'add-sale',
-                    builder: (context, state) => const AddSaleScreen(),
-                    pageBuilder: (context, state) => CustomTransitionPage(
+                    parentNavigatorKey: _rootNavigatorKey,
+                    pageBuilder: (context, state) => AppTransitions.slideBottom(
                       key: state.pageKey,
                       child: const AddSaleScreen(),
-                      transitionsBuilder:
-                          (context, animation, secondaryAnimation, child) {
-                        return SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0.0, 1.0),
-                            end: Offset.zero,
-                          ).animate(animation),
-                          child: child,
-                        );
-                      },
-                      transitionDuration: const Duration(milliseconds: 300),
                     ),
                   ),
                 ],
               ),
-
-              // Create batch
-              GoRoute(
-                path: 'new',
-                builder: (context, state) => const CreateBatchScreen(),
-                pageBuilder: (context, state) => CustomTransitionPage(
-                  key: state.pageKey,
-                  child: const CreateBatchScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1.0, 0.0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  transitionDuration: const Duration(milliseconds: 200),
-                ),
-              ),
             ],
           ),
-
           // Tasks
           GoRoute(
             path: '/home/tasks',
-            builder: (context, state) => const TasksScreen(),
-            pageBuilder: (context, state) => CustomTransitionPage(
+            pageBuilder: (context, state) => AppTransitions.fade(
               key: state.pageKey,
               child: const TasksScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              transitionDuration: const Duration(milliseconds: 150),
             ),
           ),
-
           // Reports
           GoRoute(
             path: '/home/reports',
-            builder: (context, state) => const ReportsScreen(),
-            pageBuilder: (context, state) => CustomTransitionPage(
+            pageBuilder: (context, state) => AppTransitions.fade(
               key: state.pageKey,
               child: const ReportsScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              transitionDuration: const Duration(milliseconds: 150),
             ),
           ),
-
           // Settings
           GoRoute(
             path: '/home/settings',
-            builder: (context, state) => const SettingsScreen(),
-            pageBuilder: (context, state) => CustomTransitionPage(
+            pageBuilder: (context, state) => AppTransitions.fade(
               key: state.pageKey,
               child: const SettingsScreen(),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                return FadeTransition(opacity: animation, child: child);
-              },
-              transitionDuration: const Duration(milliseconds: 150),
             ),
             routes: [
               GoRoute(
                 path: 'farm-profile',
-                builder: (context, state) => const FarmProfileScreen(),
-                pageBuilder: (context, state) => CustomTransitionPage(
+                pageBuilder: (context, state) => AppTransitions.slideRight(
                   key: state.pageKey,
                   child: const FarmProfileScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1.0, 0.0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  transitionDuration: const Duration(milliseconds: 200),
                 ),
               ),
               GoRoute(
                 path: 'sheds',
-                builder: (context, state) => const ShedManagementScreen(),
-                pageBuilder: (context, state) => CustomTransitionPage(
+                pageBuilder: (context, state) => AppTransitions.slideRight(
                   key: state.pageKey,
                   child: const ShedManagementScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1.0, 0.0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  transitionDuration: const Duration(milliseconds: 200),
                 ),
               ),
               GoRoute(
                 path: 'alert-preferences',
-                builder: (context, state) => const AlertPreferencesScreen(),
-                pageBuilder: (context, state) => CustomTransitionPage(
+                pageBuilder: (context, state) => AppTransitions.slideRight(
                   key: state.pageKey,
                   child: const AlertPreferencesScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1.0, 0.0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  transitionDuration: const Duration(milliseconds: 200),
                 ),
               ),
               GoRoute(
                 path: 'data-export',
-                builder: (context, state) => const DataExportScreen(),
-                pageBuilder: (context, state) => CustomTransitionPage(
+                pageBuilder: (context, state) => AppTransitions.slideRight(
                   key: state.pageKey,
                   child: const DataExportScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1.0, 0.0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  transitionDuration: const Duration(milliseconds: 200),
                 ),
               ),
               GoRoute(
                 path: 'backup',
-                builder: (context, state) => const BackupScreen(),
-                pageBuilder: (context, state) => CustomTransitionPage(
+                pageBuilder: (context, state) => AppTransitions.slideRight(
                   key: state.pageKey,
                   child: const BackupScreen(),
-                  transitionsBuilder:
-                      (context, animation, secondaryAnimation, child) {
-                    return SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(1.0, 0.0),
-                        end: Offset.zero,
-                      ).animate(animation),
-                      child: child,
-                    );
-                  },
-                  transitionDuration: const Duration(milliseconds: 200),
                 ),
               ),
             ],
@@ -508,10 +328,133 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   );
 });
 
-class FarmModel {
-  // Placeholder
+// --- SCREEN STUBS (To be moved to features/ as implemented) ---
+
+class DashboardScreen extends StatelessWidget {
+  const DashboardScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Dashboard')));
 }
 
-class FarmRepository {
-  // Placeholder
+class BatchListScreen extends StatelessWidget {
+  const BatchListScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Batch List')));
+}
+
+class BatchDetailScreen extends StatelessWidget {
+  const BatchDetailScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Batch Detail')),
+        body: const Center(child: Text('Batch Detail Content (Tabs: Overview, Expenses, Mortality, Sales)')),
+      );
+}
+
+class CreateBatchScreen extends StatelessWidget {
+  const CreateBatchScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('New Batch')),
+        body: const Center(child: Text('Create Batch Form')),
+      );
+}
+
+class AddExpenseScreen extends StatelessWidget {
+  const AddExpenseScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Add Expense')),
+        body: const Center(child: Text('Add Expense Form')),
+      );
+}
+
+class AddMortalityScreen extends StatelessWidget {
+  const AddMortalityScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Add Mortality')),
+        body: const Center(child: Text('Add Mortality Form')),
+      );
+}
+
+class AddGrowthScreen extends StatelessWidget {
+  const AddGrowthScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Add Growth')),
+        body: const Center(child: Text('Add Growth Form')),
+      );
+}
+
+class AddSaleScreen extends StatelessWidget {
+  const AddSaleScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Add Sale')),
+        body: const Center(child: Text('Add Sale Form')),
+      );
+}
+
+class TasksScreen extends StatelessWidget {
+  const TasksScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Tasks')));
+}
+
+class ReportsScreen extends StatelessWidget {
+  const ReportsScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Reports')));
+}
+
+class SettingsScreen extends StatelessWidget {
+  const SettingsScreen({super.key});
+  @override
+  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Settings')));
+}
+
+class FarmProfileScreen extends StatelessWidget {
+  const FarmProfileScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Farm Profile')),
+        body: const Center(child: Text('Farm Profile Settings')),
+      );
+}
+
+class ShedManagementScreen extends StatelessWidget {
+  const ShedManagementScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Shed Management')),
+        body: const Center(child: Text('Shed List and Management')),
+      );
+}
+
+class AlertPreferencesScreen extends StatelessWidget {
+  const AlertPreferencesScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Alert Preferences')),
+        body: const Center(child: Text('Notification and Alert Settings')),
+      );
+}
+
+class DataExportScreen extends StatelessWidget {
+  const DataExportScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Data Export')),
+        body: const Center(child: Text('Export Data to CSV/Excel')),
+      );
+}
+
+class BackupScreen extends StatelessWidget {
+  const BackupScreen({super.key});
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        appBar: AppBar(title: const Text('Backup & Restore')),
+        body: const Center(child: Text('Database Backup Settings')),
+      );
 }
