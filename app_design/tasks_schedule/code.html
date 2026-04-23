@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AgroPrecision - Tasks</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e3dd",
+                        "on-tertiary-container": "#f79eaa",
+                        "on-tertiary-fixed-variant": "#73323d",
+                        "secondary": "#855300",
+                        "on-secondary": "#ffffff",
+                        "primary": "#003b1b",
+                        "inverse-on-surface": "#eff2eb",
+                        "surface-container-highest": "#e1e3dd",
+                        "outline-variant": "#c0c9be",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "secondary-container": "#fea619",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "tertiary-container": "#75333e",
+                        "surface-tint": "#2e6a41",
+                        "surface-container": "#ecefe9",
+                        "on-surface-variant": "#404941",
+                        "on-primary-fixed-variant": "#12512c",
+                        "on-primary-fixed": "#00210d",
+                        "on-tertiary-fixed": "#3c0613",
+                        "outline": "#717970",
+                        "on-surface": "#191c19",
+                        "on-error": "#ffffff",
+                        "tertiary": "#591d28",
+                        "on-primary-container": "#87c695",
+                        "primary-fixed-dim": "#96d5a3",
+                        "tertiary-fixed": "#ffd9dc",
+                        "surface-dim": "#d8dbd5",
+                        "surface-bright": "#f8faf4",
+                        "on-secondary-container": "#684000",
+                        "surface-container-low": "#f2f4ee",
+                        "secondary-fixed": "#ffddb8",
+                        "surface-container-high": "#e7e9e3",
+                        "surface": "#f8faf4",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb2bb",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8faf4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#2a1700",
+                        "inverse-primary": "#96d5a3",
+                        "primary-container": "#14532d",
+                        "inverse-surface": "#2e312d",
+                        "on-background": "#191c19",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#b1f2be"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "card-padding": "20px",
+                        "section-margin": "32px",
+                        "inline-gap": "12px",
+                        "unit": "4px",
+                        "container-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-stat": ["Manrope"],
+                        "label-bold": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "display-stat": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        /* Hide scrollbar for cleaner look on mobile */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+        /* Custom checkbox sizing to override forms plugin slightly if needed */
+        input[type="checkbox"] {
+            width: 24px;
+            height: 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24 antialiased flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-white dark:bg-slate-950 font-manrope font-bold text-lg tracking-tight docked full-width top-0 shadow-sm dark:shadow-none flex justify-between items-center px-5 h-16 w-full max-w-7xl mx-auto sticky z-40">
+<div class="flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors p-2 -ml-2 rounded-lg cursor-pointer">
+<span class="material-symbols-outlined text-green-900 dark:text-green-400">agriculture</span>
+</div>
+<div class="text-xl font-black text-green-900 dark:text-green-500">AgroPrecision</div>
+<div class="flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors p-2 -mr-2 rounded-lg cursor-pointer">
+<span class="material-symbols-outlined text-green-900 dark:text-green-400">cloud_off</span>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 w-full max-w-7xl mx-auto px-container-padding py-section-margin space-y-section-margin">
+<!-- Header & Progress -->
+<section class="space-y-inline-gap">
+<div class="flex justify-between items-end">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Daily Schedule</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Thursday, Oct 24 • Farm Block A</p>
+</div>
+<div class="bg-primary-container text-on-primary-container font-label-bold text-label-bold px-3 py-1.5 rounded-full flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">done_all</span>
+                    1/4
+                </div>
+</div>
+<!-- Visual Progress Bar -->
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 25%;"></div>
+</div>
+</section>
+<!-- Tasks List Card -->
+<section class="bg-surface rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<div class="px-card-padding py-inline-gap bg-surface-container-lowest border-b border-surface-container-highest flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-on-surface">Pending Tasks</h2>
+<button class="text-primary font-label-bold text-label-bold hover:text-primary-fixed-dim transition-colors">Select All</button>
+</div>
+<ul class="flex flex-col">
+<!-- Task 1 (Completed) -->
+<li class="relative flex items-start gap-stack-gap p-card-padding border-b border-surface-container-highest last:border-0 bg-surface-bright/50">
+<div class="flex-shrink-0 pt-1">
+<input checked="" class="rounded border-outline-variant text-primary focus:ring-primary shadow-sm cursor-pointer transition-colors" id="task-1" type="checkbox"/>
+</div>
+<label class="flex-1 cursor-pointer select-none" for="task-1">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface line-through opacity-70">Morning Feed</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1 opacity-70">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 06:00 AM
+                                </p>
+</div>
+<span class="bg-surface-variant text-on-surface-variant font-label-bold text-label-bold px-2 py-1 rounded-md text-[10px] uppercase tracking-wide">Done</span>
+</div>
+</label>
+</li>
+<!-- Task 2 (Routine) -->
+<li class="relative flex items-start gap-stack-gap p-card-padding border-b border-surface-container-highest last:border-0 hover:bg-surface-bright transition-colors cursor-pointer">
+<div class="flex-shrink-0 pt-1">
+<input class="rounded border-outline-variant text-primary focus:ring-primary shadow-sm cursor-pointer transition-colors" id="task-2" type="checkbox"/>
+</div>
+<label class="flex-1 cursor-pointer select-none" for="task-2">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface">Check Water Levels</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 07:30 AM
+                                </p>
+</div>
+<span class="bg-secondary-container/20 text-secondary font-label-bold text-label-bold px-2 py-1 rounded-md text-[10px] uppercase tracking-wide">Routine</span>
+</div>
+</label>
+</li>
+<!-- Task 3 (Critical) -->
+<li class="relative flex items-start gap-stack-gap p-card-padding border-b border-surface-container-highest last:border-0 hover:bg-surface-bright transition-colors cursor-pointer">
+<div class="flex-shrink-0 pt-1">
+<input class="rounded border-outline-variant text-primary focus:ring-primary shadow-sm cursor-pointer transition-colors" id="task-3" type="checkbox"/>
+</div>
+<label class="flex-1 cursor-pointer select-none" for="task-3">
+<div class="flex justify-between items-start gap-4">
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">Newcastle Vaccination (Day 28)</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 09:00 AM • <span class="material-symbols-outlined text-[14px] ml-1">medication</span> Block A2
+                                </p>
+</div>
+<span class="bg-error-container text-on-error-container font-label-bold text-label-bold px-2 py-1 rounded-md text-[10px] uppercase tracking-wide whitespace-nowrap">Priority</span>
+</div>
+</label>
+</li>
+<!-- Task 4 (Routine) -->
+<li class="relative flex items-start gap-stack-gap p-card-padding border-b border-surface-container-highest last:border-0 hover:bg-surface-bright transition-colors cursor-pointer">
+<div class="flex-shrink-0 pt-1">
+<input class="rounded border-outline-variant text-primary focus:ring-primary shadow-sm cursor-pointer transition-colors" id="task-4" type="checkbox"/>
+</div>
+<label class="flex-1 cursor-pointer select-none" for="task-4">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface">Litter Management</h3>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> 14:00 PM
+                                </p>
+</div>
+</div>
+</label>
+</li>
+</ul>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="bg-white/95 dark:bg-slate-950/95 backdrop-blur-md shadow-[0_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20 md:hidden">
+<!-- Dashboard -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1.5 hover:text-green-700 dark:hover:text-green-300" href="#">
+<span class="material-symbols-outlined mb-1">dashboard</span>
+<span class="font-manrope text-[11px] font-semibold tracking-wide uppercase">Dashboard</span>
+</a>
+<!-- Batches -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1.5 hover:text-green-700 dark:hover:text-green-300" href="#">
+<span class="material-symbols-outlined mb-1">inventory_2</span>
+<span class="font-manrope text-[11px] font-semibold tracking-wide uppercase">Batches</span>
+</a>
+<!-- Tasks (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-green-50 dark:bg-green-900/30 text-green-900 dark:text-green-300 rounded-2xl px-3 py-1.5 opacity-80 transition-opacity scale-95 duration-200 ease-in-out hover:text-green-700 dark:hover:text-green-300" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">assignment_turned_in</span>
+<span class="font-manrope text-[11px] font-semibold tracking-wide uppercase">Tasks</span>
+</a>
+<!-- Reports -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1.5 hover:text-green-700 dark:hover:text-green-300" href="#">
+<span class="material-symbols-outlined mb-1">bar_chart</span>
+<span class="font-manrope text-[11px] font-semibold tracking-wide uppercase">Reports</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 px-3 py-1.5 hover:text-green-700 dark:hover:text-green-300" href="#">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-manrope text-[11px] font-semibold tracking-wide uppercase">Settings</span>
+</a>
+</nav>
+<!-- Web Navigation Cluster (Hidden on mobile, required by strict rules for complete component representation if adapted for web, but prompt implies a mobile-first context based on safe areas. Adding a basic version to satisfy "On WEB hidden md:flex use full nav cluster") -->
+<div class="hidden md:flex fixed top-0 right-0 h-16 items-center px-5 gap-6 z-50">
+<a class="text-slate-500 hover:text-green-700 font-manrope text-[13px] font-semibold tracking-wide uppercase" href="#">Dashboard</a>
+<a class="text-slate-500 hover:text-green-700 font-manrope text-[13px] font-semibold tracking-wide uppercase" href="#">Batches</a>
+<a class="text-green-900 font-bold hover:text-green-700 font-manrope text-[13px] tracking-wide uppercase" href="#">Tasks</a>
+<a class="text-slate-500 hover:text-green-700 font-manrope text-[13px] font-semibold tracking-wide uppercase" href="#">Reports</a>
+<a class="text-slate-500 hover:text-green-700 font-manrope text-[13px] font-semibold tracking-wide uppercase" href="#">Settings</a>
+</div>
+</body></html>

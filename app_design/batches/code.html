@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Batch Management - AgroPrecision</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e1e3dd",
+                      "on-tertiary-container": "#f79eaa",
+                      "on-tertiary-fixed-variant": "#73323d",
+                      "secondary": "#855300",
+                      "on-secondary": "#ffffff",
+                      "primary": "#003b1b",
+                      "inverse-on-surface": "#eff2eb",
+                      "surface-container-highest": "#e1e3dd",
+                      "outline-variant": "#c0c9be",
+                      "on-secondary-fixed-variant": "#653e00",
+                      "secondary-container": "#fea619",
+                      "secondary-fixed-dim": "#ffb95f",
+                      "tertiary-container": "#75333e",
+                      "surface-tint": "#2e6a41",
+                      "surface-container": "#ecefe9",
+                      "on-surface-variant": "#404941",
+                      "on-primary-fixed-variant": "#12512c",
+                      "on-primary-fixed": "#00210d",
+                      "on-tertiary-fixed": "#3c0613",
+                      "outline": "#717970",
+                      "on-surface": "#191c19",
+                      "on-error": "#ffffff",
+                      "tertiary": "#591d28",
+                      "on-primary-container": "#87c695",
+                      "primary-fixed-dim": "#96d5a3",
+                      "tertiary-fixed": "#ffd9dc",
+                      "surface-dim": "#d8dbd5",
+                      "surface-bright": "#f8faf4",
+                      "on-secondary-container": "#684000",
+                      "surface-container-low": "#f2f4ee",
+                      "secondary-fixed": "#ffddb8",
+                      "surface-container-high": "#e7e9e3",
+                      "surface": "#f8faf4",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed-dim": "#ffb2bb",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "background": "#f8faf4",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#2a1700",
+                      "inverse-primary": "#96d5a3",
+                      "primary-container": "#14532d",
+                      "inverse-surface": "#2e312d",
+                      "on-background": "#191c19",
+                      "error": "#ba1a1a",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#b1f2be"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-gap": "16px",
+                      "card-padding": "20px",
+                      "section-margin": "32px",
+                      "inline-gap": "12px",
+                      "unit": "4px",
+                      "container-padding": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Manrope"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "display-stat": [
+                              "Manrope"
+                      ],
+                      "label-bold": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-stat": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        /* Hide scrollbar for clean UI but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md text-body-md antialiased min-h-screen pb-24 md:pb-0 pt-16">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-40 bg-surface-container-lowest border-b border-surface-container-high shadow-sm dark:shadow-none font-headline-lg text-headline-lg tracking-tight flex justify-between items-center px-5 h-16 max-w-7xl mx-auto left-0 right-0">
+<button aria-label="Menu" class="text-primary-container p-2 -ml-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[24px]">agriculture</span>
+</button>
+<h1 class="text-xl font-black text-primary-container">AgroPrecision</h1>
+<button aria-label="Status" class="text-outline p-2 -mr-2 rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-[24px]">cloud_off</span>
+</button>
+</header>
+<!-- Main Content Canvas -->
+<main class="max-w-7xl mx-auto px-container-padding py-section-margin md:px-8">
+<div class="flex justify-between items-center mb-stack-gap">
+<h2 class="font-headline-lg text-headline-lg text-on-background">Batches</h2>
+<button class="hidden md:flex items-center gap-2 bg-primary-container text-on-primary font-label-bold text-label-bold px-4 py-3 rounded-[12px] shadow-[0_8px_24px_rgba(20,83,45,0.12)] hover:bg-primary transition-colors">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                Start New Batch
+            </button>
+</div>
+<!-- Filter/Tabs -->
+<div class="flex gap-inline-gap mb-section-margin overflow-x-auto no-scrollbar pb-2">
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-primary-container text-on-primary font-label-bold text-label-bold shadow-[0_4px_20px_rgba(0,0,0,0.05)]">All Batches</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-bold text-label-bold border border-outline-variant hover:bg-surface-container-low transition-colors">Active</button>
+<button class="whitespace-nowrap px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface-variant font-label-bold text-label-bold border border-outline-variant hover:bg-surface-container-low transition-colors">Completed</button>
+</div>
+<!-- Batch Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-stack-gap">
+<!-- Active Batch Card -->
+<div class="bg-surface-container-lowest rounded-[16px] p-card-padding shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-high flex flex-col gap-inline-gap relative overflow-hidden group hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow">
+<!-- Status Bar Indicator -->
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary-container"></div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-background">Batch #204</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                            Started Oct 12, 2023
+                        </p>
+</div>
+<span class="px-3 py-1 rounded-full bg-secondary-container/20 text-secondary font-label-bold text-label-bold">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-inline-gap mt-unit p-3 bg-surface-container-low rounded-[12px]">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Chickens Alive</span>
+<span class="font-display-stat text-display-stat text-on-background text-[24px] leading-tight">4,892</span>
+</div>
+<div class="flex flex-col items-end justify-center">
+<div class="flex items-center gap-2">
+<div class="w-12 h-12 rounded-full border-4 border-surface-container flex items-center justify-center relative">
+<svg class="absolute top-0 left-0 w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-primary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="94, 100" stroke-width="4"></path>
+</svg>
+<span class="font-label-bold text-label-bold text-primary-container">94%</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-outline mt-1">Performance</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-unit">
+<div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-fixed/30 text-primary-container">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-primary-container font-medium">Est. $1.04 per bird</span>
+<span class="font-label-md text-label-md text-outline">Profit projection</span>
+</div>
+</div>
+</div>
+<!-- Completed Batch Card -->
+<div class="bg-surface-container-lowest rounded-[16px] p-card-padding shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-high flex flex-col gap-inline-gap relative overflow-hidden hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow">
+<!-- Status Bar Indicator -->
+<div class="absolute top-0 left-0 w-full h-1 bg-outline-variant"></div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-background">Batch #203</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                            Started Aug 05, 2023
+                        </p>
+</div>
+<span class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-bold text-label-bold">Completed</span>
+</div>
+<div class="grid grid-cols-2 gap-inline-gap mt-unit p-3 bg-surface-container-low rounded-[12px]">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Total Harvest</span>
+<span class="font-display-stat text-display-stat text-on-surface-variant text-[24px] leading-tight">5,102</span>
+</div>
+<div class="flex flex-col items-end justify-center">
+<div class="flex items-center gap-2">
+<div class="w-12 h-12 rounded-full border-4 border-surface-container flex items-center justify-center relative">
+<svg class="absolute top-0 left-0 w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-tint" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="98, 100" stroke-width="4"></path>
+</svg>
+<span class="font-label-bold text-label-bold text-surface-tint">98%</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-outline mt-1">Performance</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-unit">
+<div class="flex items-center justify-center w-8 h-8 rounded-full bg-primary-fixed/30 text-primary-container">
+<span class="material-symbols-outlined text-[16px]">payments</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-primary-container font-medium">Actual $1.12 per bird</span>
+<span class="font-label-md text-label-md text-outline">Final profit</span>
+</div>
+</div>
+</div>
+<!-- Active Batch Card -->
+<div class="bg-surface-container-lowest rounded-[16px] p-card-padding shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-container-high flex flex-col gap-inline-gap relative overflow-hidden group hover:shadow-[0_8px_24px_rgba(0,0,0,0.08)] transition-shadow">
+<!-- Status Bar Indicator -->
+<div class="absolute top-0 left-0 w-full h-1 bg-secondary-container"></div>
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-background">Batch #205</h3>
+<p class="font-label-md text-label-md text-on-surface-variant flex items-center gap-1 mt-1">
+<span class="material-symbols-outlined text-[14px]">calendar_today</span>
+                            Started Nov 01, 2023
+                        </p>
+</div>
+<span class="px-3 py-1 rounded-full bg-secondary-container/20 text-secondary font-label-bold text-label-bold">Active</span>
+</div>
+<div class="grid grid-cols-2 gap-inline-gap mt-unit p-3 bg-surface-container-low rounded-[12px]">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant">Chickens Alive</span>
+<span class="font-display-stat text-display-stat text-on-background text-[24px] leading-tight">2,450</span>
+</div>
+<div class="flex flex-col items-end justify-center">
+<div class="flex items-center gap-2">
+<div class="w-12 h-12 rounded-full border-4 border-surface-container flex items-center justify-center relative">
+<svg class="absolute top-0 left-0 w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-tertiary-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="88, 100" stroke-width="4"></path>
+</svg>
+<span class="font-label-bold text-label-bold text-tertiary-container">88%</span>
+</div>
+</div>
+<span class="font-label-md text-label-md text-outline mt-1">Performance</span>
+</div>
+</div>
+<div class="flex items-center gap-2 mt-unit">
+<div class="flex items-center justify-center w-8 h-8 rounded-full bg-tertiary-fixed/50 text-tertiary-container">
+<span class="material-symbols-outlined text-[16px]">trending_down</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-md text-body-md text-tertiary-container font-medium">Est. $0.85 per bird</span>
+<span class="font-label-md text-label-md text-outline">Profit projection</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Mobile) -->
+<button class="md:hidden fixed bottom-24 right-5 w-14 h-14 bg-primary-container text-on-primary rounded-full shadow-[0_8px_24px_rgba(20,83,45,0.25)] flex items-center justify-center z-40 hover:bg-primary transition-colors focus:ring-4 focus:ring-primary-fixed/50">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+<!-- BottomNavBar -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 h-20 bg-surface-container-lowest/95 backdrop-blur-md border-t border-surface-container-high shadow-[0_-4px_20px_rgba(0,0,0,0.05)] pb-safe">
+<button class="flex flex-col items-center justify-center text-outline px-3 py-1.5 hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined mb-1">dashboard</span>
+<span class="font-label-md text-[11px] font-semibold tracking-wide uppercase">Dashboard</span>
+</button>
+<button class="flex flex-col items-center justify-center bg-primary-fixed/30 text-primary-container rounded-2xl px-3 py-1.5 transform scale-95 duration-200 ease-in-out">
+<span class="material-symbols-outlined filled mb-1">inventory_2</span>
+<span class="font-label-md text-[11px] font-semibold tracking-wide uppercase">Batches</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline px-3 py-1.5 hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined mb-1">assignment_turned_in</span>
+<span class="font-label-md text-[11px] font-semibold tracking-wide uppercase">Tasks</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline px-3 py-1.5 hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined mb-1">bar_chart</span>
+<span class="font-label-md text-[11px] font-semibold tracking-wide uppercase">Reports</span>
+</button>
+<button class="flex flex-col items-center justify-center text-outline px-3 py-1.5 hover:text-primary-container transition-colors">
+<span class="material-symbols-outlined mb-1">settings</span>
+<span class="font-label-md text-[11px] font-semibold tracking-wide uppercase">Settings</span>
+</button>
+</nav>
+</body></html>

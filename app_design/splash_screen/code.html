@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AgroPrecision - Splash Screen</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#ffddb8",
+                        "tertiary": "#591d28",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "surface-dim": "#d8dbd5",
+                        "surface-container": "#ecefe9",
+                        "on-error": "#ffffff",
+                        "on-primary-fixed-variant": "#12512c",
+                        "on-primary-container": "#87c695",
+                        "on-background": "#191c19",
+                        "primary-fixed-dim": "#96d5a3",
+                        "on-error-container": "#93000a",
+                        "inverse-surface": "#2e312d",
+                        "inverse-on-surface": "#eff2eb",
+                        "on-secondary": "#ffffff",
+                        "outline-variant": "#c0c9be",
+                        "on-primary-fixed": "#00210d",
+                        "on-surface": "#191c19",
+                        "error": "#ba1a1a",
+                        "primary-container": "#14532d",
+                        "tertiary-fixed-dim": "#ffb2bb",
+                        "tertiary-container": "#75333e",
+                        "surface-tint": "#2e6a41",
+                        "on-surface-variant": "#404941",
+                        "primary-fixed": "#b1f2be",
+                        "on-tertiary-fixed-variant": "#73323d",
+                        "tertiary-fixed": "#ffd9dc",
+                        "surface": "#f8faf4",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "inverse-primary": "#96d5a3",
+                        "on-tertiary-container": "#f79eaa",
+                        "on-tertiary-fixed": "#3c0613",
+                        "surface-bright": "#f8faf4",
+                        "secondary-container": "#fea619",
+                        "surface-container-highest": "#e1e3dd",
+                        "on-secondary-fixed": "#2a1700",
+                        "surface-container-low": "#f2f4ee",
+                        "on-primary": "#ffffff",
+                        "outline": "#717970",
+                        "background": "#f8faf4",
+                        "error-container": "#ffdad6",
+                        "on-secondary-container": "#684000",
+                        "secondary": "#855300",
+                        "surface-variant": "#e1e3dd",
+                        "surface-container-high": "#e7e9e3",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#003b1b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "unit": "4px",
+                        "card-padding": "20px",
+                        "stack-gap": "16px",
+                        "section-margin": "32px",
+                        "inline-gap": "12px",
+                        "container-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Manrope"],
+                        "label-bold": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-stat": ["Manrope"],
+                        "headline-lg": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "display-stat": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col items-center justify-between relative overflow-hidden selection:bg-primary-container selection:text-on-primary">
+<!-- Subtle Premium Background Pattern -->
+<div class="absolute inset-0 pointer-events-none z-0">
+<!-- Soft gradient overlay for depth -->
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-surface-variant/40 via-background to-background"></div>
+<!-- Minimalist geometric grid (simulated with CSS gradients) -->
+<div class="absolute inset-0 opacity-[0.03] bg-[linear-gradient(to_right,#000_1px,transparent_1px),linear-gradient(to_bottom,#000_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+</div>
+<!-- Top spacer to push content slightly below true center for visual balance -->
+<div class="flex-none h-16 w-full"></div>
+<!-- Main Central Content -->
+<main class="flex flex-col items-center justify-center z-10 w-full px-container-padding flex-grow">
+<!-- Premium Logo Mark -->
+<div class="relative group mb-stack-gap">
+<!-- Glow effect -->
+<div class="absolute -inset-4 bg-primary-container/10 rounded-full blur-2xl"></div>
+<!-- Icon Container -->
+<div class="relative w-24 h-24 rounded-[24px] bg-surface-container-lowest shadow-[0_8px_32px_rgba(20,83,45,0.12)] border border-surface-variant flex items-center justify-center overflow-hidden">
+<!-- Inner subtle gradient -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container/5 to-transparent"></div>
+<!-- Icon -->
+<span class="material-symbols-outlined text-[48px] text-primary-container z-10" style="font-variation-settings: 'FILL' 1;">
+                    agriculture
+                </span>
+</div>
+</div>
+<!-- Typography Stack -->
+<div class="text-center flex flex-col items-center">
+<h1 class="font-display-stat text-display-stat text-primary-container tracking-tight">
+                AgroPrecision
+            </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-unit max-w-[280px]">
+                Precision Farming. Maximum Yield.
+            </p>
+</div>
+</main>
+<!-- Bottom Footer Badge -->
+<footer class="flex-none pb-12 z-10">
+<div class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container/60 border border-outline-variant/40 shadow-sm backdrop-blur-md">
+<span class="material-symbols-outlined text-[16px] text-primary-container">
+                cloud_done
+            </span>
+<span class="font-label-md text-label-md text-on-surface-variant tracking-wide uppercase">
+                Powered by Offline-First Technology
+            </span>
+</div>
+</footer>
+</body></html>

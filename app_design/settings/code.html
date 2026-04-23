@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/>
+<title>Settings - AgroPrecision</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-variant": "#e1e3dd",
+                        "on-tertiary-container": "#f79eaa",
+                        "on-tertiary-fixed-variant": "#73323d",
+                        "secondary": "#855300",
+                        "on-secondary": "#ffffff",
+                        "primary": "#003b1b",
+                        "inverse-on-surface": "#eff2eb",
+                        "surface-container-highest": "#e1e3dd",
+                        "outline-variant": "#c0c9be",
+                        "on-secondary-fixed-variant": "#653e00",
+                        "secondary-container": "#fea619",
+                        "secondary-fixed-dim": "#ffb95f",
+                        "tertiary-container": "#75333e",
+                        "surface-tint": "#2e6a41",
+                        "surface-container": "#ecefe9",
+                        "on-surface-variant": "#404941",
+                        "on-primary-fixed-variant": "#12512c",
+                        "on-primary-fixed": "#00210d",
+                        "on-tertiary-fixed": "#3c0613",
+                        "outline": "#717970",
+                        "on-surface": "#191c19",
+                        "on-error": "#ffffff",
+                        "tertiary": "#591d28",
+                        "on-primary-container": "#87c695",
+                        "primary-fixed-dim": "#96d5a3",
+                        "tertiary-fixed": "#ffd9dc",
+                        "surface-dim": "#d8dbd5",
+                        "surface-bright": "#f8faf4",
+                        "on-secondary-container": "#684000",
+                        "surface-container-low": "#f2f4ee",
+                        "secondary-fixed": "#ffddb8",
+                        "surface-container-high": "#e7e9e3",
+                        "surface": "#f8faf4",
+                        "on-error-container": "#93000a",
+                        "tertiary-fixed-dim": "#ffb2bb",
+                        "on-primary": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "background": "#f8faf4",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#2a1700",
+                        "inverse-primary": "#96d5a3",
+                        "primary-container": "#14532d",
+                        "inverse-surface": "#2e312d",
+                        "on-background": "#191c19",
+                        "error": "#ba1a1a",
+                        "error-container": "#ffdad6",
+                        "primary-fixed": "#b1f2be"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-gap": "16px",
+                        "card-padding": "20px",
+                        "section-margin": "32px",
+                        "inline-gap": "12px",
+                        "unit": "4px",
+                        "container-padding": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Manrope"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "display-stat": ["Manrope"],
+                        "label-bold": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "display-stat": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "label-bold": ["12px", { "lineHeight": "16px", "fontWeight": "600" }],
+                        "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background antialiased pb-24 md:pb-0">
+<!-- TopAppBar -->
+<header class="bg-surface surface-container-lowest text-on-surface font-headline-lg font-bold text-lg tracking-tight docked full-width top-0 border-b border-outline-variant shadow-sm dark:shadow-none flex justify-between items-center px-5 h-16 w-full max-w-7xl mx-auto sticky z-40">
+<div class="flex items-center gap-inline-gap">
+<span class="material-symbols-outlined text-primary-container">agriculture</span>
+<span class="text-xl font-black text-primary-container">AgroPrecision</span>
+</div>
+<div>
+<span class="material-symbols-outlined text-outline">cloud_off</span>
+</div>
+</header>
+<!-- Main Content -->
+<main class="max-w-3xl mx-auto px-container-padding py-section-margin">
+<div class="mb-section-margin">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-unit">Settings</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage your farm operations and preferences.</p>
+</div>
+<div class="space-y-section-margin">
+<!-- Farm Profile -->
+<section>
+<h2 class="font-label-bold text-label-bold text-primary-container uppercase tracking-wider mb-stack-gap px-4">Farm Profile</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors border-b border-outline-variant/30 text-left">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">domain</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">General Details</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Name, location, and contact info</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors text-left">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">notifications</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">Alert Preferences</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Email, SMS, and push notifications</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Shed Management -->
+<section>
+<h2 class="font-label-bold text-label-bold text-primary-container uppercase tracking-wider mb-stack-gap px-4">Shed Management</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors border-b border-outline-variant/30 text-left">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">warehouse</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">Shed A Configurations</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Climate targets, hardware setup</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors text-left">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">warehouse</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">Shed B Configurations</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Climate targets, hardware setup</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Access & Security -->
+<section>
+<h2 class="font-label-bold text-label-bold text-primary-container uppercase tracking-wider mb-stack-gap px-4">Access &amp; Security</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors border-b border-outline-variant/30 text-left">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">group</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">User Permissions</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage staff roles and access</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors text-left">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined">shield_person</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">Security Settings</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Two-factor authentication, sessions</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Data & System -->
+<section>
+<h2 class="font-label-bold text-label-bold text-primary-container uppercase tracking-wider mb-stack-gap px-4">Data &amp; System</h2>
+<div class="bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.05)] overflow-hidden">
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors border-b border-outline-variant/30 text-left">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined">download</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">Data Export</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Download reports and historical data</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors border-b border-outline-variant/30 text-left">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-tertiary-container/10 flex items-center justify-center text-tertiary-container">
+<span class="material-symbols-outlined">backup</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg text-on-surface font-medium">System Backup</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage automated backups</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline">chevron_right</span>
+</button>
+<button class="w-full flex items-center justify-between p-card-padding hover:bg-surface-container-low transition-colors text-left text-error">
+<div class="flex items-center gap-inline-gap">
+<div class="w-10 h-10 rounded-full bg-error-container/20 flex items-center justify-center text-error">
+<span class="material-symbols-outlined">logout</span>
+</div>
+<div>
+<h3 class="font-body-lg text-body-lg font-medium">Log Out</h3>
+</div>
+</div>
+</button>
+</div>
+</section>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="md:hidden bg-surface-container-lowest/95 backdrop-blur-md font-headline-lg text-[11px] font-semibold tracking-wide uppercase fixed bottom-0 w-full z-50 border-t border-outline-variant/30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-safe h-20">
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-primary-container" href="#">
+<span class="material-symbols-outlined mb-1">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-primary-container" href="#">
+<span class="material-symbols-outlined mb-1">inventory_2</span>
+<span>Batches</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-primary-container" href="#">
+<span class="material-symbols-outlined mb-1">assignment_turned_in</span>
+<span>Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant px-3 py-1.5 hover:text-primary-container" href="#">
+<span class="material-symbols-outlined mb-1">bar_chart</span>
+<span>Reports</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary-container/10 text-primary-container rounded-2xl px-3 py-1.5 scale-95 duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined icon-filled mb-1">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+</body></html>

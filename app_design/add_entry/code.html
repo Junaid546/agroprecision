@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<title>Log Daily Activity - AgroPrecision</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-variant": "#e1e3dd",
+                      "on-tertiary-container": "#f79eaa",
+                      "on-tertiary-fixed-variant": "#73323d",
+                      "secondary": "#855300",
+                      "on-secondary": "#ffffff",
+                      "primary": "#003b1b",
+                      "inverse-on-surface": "#eff2eb",
+                      "surface-container-highest": "#e1e3dd",
+                      "outline-variant": "#c0c9be",
+                      "on-secondary-fixed-variant": "#653e00",
+                      "secondary-container": "#fea619",
+                      "secondary-fixed-dim": "#ffb95f",
+                      "tertiary-container": "#75333e",
+                      "surface-tint": "#2e6a41",
+                      "surface-container": "#ecefe9",
+                      "on-surface-variant": "#404941",
+                      "on-primary-fixed-variant": "#12512c",
+                      "on-primary-fixed": "#00210d",
+                      "on-tertiary-fixed": "#3c0613",
+                      "outline": "#717970",
+                      "on-surface": "#191c19",
+                      "on-error": "#ffffff",
+                      "tertiary": "#591d28",
+                      "on-primary-container": "#87c695",
+                      "primary-fixed-dim": "#96d5a3",
+                      "tertiary-fixed": "#ffd9dc",
+                      "surface-dim": "#d8dbd5",
+                      "surface-bright": "#f8faf4",
+                      "on-secondary-container": "#684000",
+                      "surface-container-low": "#f2f4ee",
+                      "secondary-fixed": "#ffddb8",
+                      "surface-container-high": "#e7e9e3",
+                      "surface": "#f8faf4",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed-dim": "#ffb2bb",
+                      "on-primary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "background": "#f8faf4",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary-fixed": "#2a1700",
+                      "inverse-primary": "#96d5a3",
+                      "primary-container": "#14532d",
+                      "inverse-surface": "#2e312d",
+                      "on-background": "#191c19",
+                      "error": "#ba1a1a",
+                      "error-container": "#ffdad6",
+                      "primary-fixed": "#b1f2be"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-gap": "16px",
+                      "card-padding": "20px",
+                      "section-margin": "32px",
+                      "inline-gap": "12px",
+                      "unit": "4px",
+                      "container-padding": "20px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Manrope"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "display-stat": [
+                              "Manrope"
+                      ],
+                      "label-bold": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Manrope"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-stat": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "800"
+                              }
+                      ],
+                      "label-bold": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom, 20px); }
+        .pt-safe { padding-top: env(safe-area-inset-top, 20px); }
+      </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md antialiased pt-safe pb-safe selection:bg-primary selection:text-on-primary">
+<!-- TopAppBar (Transactional - Close intent, so no full nav shell, but keeping a header for context) -->
+<header class="bg-surface sticky top-0 z-40 border-b border-surface-variant flex justify-between items-center px-5 h-16 w-full max-w-7xl mx-auto shadow-sm">
+<div class="flex items-center gap-inline-gap">
+<button aria-label="Close" class="text-on-surface-variant hover:bg-surface-variant transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+<h1 class="font-headline-md text-headline-md text-on-surface">Log Daily Activity</h1>
+</div>
+<div class="flex items-center gap-2 px-3 py-1 bg-surface-container-highest rounded-full text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 0;">cloud_off</span>
+<span class="font-label-md text-label-md">Offline</span>
+</div>
+</header>
+<main class="flex-1 w-full max-w-3xl mx-auto px-container-padding py-stack-gap flex flex-col gap-section-margin">
+<!-- Quick Add Actions -->
+<section class="flex flex-col gap-stack-gap">
+<h2 class="font-label-bold text-label-bold text-on-surface-variant uppercase tracking-wider">Quick Actions</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-inline-gap">
+<button class="bg-surface flex flex-col items-center justify-center gap-2 p-card-padding rounded-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-variant hover:bg-surface-container-low transition-colors min-h-[100px]">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">payments</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface">Add Expense</span>
+</button>
+<button class="bg-surface flex flex-col items-center justify-center gap-2 p-card-padding rounded-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-variant hover:bg-surface-container-low transition-colors min-h-[100px]">
+<div class="w-12 h-12 rounded-full bg-error-container flex items-center justify-center text-on-error-container">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface">Log Deaths</span>
+</button>
+<button class="bg-surface flex flex-col items-center justify-center gap-2 p-card-padding rounded-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-primary hover:bg-surface-container-low transition-colors min-h-[100px] relative overflow-hidden">
+<div class="absolute inset-0 bg-primary opacity-5"></div>
+<div class="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-on-primary z-10">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">eco</span>
+</div>
+<span class="font-label-bold text-label-bold text-primary z-10">Add Feed</span>
+</button>
+<button class="bg-surface flex flex-col items-center justify-center gap-2 p-card-padding rounded-[16px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] border border-surface-variant hover:bg-surface-container-low transition-colors min-h-[100px]">
+<div class="w-12 h-12 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+</div>
+<span class="font-label-bold text-label-bold text-on-surface">Record Growth</span>
+</button>
+</div>
+</section>
+<!-- Fast Input Form -->
+<section class="bg-surface rounded-[16px] p-card-padding shadow-[0_4px_20px_rgba(0,0,0,0.05)] flex flex-col gap-stack-gap">
+<h2 class="font-headline-md text-headline-md text-on-surface">Log Feed Usage</h2>
+<form class="flex flex-col gap-stack-gap">
+<!-- Batch Selection (Dropdown) -->
+<div class="flex flex-col gap-unit">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="batch">Select Batch</label>
+<div class="relative">
+<select class="w-full h-[56px] px-4 font-body-lg text-body-lg text-on-surface bg-surface border border-outline-variant rounded-[12px] appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:border-[2px] transition-all" id="batch">
+<option value="">Choose active batch...</option>
+<option value="b1">Broilers - Barn A (Day 14)</option>
+<option value="b2">Layers - Barn B (Week 20)</option>
+<option value="b3">Growers - Barn C (Day 35)</option>
+</select>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Feed Type (Dropdown) -->
+<div class="flex flex-col gap-unit">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="feed_type">Feed Type</label>
+<div class="relative">
+<select class="w-full h-[56px] px-4 font-body-lg text-body-lg text-on-surface bg-surface border border-outline-variant rounded-[12px] appearance-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:border-[2px] transition-all" id="feed_type">
+<option value="">Select feed formulation...</option>
+<option value="starter">Starter Crumble (22% Protein)</option>
+<option value="grower">Grower Pellets (19% Protein)</option>
+<option value="finisher">Finisher Pellets (17% Protein)</option>
+</select>
+<div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-on-surface-variant">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Quantity (Numeric Input) -->
+<div class="flex flex-col gap-unit">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="quantity">Quantity (kg)</label>
+<div class="flex items-center">
+<button class="w-[56px] h-[56px] bg-surface-container-high text-on-surface rounded-l-[12px] border border-r-0 border-outline-variant flex items-center justify-center hover:bg-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">remove</span>
+</button>
+<input class="flex-1 h-[56px] text-center font-display-stat text-[24px] text-on-surface bg-surface border-y border-outline-variant focus:outline-none focus:border-primary focus:ring-0 appearance-none m-0" id="quantity" inputmode="numeric" placeholder="0" style="-moz-appearance: textfield;" type="number"/>
+<button class="w-[56px] h-[56px] bg-surface-container-high text-on-surface rounded-r-[12px] border border-l-0 border-outline-variant flex items-center justify-center hover:bg-surface-variant transition-colors" type="button">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">add</span>
+</button>
+</div>
+</div>
+<!-- Notes (Optional) -->
+<div class="flex flex-col gap-unit mt-2">
+<label class="font-label-bold text-label-bold text-on-surface-variant" for="notes">Notes (Optional)</label>
+<textarea class="w-full px-4 py-3 font-body-md text-body-md text-on-surface bg-surface border border-outline-variant rounded-[12px] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary focus:border-[2px] transition-all resize-none" id="notes" placeholder="Any specific observations..." rows="2"></textarea>
+</div>
+<!-- Submit Button -->
+<button class="mt-4 w-full h-[56px] bg-primary-container text-on-primary shadow-[0_8px_24px_rgba(20,83,45,0.12)] rounded-[12px] font-label-bold text-label-bold flex items-center justify-center gap-2 hover:bg-primary transition-colors" type="button">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">save</span>
+                    Save Entry
+                </button>
+</form>
+</section>
+</main>
+</body></html>
