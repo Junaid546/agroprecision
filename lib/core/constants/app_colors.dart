@@ -47,6 +47,9 @@ class AppColors {
   static const Color background = Color(0xFFF8FAF4);
   static const Color onBackground = Color(0xFF191C19);
 
+  // Surface variants
+  static const Color surfaceVariant = Color(0xFFE1E3DD);
+
   // Cards
   static const Color cardBackground = Color(0xFFFFFFFF);
 

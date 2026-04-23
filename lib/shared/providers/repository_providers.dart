@@ -6,6 +6,7 @@ import '../../data/repositories/mortality_repository.dart';
 import '../../data/repositories/growth_repository.dart';
 import '../../data/repositories/sale_repository.dart';
 import '../../data/repositories/task_repository.dart';
+import '../../data/repositories/shed_repository.dart';
 import '../../services/calculation_engine.dart';
 
 // Repository providers — singleton instances
@@ -23,6 +24,8 @@ final saleRepositoryProvider =
     Provider<SaleRepository>((ref) => SaleRepository());
 final taskRepositoryProvider =
     Provider<TaskRepository>((ref) => TaskRepository());
+final shedRepositoryProvider =
+    Provider<ShedRepository>((ref) => ShedRepository());
 
 // Calculation engine provider
 final calculationEngineProvider = Provider<CalculationEngine>((ref) {
