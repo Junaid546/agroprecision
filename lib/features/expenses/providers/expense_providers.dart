@@ -42,7 +42,7 @@ class ExpenseFormNotifier extends StateNotifier<ExpenseFormState> {
       await _repo.create(expense);
       _ref.invalidate(expenseListProvider(expense.batchId));
       _ref.invalidate(batchFinancialsProvider(expense.batchId));
-      _ref.invalidate(dashboardSummaryProvider);
+      _ref.invalidate(farmSummaryProvider);
       state = ExpenseFormState(success: true);
     } catch (e) {
       state = ExpenseFormState(error: e.toString());

@@ -86,24 +86,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            // Skip button
-            Align(
-              alignment: Alignment.topRight,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: TextButton(
-                  onPressed: _skipOnboarding,
-                  child: Text(
-                    'Skip',
-                    style: AppTypography.labelBold.copyWith(
-                      color: AppColors.onSurfaceVariant,
+            // Top Action Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton(
+                    onPressed: _skipOnboarding,
+                    child: Text(
+                      'Skip',
+                      style: AppTypography.labelBold.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
 
-            // Page content
+            // Page Content
             Expanded(
               child: PageView.builder(
                 controller: _pageController,
@@ -112,14 +114,29 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 itemBuilder: (context, index) {
                   final page = _pages[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 32),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Illustration
-                        OnboardingIllustrationWidget(
-                          type: page.illustration,
-                          size: MediaQuery.of(context).size.width * 0.7,
+                        // Illustration Container
+                        Container(
+                          width: double.infinity,
+                          height: 300,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(32),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.03),
+                                blurRadius: 32,
+                                offset: const Offset(0, 16),
+                              ),
+                            ],
+                          ),
+                          padding: const EdgeInsets.all(32),
+                          child: OnboardingIllustrationWidget(
+                            type: page.illustration,
+                          ),
                         ),
 
                         const SizedBox(height: 48),
@@ -127,7 +144,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         // Title
                         Text(
                           page.title,
-                          style: AppTypography.headlineLg,
+                          style: AppTypography.headlineLg.copyWith(
+                            fontSize: 28,
+                            fontWeight: FontWeight.w800,
+                          ),
                           textAlign: TextAlign.center,
                         ),
 
@@ -138,30 +158,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           page.description,
                           style: AppTypography.bodyLg.copyWith(
                             color: AppColors.onSurfaceVariant,
+                            height: 1.6,
                           ),
                           textAlign: TextAlign.center,
-                        ),
-
-                        const SizedBox(height: 48),
-
-                        // Page indicators
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(
-                            _pages.length,
-                            (dotIndex) => AnimatedContainer(
-                              duration: const Duration(milliseconds: 200),
-                              margin: const EdgeInsets.symmetric(horizontal: 4),
-                              width: dotIndex == _currentPage ? 24 : 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: dotIndex == _currentPage
-                                    ? AppColors.primaryContainer
-                                    : AppColors.outlineVariant,
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                          ),
                         ),
                       ],
                     ),
@@ -170,39 +169,54 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ),
 
-            // Bottom navigation
+            // Bottom Navigation Area
             Padding(
-              padding: const EdgeInsets.all(20),
-              child: Row(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Page indicator text
-                  Text(
-                    '${_currentPage + 1} of ${_pages.length}',
-                    style: AppTypography.labelMd.copyWith(
-                      color: AppColors.onSurfaceVariant,
+                  // Page Indicators
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(
+                      _pages.length,
+                      (dotIndex) => AnimatedContainer(
+                        duration: const Duration(milliseconds: 300),
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        width: dotIndex == _currentPage ? 24 : 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: dotIndex == _currentPage
+                              ? AppColors.primary
+                              : AppColors.outlineVariant,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                      ),
                     ),
                   ),
 
-                  const Spacer(),
+                  const SizedBox(height: 32),
 
-                  // Next/Continue button
-                  FilledButton(
-                    onPressed: _nextPage,
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
+                  // Next Button
+                  SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: FilledButton(
+                      onPressed: _nextPage,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
                       ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      _currentPage == _pages.length - 1
-                          ? 'Get Started'
-                          : 'Next',
-                      style: AppTypography.labelBold.copyWith(
-                        color: AppColors.onPrimary,
+                      child: Text(
+                        _currentPage == _pages.length - 1
+                            ? 'Get Started'
+                            : 'Next',
+                        style: AppTypography.labelBold.copyWith(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),
@@ -215,3 +229,4 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
+

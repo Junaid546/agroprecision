@@ -152,4 +152,41 @@ class BatchModel extends HiveObject {
       targetDays: json['targetDays'],
     );
   }
+
+  BatchModel copyWith({
+    String? id,
+    String? shedId,
+    String? farmId,
+    String? batchNumber,
+    int? initialCount,
+    double? initialCostPerBird,
+    DateTime? startDate,
+    DateTime? endDate,
+    BatchStatus? status,
+    String? notes,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? breed,
+    double? targetWeightKg,
+    int? targetDays,
+  }) {
+    return BatchModel(
+      id: id ?? this.id,
+      shedId: shedId ?? this.shedId,
+      farmId: farmId ?? this.farmId,
+      batchNumber: batchNumber ?? this.batchNumber,
+      initialCount: initialCount ?? this.initialCount,
+      initialCostPerBird: initialCostPerBird ?? this.initialCostPerBird,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      status: status ?? this.status,
+      notes: notes ?? this.notes,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      breed: breed ?? this.breed,
+      targetWeightKg: targetWeightKg ?? this.targetWeightKg,
+      targetDays: targetDays ?? this.targetDays,
+    );
+  }
 }
+

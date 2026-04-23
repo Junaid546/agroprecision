@@ -79,8 +79,8 @@ class ShedModel extends HiveObject {
   factory ShedModel.fromJson(Map<String, dynamic> json) {
     return ShedModel(
       id: json['id'],
-      farmId: json['farmId'],
       name: json['name'],
+      farmId: json['farmId'],
       capacity: json['capacity'],
       areaSqMeters: json['areaSqMeters'] != null ? (json['areaSqMeters'] as num).toDouble() : null,
       activeBatchId: json['activeBatchId'],
@@ -89,4 +89,29 @@ class ShedModel extends HiveObject {
       isActive: json['isActive'] ?? true,
     );
   }
+
+  ShedModel copyWith({
+    String? id,
+    String? farmId,
+    String? name,
+    int? capacity,
+    double? areaSqMeters,
+    String? activeBatchId,
+    DateTime? createdAt,
+    String? notes,
+    bool? isActive,
+  }) {
+    return ShedModel(
+      id: id ?? this.id,
+      farmId: farmId ?? this.farmId,
+      name: name ?? this.name,
+      capacity: capacity ?? this.capacity,
+      areaSqMeters: areaSqMeters ?? this.areaSqMeters,
+      activeBatchId: activeBatchId ?? this.activeBatchId,
+      createdAt: createdAt ?? this.createdAt,
+      notes: notes ?? this.notes,
+      isActive: isActive ?? this.isActive,
+    );
+  }
 }
+

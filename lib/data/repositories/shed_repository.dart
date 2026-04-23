@@ -7,33 +7,37 @@ class ShedRepository {
     return shed;
   }
 
+  Future<List<ShedModel>> getByFarm(String farmId) async {
+    return HiveService.shedBox.values
+        .where((s) => s.farmId == farmId)
+        .toList()
+      ..sort((a, b) => a.name.compareTo(b.name));
+  }
+
   Future<ShedModel?> getById(String id) async {
     return HiveService.shedBox.get(id);
   }
 
-  Future<List<ShedModel>> getAll() async {
-    return HiveService.shedBox.values.toList()
-      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-  }
-
-  Future<List<ShedModel>> getByFarm(String farmId) async {
-    return HiveService.shedBox.values.where((s) => s.farmId == farmId).toList()
-      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
-  }
-
   Future<ShedModel> update(ShedModel shed) async {
-    await shed.save();
+    await HiveService.shedBox.put(shed.id, shed);
     return shed;
+  }
+
+  Future<ShedModel> assignBatch(String shedId, String batchId) async {
+    final shed = await getById(shedId);
+    if (shed == null) throw Exception('Shed not found: $shedId');
+    shed.activeBatchId = batchId;
+    return await update(shed);
+  }
+
+  Future<ShedModel> clearBatch(String shedId) async {
+    final shed = await getById(shedId);
+    if (shed == null) throw Exception('Shed not found: $shedId');
+    shed.activeBatchId = null;
+    return await update(shed);
   }
 
   Future<void> delete(String id) async {
     await HiveService.shedBox.delete(id);
-  }
-
-  Future<List<ShedModel>> getActiveByFarm(String farmId) async {
-    return HiveService.shedBox.values
-        .where((s) => s.farmId == farmId && s.isActive)
-        .toList()
-      ..sort((a, b) => a.createdAt.compareTo(b.createdAt));
   }
 }

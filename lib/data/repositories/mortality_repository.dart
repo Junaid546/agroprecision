@@ -36,7 +36,7 @@ class MortalityRepository {
   
   // Weekly mortality breakdown for chart (W1, W2, W3...)
   Future<List<WeeklyMortalityData>> getWeeklyBreakdown(String batchId) async {
-    final batch = await HiveService.batchBox.get(batchId);
+    final batch = HiveService.batchBox.get(batchId);
     if (batch == null) return [];
 
     final logs = HiveService.getMortalityForBatch(batchId);
@@ -49,7 +49,14 @@ class MortalityRepository {
     }
 
     final List<WeeklyMortalityData> breakdown = [];
-    final maxWeek = weeklyCounts.keys.isEmpty ? 0 : weeklyCounts.keys.reduce((a, b) => a > b ? a : b);
+    final currentAgeDays = DateTime.now().difference(batch.startDate).inDays;
+    final currentWeek = (currentAgeDays / 7).floor() + 1;
+    
+    final lastLogWeek = weeklyCounts.keys.isEmpty 
+        ? 0 
+        : weeklyCounts.keys.reduce((a, b) => a > b ? a : b);
+    
+    final maxWeek = currentWeek > lastLogWeek ? currentWeek : lastLogWeek;
 
     for (int w = 1; w <= maxWeek; w++) {
       breakdown.add(WeeklyMortalityData(

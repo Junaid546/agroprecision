@@ -6,10 +6,13 @@ import 'package:go_router/go_router.dart';
 import '../../features/splash/splash_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/onboarding/farm_setup_screen.dart';
+import '../../features/dashboard/dashboard_screen.dart';
+import '../../features/batch/screens/batch_list_screen.dart';
+import '../../features/batch/screens/create_batch_screen.dart';
+import '../../features/batch/screens/batch_detail_screen.dart';
 
 // Imports for data/shared
 import '../../shared/providers/app_state_provider.dart';
-import '../../data/models/farm_model.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -158,13 +161,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final location = state.matchedLocation;
 
+      // Allow Splash screen at / to handle its own navigation
+      if (location == '/') return null;
+
       // If no farm exists and not on onboarding, redirect to onboarding
       if (farm == null && !location.startsWith('/onboarding')) {
         return '/onboarding';
       }
 
-      // If farm exists and on root or onboarding, redirect to dashboard
-      if (farm != null && (location == '/' || location.startsWith('/onboarding'))) {
+      // If farm exists and on onboarding, redirect to dashboard
+      if (farm != null && location.startsWith('/onboarding')) {
         return '/home/dashboard';
       }
 
@@ -327,36 +333,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-
 // --- SCREEN STUBS (To be moved to features/ as implemented) ---
 
-class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Dashboard')));
-}
 
-class BatchListScreen extends StatelessWidget {
-  const BatchListScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Batch List')));
-}
-
-class BatchDetailScreen extends StatelessWidget {
-  const BatchDetailScreen({super.key});
+// These will be implemented in their respective feature folders
+class AddExpenseScreen extends StatelessWidget {
+  const AddExpenseScreen({super.key});
   @override
   Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Batch Detail')),
-        body: const Center(child: Text('Batch Detail Content (Tabs: Overview, Expenses, Mortality, Sales)')),
-      );
-}
-
-class CreateBatchScreen extends StatelessWidget {
-  const CreateBatchScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('New Batch')),
-        body: const Center(child: Text('Create Batch Form')),
+        appBar: AppBar(title: const Text('Add Expense')),
+        body: const Center(child: Text('Add Expense Form')),
       );
 }
 

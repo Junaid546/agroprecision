@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/farm_model.dart';
 import '../../data/repositories/farm_repository.dart';
-import '../../data/models/batch_model.dart';
 import 'repository_providers.dart';
 
 // Current farm provider (loaded from Hive on app start)
@@ -32,13 +31,10 @@ class CurrentFarmNotifier extends StateNotifier<FarmModel?> {
   }
 }
 
-// Active batch provider (dashboard context)
-final activeBatchProvider = StateProvider<BatchModel?>((ref) => null);
-
-// Selected batch for detail view
-final selectedBatchIdProvider = StateProvider<String?>((ref) => null);
-
 // Connectivity provider
 final connectivityProvider = StateProvider<bool>((ref) => false);
 // Note: In offline-first app this is always false (no internet dependency)
 // But we watch it to show/hide the cloud indicator in app bar
+
+// Global UI State
+final selectedBatchIdProvider = StateProvider<String?>((ref) => null);

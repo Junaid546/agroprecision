@@ -95,4 +95,31 @@ class FarmModel extends HiveObject {
       preferences: json['preferences'] != null ? Map<String, dynamic>.from(json['preferences']) : null,
     );
   }
+
+  FarmModel copyWith({
+    String? id,
+    String? name,
+    String? ownerName,
+    String? location,
+    String? phone,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    List<String>? shedIds,
+    bool? isSetupComplete,
+    Map<String, dynamic>? preferences,
+  }) {
+    return FarmModel(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      ownerName: ownerName ?? this.ownerName,
+      location: location ?? this.location,
+      phone: phone ?? this.phone,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      shedIds: shedIds ?? this.shedIds,
+      isSetupComplete: isSetupComplete ?? this.isSetupComplete,
+      preferences: preferences ?? this.preferences,
+    );
+  }
 }
+

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
@@ -22,20 +21,15 @@ class FarmSetupScreen extends ConsumerStatefulWidget {
 class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
   SetupStep _currentStep = SetupStep.farmDetails;
 
-  // Farm form controllers
   final _farmNameController = TextEditingController();
   final _ownerNameController = TextEditingController();
   final _locationController = TextEditingController();
   final _phoneController = TextEditingController();
 
-  // Shed form controllers
   final _shedNameController = TextEditingController();
   final _capacityController = TextEditingController();
   final _areaController = TextEditingController();
 
-  // Form validation - using manual validation
-
-  // Error messages
   String? _farmNameError;
   String? _ownerNameError;
   String? _shedNameError;
@@ -128,7 +122,6 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
     try {
       final uuid = const Uuid();
 
-      // Create farm
       final farm = FarmModel(
         id: uuid.v4(),
         name: _farmNameController.text.trim(),
@@ -141,12 +134,11 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
             : null,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
-        shedIds: [], // Will be updated after shed creation
+        shedIds: [],
       );
 
       await ref.read(farmRepositoryProvider).create(farm);
 
-      // Create shed
       final shed = ShedModel.create(
         farmId: farm.id,
         name: _shedNameController.text.trim(),
@@ -158,25 +150,15 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
 
       await ref.read(shedRepositoryProvider).create(shed);
 
-      // Update farm with shed ID
-      final updatedFarm = FarmModel(
-        id: farm.id,
-        name: farm.name,
-        ownerName: farm.ownerName,
-        location: farm.location,
-        phone: farm.phone,
-        createdAt: farm.createdAt,
-        updatedAt: DateTime.now(),
+      final updatedFarm = farm.copyWith(
         shedIds: [shed.id],
         isSetupComplete: true,
-        preferences: farm.preferences,
+        updatedAt: DateTime.now(),
       );
       await ref.read(farmRepositoryProvider).update(updatedFarm);
 
-      // Update current farm provider
       ref.read(currentFarmProvider.notifier).updateFarm(updatedFarm);
 
-      // Navigate to dashboard
       if (mounted) {
         context.go('/home/dashboard');
       }
@@ -203,6 +185,7 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
     return Scaffold(
       backgroundColor: AppColors.surface,
       appBar: AppBar(
+        title: const Text('Setup Your Farm'),
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: _currentStep == SetupStep.firstShed
@@ -218,69 +201,60 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
       ),
       body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Column(
             children: [
-              // Step indicator
-              Row(
-                children: [
-                  _buildStepIndicator(
-                    step: SetupStep.farmDetails,
-                    label: 'Farm Details',
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Container(
-                      height: 2,
-                      color: AppColors.outlineVariant,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  _buildStepIndicator(
-                    step: SetupStep.firstShed,
-                    label: 'First Shed',
-                  ),
-                ],
-              ),
+              // Step Indicator
+              _buildProgressIndicator(),
 
               const SizedBox(height: 32),
 
-              // Form content
+              // Form Card
               Expanded(
                 child: SingleChildScrollView(
-                  child: _currentStep == SetupStep.farmDetails
-                      ? _buildFarmForm()
-                      : _buildShedForm(),
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(24),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.04),
+                          blurRadius: 24,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: _currentStep == SetupStep.farmDetails
+                        ? _buildFarmForm()
+                        : _buildShedForm(),
+                  ),
                 ),
               ),
 
-              // Continue button
+              const SizedBox(height: 24),
+
+              // Action Button
               SizedBox(
                 width: double.infinity,
+                height: 56,
                 child: FilledButton(
                   onPressed: _isLoading ? null : _nextStep,
                   style: FilledButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                     ),
                   ),
                   child: _isLoading
-                      ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(Colors.white),
-                          ),
-                        )
+                      ? const CircularProgressIndicator(color: Colors.white)
                       : Text(
                           _currentStep == SetupStep.farmDetails
                               ? 'Continue'
                               : 'Complete Setup',
                           style: AppTypography.labelBold.copyWith(
-                            color: AppColors.onPrimary,
+                            color: Colors.white,
+                            fontSize: 16,
                           ),
                         ),
                 ),
@@ -292,47 +266,44 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
     );
   }
 
-  Widget _buildStepIndicator({required SetupStep step, required String label}) {
-    final isActive = _currentStep == step;
-    final isCompleted = step.index < _currentStep.index;
+  Widget _buildProgressIndicator() {
+    return Row(
+      children: [
+        _buildStepBadge(1, 'Farm Details', _currentStep == SetupStep.farmDetails),
+        const SizedBox(width: 8),
+        Expanded(child: Divider(color: AppColors.outlineVariant, thickness: 2)),
+        const SizedBox(width: 8),
+        _buildStepBadge(2, 'First Shed', _currentStep == SetupStep.firstShed),
+      ],
+    );
+  }
 
-    return Column(
+  Widget _buildStepBadge(int number, String label, bool isActive) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: 32,
-          height: 32,
+          width: 28,
+          height: 28,
           decoration: BoxDecoration(
+            color: isActive ? AppColors.primary : AppColors.outlineVariant,
             shape: BoxShape.circle,
-            color: isCompleted
-                ? AppColors.primaryContainer
-                : isActive
-                    ? AppColors.primary
-                    : AppColors.surfaceContainer,
-            border: Border.all(
-              color: isActive ? AppColors.primary : AppColors.outline,
-              width: 2,
+          ),
+          child: Center(
+            child: Text(
+              '$number',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
             ),
           ),
-          child: isCompleted
-              ? const Icon(
-                  Icons.check,
-                  color: Colors.white,
-                  size: 16,
-                )
-              : Center(
-                  child: Text(
-                    '${step.index + 1}',
-                    style: AppTypography.labelBold.copyWith(
-                      color:
-                          isActive ? Colors.white : AppColors.onSurfaceVariant,
-                    ),
-                  ),
-                ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(width: 8),
         Text(
           label,
-          style: AppTypography.labelMd.copyWith(
+          style: AppTypography.labelBold.copyWith(
             color: isActive ? AppColors.primary : AppColors.onSurfaceVariant,
           ),
         ),
@@ -341,165 +312,117 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
   }
 
   Widget _buildFarmForm() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Farm Details',
-            style: AppTypography.headlineMd,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Tell us about your poultry farm',
-            style: AppTypography.bodyMd,
-          ),
-          const SizedBox(height: 24),
-
-          // Farm Name
-          TextFormField(
-            controller: _farmNameController,
-            decoration: InputDecoration(
-              labelText: 'Farm Name',
-              hintText: 'Enter your farm name',
-              errorText: _farmNameError,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Owner Name
-          TextFormField(
-            controller: _ownerNameController,
-            decoration: InputDecoration(
-              labelText: 'Owner Name',
-              hintText: 'Enter owner full name',
-              errorText: _ownerNameError,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Location (optional)
-          TextFormField(
-            controller: _locationController,
-            decoration: InputDecoration(
-              labelText: 'Location (Optional)',
-              hintText: 'City, State or Region',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Phone (optional)
-          TextFormField(
-            controller: _phoneController,
-            keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-              labelText: 'Phone Number (Optional)',
-              hintText: '+1 (555) 123-4567',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Farm Details', style: AppTypography.headlineMd),
+        const SizedBox(height: 8),
+        Text('Basic information about your operation', style: AppTypography.bodyMd),
+        const SizedBox(height: 32),
+        _buildTextField(
+          controller: _farmNameController,
+          label: 'Farm Name',
+          hint: 'e.g. Green Valley Poultry',
+          error: _farmNameError,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          controller: _ownerNameController,
+          label: 'Owner Name',
+          hint: 'Full name',
+          error: _ownerNameError,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          controller: _locationController,
+          label: 'Location',
+          hint: 'City, Region',
+          required: false,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          controller: _phoneController,
+          label: 'Phone Number',
+          hint: '+123...',
+          keyboardType: TextInputType.phone,
+          required: false,
+        ),
+      ],
     );
   }
 
   Widget _buildShedForm() {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'First Shed',
-            style: AppTypography.headlineMd,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Set up your first poultry shed',
-            style: AppTypography.bodyMd,
-          ),
-          const SizedBox(height: 24),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('First Shed', style: AppTypography.headlineMd),
+        const SizedBox(height: 8),
+        Text('Create your first poultry house', style: AppTypography.bodyMd),
+        const SizedBox(height: 32),
+        _buildTextField(
+          controller: _shedNameController,
+          label: 'Shed Name',
+          hint: 'e.g. Block A',
+          error: _shedNameError,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          controller: _capacityController,
+          label: 'Capacity (Birds)',
+          hint: '0',
+          keyboardType: TextInputType.number,
+          error: _capacityError,
+        ),
+        const SizedBox(height: 20),
+        _buildTextField(
+          controller: _areaController,
+          label: 'Area (sq meters)',
+          hint: '0.0',
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
+          required: false,
+        ),
+      ],
+    );
+  }
 
-          // Shed Name
-          TextFormField(
-            controller: _shedNameController,
-            decoration: InputDecoration(
-              labelText: 'Shed Name',
-              hintText: 'e.g., Block A, Main Shed',
-              errorText: _shedNameError,
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    String? error,
+    bool required = true,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(label, style: AppTypography.labelBold),
+            if (required) const Text(' *', style: TextStyle(color: AppColors.error)),
+          ],
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          decoration: InputDecoration(
+            hintText: hint,
+            errorText: error,
+            fillColor: AppColors.surfaceContainerLowest,
+            filled: true,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: AppColors.outlineVariant),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: AppColors.outlineVariant),
             ),
           ),
-          const SizedBox(height: 16),
-
-          // Capacity
-          TextFormField(
-            controller: _capacityController,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            decoration: InputDecoration(
-              labelText: 'Capacity',
-              hintText: 'Number of birds',
-              errorText: _capacityError,
-              suffixText: 'birds',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-
-          // Area (optional)
-          TextFormField(
-            controller: _areaController,
-            keyboardType: TextInputType.numberWithOptions(decimal: true),
-            decoration: InputDecoration(
-              labelText: 'Area (Optional)',
-              hintText: 'Area in square meters',
-              suffixText: 'm²',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
+

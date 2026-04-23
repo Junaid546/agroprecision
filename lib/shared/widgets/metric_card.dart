@@ -27,67 +27,76 @@ class MetricCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isHero = label == "ESTIMATED PROFIT";
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(AppSpacing.cardPadding),
         decoration: BoxDecoration(
-          color: AppColors.cardBackground,
-          borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withValues(alpha: 0.05),
               blurRadius: 20,
               offset: const Offset(0, 4),
             ),
           ],
           border: borderLeftColor != null
-              ? Border(
-                  left: BorderSide(color: borderLeftColor!, width: 4),
-                )
-              : null,
+              ? Border(left: BorderSide(color: borderLeftColor!, width: 4))
+              : Border.all(color: AppColors.surfaceVariant),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
+        child: Stack(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   label.toUpperCase(),
-                  style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                  style: AppTypography.labelBold.copyWith(
+                    color: AppColors.onSurfaceVariant,
+                    letterSpacing: 0.5,
+                  ),
                 ),
-                if (icon != null) icon!,
+                const SizedBox(height: 8),
+                Text(
+                  value,
+                  style: isHero ? AppTypography.displayStat : AppTypography.headlineLg.copyWith(fontSize: 28),
+                ),
+                if (isHero && icon != null) icon!,
               ],
             ),
-            const SizedBox(height: AppSpacing.sm),
-            Text(
-              value,
-              style: AppTypography.displayStat,
-            ),
-            if (trend != null) ...[
-              const SizedBox(height: AppSpacing.xs),
-              Row(
-                children: [
-                  if (trendDirection == TrendDirection.up)
-                    const Icon(Icons.north_east_rounded, color: AppColors.successText, size: 16)
-                  else if (trendDirection == TrendDirection.down)
-                    const Icon(Icons.south_east_rounded, color: AppColors.dangerText, size: 16),
-                  const SizedBox(width: 4),
-                  Text(
-                    trend!,
-                    style: AppTypography.bodyMd.copyWith(
-                      color: trendDirection == TrendDirection.up
-                          ? AppColors.successText
-                          : trendDirection == TrendDirection.down
-                              ? AppColors.dangerText
-                              : AppColors.onSurfaceVariant,
-                    ),
+            if (trend != null)
+              Positioned(
+                top: 0,
+                right: 0,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.primaryContainer.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                ],
+                  child: Row(
+                    children: [
+                      if (trendDirection == TrendDirection.up)
+                        const Icon(Icons.arrow_upward, size: 14, color: AppColors.primary),
+                      const SizedBox(width: 4),
+                      Text(
+                        trend!,
+                        style: AppTypography.labelBold.copyWith(color: AppColors.primary),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ],
+            if (!isHero && icon != null)
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: icon!,
+              ),
           ],
         ),
       ),
