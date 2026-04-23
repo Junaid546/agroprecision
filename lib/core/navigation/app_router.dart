@@ -6,20 +6,6 @@ import '../../features/splash/splash_screen.dart';
 import '../../features/onboarding/onboarding_screen.dart';
 import '../../features/onboarding/farm_setup_screen.dart';
 
-class OnboardingScreen extends StatelessWidget {
-  const OnboardingScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: Text('Onboarding')));
-}
-
-class FarmSetupScreen extends StatelessWidget {
-  const FarmSetupScreen({super.key});
-  @override
-  Widget build(BuildContext context) =>
-      const Scaffold(body: Center(child: Text('Farm Setup')));
-}
-
 class AgroBottomNav extends StatelessWidget {
   final Widget child;
   const AgroBottomNav({super.key, required this.child});

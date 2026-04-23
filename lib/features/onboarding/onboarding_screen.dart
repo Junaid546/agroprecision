@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
-import '../../../core/constants/app_spacing.dart';
 import 'widgets/onboarding_illustrations.dart';
 
 class OnboardingPageData {

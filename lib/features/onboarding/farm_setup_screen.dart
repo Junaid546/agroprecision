@@ -33,9 +33,7 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
   final _capacityController = TextEditingController();
   final _areaController = TextEditingController();
 
-  // Form validation
-  final _farmFormKey = GlobalKey<FormState>();
-  final _shedFormKey = GlobalKey<FormState>();
+  // Form validation - using manual validation
 
   // Error messages
   String? _farmNameError;
