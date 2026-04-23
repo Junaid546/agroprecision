@@ -31,6 +31,8 @@ class HiveService {
   static Box<TaskModel> get taskBox => Hive.box<TaskModel>(taskBoxName);
 
   static Future<void> init() async {
+    await Hive.initFlutter();
+    
     // Enums FIRST (they are referenced by model adapters)
     if (!Hive.isAdapterRegistered(8))  Hive.registerAdapter(BatchStatusAdapter());
     if (!Hive.isAdapterRegistered(9))  Hive.registerAdapter(ExpenseCategoryAdapter());

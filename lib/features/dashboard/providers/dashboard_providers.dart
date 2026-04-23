@@ -47,7 +47,7 @@ final dashboardSummaryProvider = FutureProvider<DashboardSummary>((ref) async {
   final todaysMortality = await mortalityRepo.getTodaysMortality(activeBatch.id);
   
   // Use the tasks provider
-  final todaysTasks = await ref.watch(tasksForDateProvider(DateTime.now()).future);
+  final todaysTasks = await taskRepo.getByDate(DateTime.now());
 
   // Get last 5 batches for the sparkline
   final allBatches = await batchRepo.getAll(); // sorted desc by default

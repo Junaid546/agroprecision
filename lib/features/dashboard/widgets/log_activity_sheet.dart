@@ -204,7 +204,7 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
           const SizedBox(height: 16),
           Text('No Active Batches', style: AppTypography.headlineMd),
           const SizedBox(height: 8),
-          const Text(
+          Text(
             'You need an active batch to log activities like feeding, mortality, or expenses.',
             textAlign: TextAlign.center,
             style: AppTypography.bodyMd,

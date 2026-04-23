@@ -201,7 +201,7 @@ class _OverviewTab extends ConsumerWidget {
         child: Column(
           children: [
             alertsAsync.when(
-              loading: () => const LoadingSkeletonCard(),
+              loading: () => LoadingSkeleton.skeletonCard(),
               error: (_, __) => const SizedBox.shrink(),
               data: (alerts) {
                 final financials = financialsAsync.value;
@@ -329,7 +329,7 @@ class _OverviewTab extends ConsumerWidget {
             ),
             const SizedBox(height: 12),
             financialsAsync.when(
-              loading: () => const LoadingSkeletonCard(),
+              loading: () => LoadingSkeleton.skeletonCard(),
               error: (_, __) => const Text('Error loading mortality'),
               data: (f) => Row(
                 children: [
@@ -363,7 +363,7 @@ class _OverviewTab extends ConsumerWidget {
             Text("Expense Breakdown", style: AppTypography.headlineMd),
             const SizedBox(height: 24),
             financialsAsync.when(
-              loading: () => const LoadingSkeletonCard(),
+              loading: () => LoadingSkeleton.skeletonCard(),
               error: (_, __) => const Text('Error loading expenses'),
               data: (f) {
                 final breakdown = f.categoryBreakdown;
@@ -396,9 +396,9 @@ class _OverviewTab extends ConsumerWidget {
   Color _getCategoryColor(ExpenseCategory category) {
     switch (category) {
       case ExpenseCategory.feed: return AppColors.primary;
-      case ExpenseCategory.birds: return AppColors.secondary;
-      case ExpenseCategory.medicine: return AppColors.error;
-      case ExpenseCategory.labor: return Colors.blue;
+      case ExpenseCategory.medication: return AppColors.secondary;
+      case ExpenseCategory.labor: return AppColors.tertiary;
+      case ExpenseCategory.utilities: return AppColors.outline;
       default: return Colors.grey;
     }
   }
@@ -484,7 +484,7 @@ class _GrowthLineChart extends ConsumerWidget {
             ],
             lineTouchData: LineTouchData(
               touchTooltipData: LineTouchTooltipData(
-                tooltipBgColor: AppColors.primary,
+                getTooltipColor: (spot) => AppColors.primary,
                 getTooltipItems: (spots) => spots.map((s) => LineTooltipItem(
                   '${s.y.toStringAsFixed(2)} kg\nDay ${s.x.toInt()}',
                   const TextStyle(color: Colors.white, fontSize: 12),
@@ -570,7 +570,7 @@ class _ExpensesTab extends ConsumerWidget {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
           final expenses = snapshot.data!;
           if (expenses.isEmpty) {
-            return const Center(child: Text('No expenses recorded', style: AppTypography.bodyMd));
+            return Center(child: Text('No expenses recorded', style: AppTypography.bodyMd));
           }
 
           return ListView.builder(
@@ -603,7 +603,7 @@ class _ExpensesTab extends ConsumerWidget {
                       child: Text(e.description ?? 'Expense', style: AppTypography.bodyMd, overflow: TextOverflow.ellipsis),
                     ),
                     Text(
-                      NumberFormat.currency(symbol: '$').format(e.amount), 
+                      NumberFormat.currency(symbol: '\$').format(e.amount), 
                       style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)
                     ),
                   ],
@@ -638,7 +638,7 @@ class _MortalityTab extends ConsumerWidget {
           if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
           final logs = snapshot.data!;
           if (logs.isEmpty) {
-            return const Center(child: Text('No mortality logs recorded', style: AppTypography.bodyMd));
+            return Center(child: Text('No mortality logs recorded', style: AppTypography.bodyMd));
           }
 
           return ListView.builder(
@@ -704,7 +704,7 @@ class _SalesTab extends ConsumerWidget {
               if (sales.isNotEmpty) _buildSalesSummary(sales),
               Expanded(
                 child: sales.isEmpty 
-                  ? const Center(child: Text('No sales recorded yet', style: AppTypography.bodyMd))
+                  ? Center(child: Text('No sales recorded yet', style: AppTypography.bodyMd))
                   : ListView.builder(
                       padding: const EdgeInsets.all(20),
                       itemCount: sales.length,
@@ -732,7 +732,7 @@ class _SalesTab extends ConsumerWidget {
                                 ),
                               ),
                               Text(
-                                NumberFormat.currency(symbol: '$').format(s.totalRevenue), 
+                                NumberFormat.currency(symbol: '\$').format(s.totalRevenue), 
                                 style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)
                               ),
                             ],
@@ -769,7 +769,7 @@ class _SalesTab extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _summaryItem("Birds Sold", totalBirds.toString()),
-          _summaryItem("Total Revenue", NumberFormat.compactCurrency(symbol: '$').format(totalRevenue)),
+          _summaryItem("Total Revenue", NumberFormat.compactCurrency(symbol: '\$').format(totalRevenue)),
           _summaryItem("Avg Price/kg", "\$${avgPrice.toStringAsFixed(2)}"),
         ],
       ),

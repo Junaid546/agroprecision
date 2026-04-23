@@ -228,7 +228,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 path: ':batchId',
                 pageBuilder: (context, state) => AppTransitions.slideRight(
                   key: state.pageKey,
-                  child: const BatchDetailScreen(),
+                  child: BatchDetailScreen(batchId: state.pathParameters['batchId']!),
                 ),
                 routes: [
                   GoRoute(
@@ -337,15 +337,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
 
 // These will be implemented in their respective feature folders
-class AddExpenseScreen extends StatelessWidget {
-  const AddExpenseScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Add Expense')),
-        body: const Center(child: Text('Add Expense Form')),
-      );
-}
-
 class AddExpenseScreen extends StatelessWidget {
   const AddExpenseScreen({super.key});
   @override

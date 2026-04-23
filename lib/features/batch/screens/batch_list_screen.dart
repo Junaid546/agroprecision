@@ -135,7 +135,7 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              const Text(
+              Text(
                 'Start tracking your first batch of birds.\nTap the + button to begin.',
                 style: AppTypography.bodyMd,
                 textAlign: TextAlign.center,
@@ -200,9 +200,9 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
               borderRadius: BorderRadius.circular(999)),
           ))),
           const SizedBox(height: 16),
-          ...List.generate(3, (i) => const Padding(
-            padding: EdgeInsets.only(bottom: 12),
-            child: LoadingSkeletonCard(),
+          ...List.generate(3, (i) => Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: LoadingSkeleton.skeletonCard(),
           )),
         ],
       ),
@@ -421,15 +421,10 @@ class _BatchCard extends ConsumerWidget {
                               ),
                             ),
                             error: (_, __) => const SizedBox.shrink(),
-                            data: (f) => Column(
-                              children: [
-                                ProgressRing(
-                                  percentage: f.performanceScore,
-                                  size: 64,
-                                ),
-                                const SizedBox(height: 4),
-                                Text("Performance", style: AppTypography.labelMd),
-                              ],
+                            data: (f) => CircularProgressRing(
+                              percentage: f.performanceScore,
+                              label: "Performance",
+                              size: 64,
                             ),
                           ),
                         ],

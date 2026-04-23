@@ -194,14 +194,9 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
           decoration: _inputDecoration('Select Shed', Icons.warehouse_outlined, 'Choose a shed...'),
           items: sheds.map((shed) => DropdownMenuItem(
             value: shed.id,
-            child: Row(
-              children: [
-                Expanded(child: Text(shed.name, style: AppTypography.bodyLg)),
-                Text(
-                  '${NumberFormat("#,###").format(shed.capacity)} birds',
-                  style: AppTypography.labelMd,
-                ),
-              ],
+            child: Text(
+              '${shed.name} (${NumberFormat("#,###").format(shed.capacity)} birds)',
+              style: AppTypography.bodyLg,
             ),
           )).toList(),
           onChanged: (val) => setState(() => selectedShedId = val),
