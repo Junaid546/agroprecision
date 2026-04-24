@@ -47,6 +47,7 @@ dependencies:
   
   # Icons
   flutter_iconly: ^1.0.2
+  logger: ^2.7.0
 
 dev_dependencies:
   flutter_test:

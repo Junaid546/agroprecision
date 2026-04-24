@@ -5,16 +5,16 @@ import '../../core/constants/app_typography.dart';
 class EmptyState extends StatelessWidget {
   final String title;
   final String message;
-  final String actionLabel;
-  final VoidCallback onAction;
+  final String? actionLabel;
+  final VoidCallback? onAction;
   final IconData icon;
 
   const EmptyState({
     super.key,
     required this.title,
     required this.message,
-    required this.actionLabel,
-    required this.onAction,
+    this.actionLabel,
+    this.onAction,
     this.icon = Icons.inventory_2_outlined,
   });
 
@@ -48,24 +48,26 @@ class EmptyState extends StatelessWidget {
                   .copyWith(color: AppColors.onSurfaceVariant),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 24),
-            SizedBox(
-              width: double.infinity,
-              height: 56,
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: Text(actionLabel),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryContainer,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+            if (actionLabel != null && onAction != null) ...[
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 56,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.add_rounded, size: 18),
+                  label: Text(actionLabel!),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryContainer,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    elevation: 0,
                   ),
-                  elevation: 0,
+                  onPressed: onAction,
                 ),
-                onPressed: onAction,
               ),
-            ),
+            ],
           ],
         ),
       ),

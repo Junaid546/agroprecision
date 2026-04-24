@@ -5,6 +5,7 @@ class AppSpacing {
   static const double inlineGap = 12.0;
   static const double cardPadding = 20.0;
   static const double sectionMargin = 32.0;
+  static const double screenPadding = 20.0;
 
   // Radius
   static const double radiusSm = 4.0;

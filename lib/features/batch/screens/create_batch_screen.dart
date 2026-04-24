@@ -377,7 +377,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
                         style: AppTypography.bodyLg
                             .copyWith(fontWeight: FontWeight.bold)),
                     const Text(
-                        "AgroPrecision will create recurring daily tasks for this batch.",
+                        "Poultry Path will create recurring daily tasks for this batch.",
                         style: TextStyle(
                             color: AppColors.onSurfaceVariant, fontSize: 14)),
                   ],

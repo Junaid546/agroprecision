@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../shared/providers/app_state_provider.dart';
+import '../../../core/constants/app_strings.dart';
 import 'widgets/grid_painter.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
@@ -147,10 +148,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         ),
                       ],
                     ),
-                    child: const Icon(
-                      Icons.agriculture_rounded,
-                      color: AppColors.primary,
-                      size: 52,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Image.asset(
+                        'assets/images/app logo.png',
+                      ),
                     ),
                   ),
                 ),
@@ -159,7 +161,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 FadeTransition(
                   opacity: _titleOpacityAnimation,
                   child: Text(
-                    'AgroPrecision',
+                    AppStrings.appName,
                     style: GoogleFonts.manrope(
                       fontSize: 36,
                       fontWeight: FontWeight.w800,

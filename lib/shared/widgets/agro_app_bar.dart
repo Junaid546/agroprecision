@@ -3,11 +3,15 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
 import '../../core/constants/app_spacing.dart';
 
+import '../../core/constants/app_strings.dart';
+
 class AgroAppBar extends StatelessWidget implements PreferredSizeWidget {
+  final String? title;
   final bool showOfflineIndicator;
 
   const AgroAppBar({
     super.key,
+    this.title,
     this.showOfflineIndicator = true,
   });
 
@@ -31,10 +35,14 @@ class AgroAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Row(
                 children: [
-                  const Icon(Icons.agriculture, color: AppColors.primary),
+                  Image.asset(
+                    'assets/images/app logo.png',
+                    height: 32,
+                    width: 32,
+                  ),
                   const SizedBox(width: AppSpacing.sm),
                   Text(
-                    'AgroPrecision',
+                    title ?? AppStrings.appName,
                     style: AppTypography.headlineLg.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w900,

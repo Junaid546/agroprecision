@@ -301,7 +301,7 @@ class ReportsScreen extends ConsumerWidget {
       if (context.mounted) Navigator.pop(context);
 
       await PDFService.generateFinancialReport(
-        farmName: farm?.name ?? 'AgroPrecision Farm',
+        farmName: farm?.name ?? 'Poultry Path Farm',
         ownerName: farm?.ownerName ?? 'Valued Farmer',
         summary: summary,
         batches: performanceRows,

@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.agroprecision.agro_precision"
+    namespace = "com.poultrypath.app"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -22,10 +22,10 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.agroprecision.agro_precision"
+        applicationId = "com.poultrypath.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        minSdk = 26
         targetSdk = 36
         versionCode = flutter.versionCode
         versionName = flutter.versionName
