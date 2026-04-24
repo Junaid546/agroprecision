@@ -74,7 +74,11 @@ class GrowthModel extends HiveObject {
 
   // Computed property
   double get feedConversionRatio {
-    if (feedConsumedKg == null || feedConsumedKg! <= 0 || averageWeightKg <= 0) return 0;
+    if (feedConsumedKg == null ||
+        feedConsumedKg! <= 0 ||
+        averageWeightKg <= 0) {
+      return 0;
+    }
     return feedConsumedKg! / averageWeightKg;
   }
 
@@ -102,7 +106,9 @@ class GrowthModel extends HiveObject {
       sampleSize: json['sampleSize'],
       batchDay: json['batchDay'],
       date: DateTime.parse(json['date']),
-      feedConsumedKg: json['feedConsumedKg'] != null ? (json['feedConsumedKg'] as num).toDouble() : null,
+      feedConsumedKg: json['feedConsumedKg'] != null
+          ? (json['feedConsumedKg'] as num).toDouble()
+          : null,
       createdAt: DateTime.parse(json['createdAt']),
       notes: json['notes'],
     );

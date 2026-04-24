@@ -19,20 +19,20 @@ enum ExpenseCategory {
   other;
 
   String get displayName => {
-    ExpenseCategory.feed: 'Feed',
-    ExpenseCategory.medication: 'Medication',
-    ExpenseCategory.labor: 'Labor',
-    ExpenseCategory.utilities: 'Utilities',
-    ExpenseCategory.other: 'Other'
-  }[this]!;
+        ExpenseCategory.feed: 'Feed',
+        ExpenseCategory.medication: 'Medication',
+        ExpenseCategory.labor: 'Labor',
+        ExpenseCategory.utilities: 'Utilities',
+        ExpenseCategory.other: 'Other'
+      }[this]!;
 
   Color get color => {
-    ExpenseCategory.feed: AppColors.primary,
-    ExpenseCategory.medication: AppColors.secondary,
-    ExpenseCategory.labor: AppColors.tertiary,
-    ExpenseCategory.utilities: AppColors.outline,
-    ExpenseCategory.other: AppColors.onSurfaceVariant
-  }[this]!;
+        ExpenseCategory.feed: AppColors.primary,
+        ExpenseCategory.medication: AppColors.secondary,
+        ExpenseCategory.labor: AppColors.tertiary,
+        ExpenseCategory.utilities: AppColors.outline,
+        ExpenseCategory.other: AppColors.onSurfaceVariant
+      }[this]!;
 }
 
 @HiveType(typeId: 3)
@@ -135,7 +135,9 @@ class ExpenseModel extends HiveObject {
       amount: (json['amount'] as num).toDouble(),
       description: json['description'],
       date: DateTime.parse(json['date']),
-      quantity: json['quantity'] != null ? (json['quantity'] as num).toDouble() : null,
+      quantity: json['quantity'] != null
+          ? (json['quantity'] as num).toDouble()
+          : null,
       unit: json['unit'],
       createdAt: DateTime.parse(json['createdAt']),
       receiptImagePath: json['receiptImagePath'],

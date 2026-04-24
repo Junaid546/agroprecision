@@ -166,7 +166,8 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
         Icons.tag_rounded,
         'e.g. Batch #204',
       ),
-      validator: (v) => v == null || v.trim().isEmpty ? 'Batch number is required' : null,
+      validator: (v) =>
+          v == null || v.trim().isEmpty ? 'Batch number is required' : null,
     );
   }
 
@@ -190,15 +191,18 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
           return _buildNoShedsWarning();
         }
         return DropdownButtonFormField<String>(
-          value: selectedShedId,
-          decoration: _inputDecoration('Select Shed', Icons.warehouse_outlined, 'Choose a shed...'),
-          items: sheds.map((shed) => DropdownMenuItem(
-            value: shed.id,
-            child: Text(
-              '${shed.name} (${NumberFormat("#,###").format(shed.capacity)} birds)',
-              style: AppTypography.bodyLg,
-            ),
-          )).toList(),
+          initialValue: selectedShedId,
+          decoration: _inputDecoration(
+              'Select Shed', Icons.warehouse_outlined, 'Choose a shed...'),
+          items: sheds
+              .map((shed) => DropdownMenuItem(
+                    value: shed.id,
+                    child: Text(
+                      '${shed.name} (${NumberFormat("#,###").format(shed.capacity)} birds)',
+                      style: AppTypography.bodyLg,
+                    ),
+                  ))
+              .toList(),
           onChanged: (val) => setState(() => selectedShedId = val),
           validator: (v) => v == null ? 'Please select a shed' : null,
         );
@@ -216,21 +220,27 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       ),
       child: Row(
         children: [
-          const Icon(Icons.warning_amber_rounded, color: AppColors.error, size: 20),
+          const Icon(Icons.warning_amber_rounded,
+              color: AppColors.error, size: 20),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('No Sheds Found', style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold, color: AppColors.error)),
-                const Text('Go to Settings → Shed Management to add a shed first.',
-                  style: TextStyle(color: AppColors.onErrorContainer)),
+                Text('No Sheds Found',
+                    style: AppTypography.bodyLg.copyWith(
+                        fontWeight: FontWeight.bold, color: AppColors.error)),
+                const Text(
+                    'Go to Settings → Shed Management to add a shed first.',
+                    style: TextStyle(color: AppColors.onErrorContainer)),
               ],
             ),
           ),
           TextButton(
             onPressed: () => context.push('/home/settings/sheds'),
-            child: const Text('Go', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+            child: const Text('Go',
+                style: TextStyle(
+                    color: AppColors.primary, fontWeight: FontWeight.bold)),
           ),
         ],
       ),
@@ -242,7 +252,8 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       controller: initialCountController,
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      decoration: _inputDecoration('Initial Bird Count', Icons.pets_rounded, 'e.g. 5000'),
+      decoration: _inputDecoration(
+          'Initial Bird Count', Icons.pets_rounded, 'e.g. 5000'),
       validator: (v) {
         if (v == null || v.trim().isEmpty) return 'Bird count is required';
         final n = int.tryParse(v.trim());
@@ -257,8 +268,11 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
     return TextFormField(
       controller: costPerBirdController,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
-      decoration: _inputDecoration('Purchase Cost Per Bird (\$)', Icons.attach_money_rounded, 'e.g. 0.85'),
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))
+      ],
+      decoration: _inputDecoration('Purchase Cost Per Bird (\$)',
+          Icons.attach_money_rounded, 'e.g. 0.85'),
       validator: (v) {
         if (v == null || v.trim().isEmpty) return 'Cost per bird is required';
         final n = double.tryParse(v.trim());
@@ -271,7 +285,8 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
   Widget _buildBreedField() {
     return TextFormField(
       controller: breedController,
-      decoration: _inputDecoration('Breed (Optional)', Icons.biotech_outlined, 'e.g. Ross 308, Cobb 500'),
+      decoration: _inputDecoration('Breed (Optional)', Icons.biotech_outlined,
+          'e.g. Ross 308, Cobb 500'),
     );
   }
 
@@ -280,10 +295,14 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       controller: startDateController,
       readOnly: true,
       onTap: _pickDate,
-      decoration: _inputDecoration('Start Date', Icons.calendar_today_rounded, '').copyWith(
-        suffixIcon: const Icon(Icons.edit_calendar_outlined, color: AppColors.onSurfaceVariant, size: 20),
+      decoration:
+          _inputDecoration('Start Date', Icons.calendar_today_rounded, '')
+              .copyWith(
+        suffixIcon: const Icon(Icons.edit_calendar_outlined,
+            color: AppColors.onSurfaceVariant, size: 20),
       ),
-      validator: (v) => v == null || v.trim().isEmpty ? 'Start date is required' : null,
+      validator: (v) =>
+          v == null || v.trim().isEmpty ? 'Start date is required' : null,
     );
   }
 
@@ -319,7 +338,9 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       controller: targetDaysController,
       keyboardType: TextInputType.number,
       inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-      decoration: _inputDecoration('Target Days to Harvest (Optional)', Icons.schedule_rounded, 'e.g. 42').copyWith(
+      decoration: _inputDecoration('Target Days to Harvest (Optional)',
+              Icons.schedule_rounded, 'e.g. 42')
+          .copyWith(
         helperText: "Industry standard: 35–42 days for broilers",
       ),
     );
@@ -329,7 +350,8 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
     return TextFormField(
       controller: targetWeightController,
       keyboardType: const TextInputType.numberWithOptions(decimal: true),
-      decoration: _inputDecoration('Target Weight at Harvest (kg, Optional)', Icons.scale_outlined, 'e.g. 2.5'),
+      decoration: _inputDecoration('Target Weight at Harvest (kg, Optional)',
+          Icons.scale_outlined, 'e.g. 2.5'),
     );
   }
 
@@ -344,15 +366,20 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
         children: [
           Row(
             children: [
-              const Icon(Icons.auto_fix_high_outlined, color: AppColors.primary, size: 20),
+              const Icon(Icons.auto_fix_high_outlined,
+                  color: AppColors.primary, size: 20),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Automatic Daily Tasks", style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)),
-                    const Text("AgroPrecision will create recurring daily tasks for this batch.",
-                      style: TextStyle(color: AppColors.onSurfaceVariant, fontSize: 14)),
+                    Text("Automatic Daily Tasks",
+                        style: AppTypography.bodyLg
+                            .copyWith(fontWeight: FontWeight.bold)),
+                    const Text(
+                        "AgroPrecision will create recurring daily tasks for this batch.",
+                        style: TextStyle(
+                            color: AppColors.onSurfaceVariant, fontSize: 14)),
                   ],
                 ),
               ),
@@ -387,19 +414,21 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
           const SizedBox(height: 12),
           Row(
             children: [
-              const Icon(Icons.vaccines_outlined, color: AppColors.primary, size: 18),
+              const Icon(Icons.vaccines_outlined,
+                  color: AppColors.primary, size: 18),
               const SizedBox(width: 8),
               Expanded(
-                child: Text("Vaccination reminders will be auto-scheduled:", 
-                  style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.bold)),
+                child: Text("Vaccination reminders will be auto-scheduled:",
+                    style: AppTypography.bodyMd
+                        .copyWith(fontWeight: FontWeight.bold)),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          _VaccinationRow("Day 7", "Newcastle Disease (1st dose)"),
-          _VaccinationRow("Day 14", "Gumboro / IBD Vaccine"),
-          _VaccinationRow("Day 21", "Newcastle Disease (2nd dose)"),
-          _VaccinationRow("Day 28", "Fowl Typhoid Vaccine"),
+          const _VaccinationRow("Day 7", "Newcastle Disease (1st dose)"),
+          const _VaccinationRow("Day 14", "Gumboro / IBD Vaccine"),
+          const _VaccinationRow("Day 21", "Newcastle Disease (2nd dose)"),
+          const _VaccinationRow("Day 28", "Fowl Typhoid Vaccine"),
         ],
       ),
     );
@@ -409,39 +438,58 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
     return TextFormField(
       controller: notesController,
       maxLines: 3,
-      decoration: _inputDecoration('Notes (Optional)', Icons.notes, 'Any special instructions for this batch...'),
+      decoration: _inputDecoration('Notes (Optional)', Icons.notes,
+          'Any special instructions for this batch...'),
     );
   }
 
   Widget _buildBottomBar() {
     return Container(
-      padding: EdgeInsets.fromLTRB(20, 12, 20, 20 + MediaQuery.of(context).padding.bottom),
+      padding: EdgeInsets.fromLTRB(
+          20, 12, 20, 20 + MediaQuery.of(context).padding.bottom),
       decoration: BoxDecoration(
         color: AppColors.surfaceContainerLowest,
-        border: const Border(top: BorderSide(color: AppColors.surfaceContainerHigh)),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8, offset: const Offset(0, -2))],
+        border: const Border(
+            top: BorderSide(color: AppColors.surfaceContainerHigh)),
+        boxShadow: [
+          BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 8,
+              offset: const Offset(0, -2))
+        ],
       ),
       child: SizedBox(
         width: double.infinity,
         height: 56,
         child: ElevatedButton(
-          onPressed: isLoading ? null : _handleSave,
+          onPressed: isLoading
+              ? null
+              : () {
+                  HapticFeedback.lightImpact();
+                  _handleSave();
+                },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryContainer,
             foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             elevation: 0,
           ),
           child: isLoading
-            ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-            : const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.check_circle_outline_rounded, size: 20),
-                  SizedBox(width: 8),
-                  Text('Create Batch', style: TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(
+                      color: Colors.white, strokeWidth: 2))
+              : const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.check_circle_outline_rounded, size: 20),
+                    SizedBox(width: 8),
+                    Text('Create Batch',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
         ),
       ),
     );
@@ -459,7 +507,8 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       }
 
       final int initialCount = int.parse(initialCountController.text.trim());
-      final double costPerBird = double.parse(costPerBirdController.text.trim());
+      final double costPerBird =
+          double.parse(costPerBirdController.text.trim());
       final String batchId = const Uuid().v4();
       final DateTime startDate = _selectedDate ?? DateTime.now();
 
@@ -473,10 +522,14 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
         startDate: startDate,
         endDate: null,
         status: BatchStatus.active,
-        notes: notesController.text.trim().isEmpty ? null : notesController.text.trim(),
+        notes: notesController.text.trim().isEmpty
+            ? null
+            : notesController.text.trim(),
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
-        breed: breedController.text.trim().isEmpty ? null : breedController.text.trim(),
+        breed: breedController.text.trim().isEmpty
+            ? null
+            : breedController.text.trim(),
         targetWeightKg: targetWeightController.text.trim().isEmpty
             ? null
             : double.tryParse(targetWeightController.text.trim()),
@@ -486,7 +539,9 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       );
 
       await ref.read(batchRepositoryProvider).create(batch);
-      await ref.read(shedRepositoryProvider).assignBatch(selectedShedId!, batchId);
+      await ref
+          .read(shedRepositoryProvider)
+          .assignBatch(selectedShedId!, batchId);
       await _generateDailyTasks(batchId, farm.id, startDate);
       await _scheduleVaccinationAlerts(batchId, batch.batchNumber, startDate);
 
@@ -500,14 +555,16 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+                const Icon(Icons.check_circle_rounded,
+                    color: Colors.white, size: 18),
                 const SizedBox(width: 8),
                 Text('${batch.batchNumber} created successfully!'),
               ],
             ),
             backgroundColor: AppColors.primaryContainer,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             margin: const EdgeInsets.all(16),
           ),
         );
@@ -521,15 +578,16 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
     }
   }
 
-  Future<void> _generateDailyTasks(String batchId, String farmId, DateTime startDate) async {
+  Future<void> _generateDailyTasks(
+      String batchId, String farmId, DateTime startDate) async {
     final taskRepo = ref.read(taskRepositoryProvider);
     final int totalDays = int.tryParse(targetDaysController.text) ?? 42;
-    
+
     List<Future> taskFutures = [];
 
     for (int i = 0; i < totalDays; i++) {
       final taskDate = startDate.add(Duration(days: i));
-      
+
       if (createFeedTasks) {
         final feedTask = TaskModel(
           id: const Uuid().v4(),
@@ -546,19 +604,23 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
           createdAt: DateTime.now(),
           shedId: selectedShedId,
         );
-        
+
         if (i < 7) {
           final timeParts = feedTask.scheduledTime!.split(':');
           final scheduledDateTime = DateTime(
-            taskDate.year, taskDate.month, taskDate.day, 
-            int.parse(timeParts[0]), int.parse(timeParts[1]),
+            taskDate.year,
+            taskDate.month,
+            taskDate.day,
+            int.parse(timeParts[0]),
+            int.parse(timeParts[1]),
           );
-          
+
           if (scheduledDateTime.isAfter(DateTime.now())) {
             final notifId = await NotificationService.scheduleTaskNotification(
               taskId: feedTask.id,
               title: feedTask.title,
-              body: 'Time for morning feed distribution for ${batchNumberController.text}',
+              body:
+                  'Time for morning feed distribution for ${batchNumberController.text}',
               scheduledDateTime: scheduledDateTime,
               priority: TaskPriority.routine,
             );
@@ -592,7 +654,8 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
           farmId: farmId,
           batchId: batchId,
           title: 'Evening Flock Observation',
-          description: 'Check bird behavior, feeding activity, and any signs of illness',
+          description:
+              'Check bird behavior, feeding activity, and any signs of illness',
           priority: TaskPriority.routine,
           status: TaskStatus.pending,
           scheduledDate: taskDate,
@@ -604,18 +667,19 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
         )));
       }
     }
-    
+
     await Future.wait(taskFutures);
     ref.invalidate(tasksForDateProvider);
     ref.invalidate(taskProgressProvider);
   }
 
-  Future<void> _scheduleVaccinationAlerts(String batchId, String batchName, DateTime startDate) async {
+  Future<void> _scheduleVaccinationAlerts(
+      String batchId, String batchName, DateTime startDate) async {
     final vaccinations = [
       {'day': 7, 'name': 'Newcastle Disease (1st dose)'},
-      {'day': 14, 'name': 'Gumboro / IBD Vaccine'},
+      {'day': 14, 'name': 'Gumboro (IBD) Vaccine'},
       {'day': 21, 'name': 'Newcastle Disease (2nd dose)'},
-      {'day': 28, 'name': 'Fowl Typhoid Vaccine'},
+      {'day': 28, 'name': 'Fowl Pox Vaccine'},
     ];
 
     final farmId = ref.read(currentFarmProvider)!.id;
@@ -624,7 +688,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       final day = vax['day'] as int;
       final name = vax['name'] as String;
       final vaxDate = startDate.add(Duration(days: day - 1));
-      
+
       // We also create a task for it
       final vaxTask = TaskModel(
         id: const Uuid().v4(),
@@ -649,7 +713,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
         batchStartDate: startDate,
         vaccineName: name,
       );
-      
+
       await ref.read(taskRepositoryProvider).create(vaxTask);
     }
   }
@@ -666,7 +730,8 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
     );
   }
 
-  InputDecoration _inputDecoration(String label, IconData prefixIcon, String hint) {
+  InputDecoration _inputDecoration(
+      String label, IconData prefixIcon, String hint) {
     return InputDecoration(
       labelText: label,
       hintText: hint,
@@ -720,7 +785,7 @@ class _AutoTaskToggle extends StatelessWidget {
         Expanded(child: Text(label, style: AppTypography.bodyMd)),
         Switch(
           value: value,
-          activeColor: AppColors.primary,
+          activeThumbColor: AppColors.primary,
           onChanged: onChanged,
         ),
       ],
@@ -749,7 +814,9 @@ class _VaccinationRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text("$day — $vaccine", style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant)),
+          Text("$day — $vaccine",
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant)),
         ],
       ),
     );

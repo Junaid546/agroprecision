@@ -92,7 +92,9 @@ class FarmModel extends HiveObject {
       updatedAt: DateTime.parse(json['updatedAt']),
       shedIds: List<String>.from(json['shedIds'] ?? []),
       isSetupComplete: json['isSetupComplete'] ?? false,
-      preferences: json['preferences'] != null ? Map<String, dynamic>.from(json['preferences']) : null,
+      preferences: json['preferences'] != null
+          ? Map<String, dynamic>.from(json['preferences'])
+          : null,
     );
   }
 
@@ -122,4 +124,3 @@ class FarmModel extends HiveObject {
     );
   }
 }
-

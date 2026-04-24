@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
-import '../../../shared/providers/app_state_provider.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
 import '../../batch/providers/batch_providers.dart';
 import '../../../data/models/shed_model.dart';
@@ -27,7 +26,8 @@ class SettingsScreen extends ConsumerWidget {
             Text('Settings', style: AppTypography.headlineLg),
             Text(
               'Manage your farm operations and preferences.',
-              style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
             ),
             const SizedBox(height: 24),
             _SettingsSection(
@@ -47,7 +47,8 @@ class SettingsScreen extends ConsumerWidget {
                   iconColor: AppColors.onSurfaceVariant,
                   title: 'Alert Preferences',
                   subtitle: ref.watch(pendingNotificationsProvider).when(
-                        data: (list) => '${list.length} active reminders scheduled',
+                        data: (list) =>
+                            '${list.length} active reminders scheduled',
                         loading: () => 'Loading reminders...',
                         error: (_, __) => 'Email, SMS, and push notifications',
                       ),
@@ -129,7 +130,8 @@ class SettingsScreen extends ConsumerWidget {
             TextButton.icon(
               onPressed: () => _showLogOutConfirmDialog(context),
               icon: const Icon(Icons.logout, color: AppColors.error),
-              label: Text('Log Out', style: AppTypography.bodyLg.copyWith(color: AppColors.error)),
+              label: Text('Log Out',
+                  style: AppTypography.bodyLg.copyWith(color: AppColors.error)),
             ),
             const SizedBox(height: 100),
           ],
@@ -167,13 +169,16 @@ class SettingsScreen extends ConsumerWidget {
         title: const Text('Log Out'),
         content: const Text('Are you sure you want to log out?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           TextButton(
             onPressed: () {
               // Implementation for logout
               Navigator.pop(context);
             },
-            child: const Text('Log Out', style: TextStyle(color: AppColors.error)),
+            child:
+                const Text('Log Out', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
@@ -233,7 +238,10 @@ class _SettingRow extends StatelessWidget {
     return Column(
       children: [
         InkWell(
-          onTap: onTap,
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onTap();
+          },
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -257,7 +265,8 @@ class _SettingRow extends StatelessWidget {
                     ],
                   ),
                 ),
-                const Icon(Icons.chevron_right, color: AppColors.outline, size: 20),
+                const Icon(Icons.chevron_right,
+                    color: AppColors.outline, size: 20),
               ],
             ),
           ),

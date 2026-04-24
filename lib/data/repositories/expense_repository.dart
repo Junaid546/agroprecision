@@ -11,7 +11,8 @@ class ExpenseRepository {
     return HiveService.getExpensesForBatch(batchId);
   }
 
-  Future<List<ExpenseModel>> getByDateRange(String batchId, DateTime start, DateTime end) async {
+  Future<List<ExpenseModel>> getByDateRange(
+      String batchId, DateTime start, DateTime end) async {
     return HiveService.getExpensesForBatch(batchId)
         .where((e) => e.date.isAfter(start) && e.date.isBefore(end))
         .toList();
@@ -22,10 +23,11 @@ class ExpenseRepository {
         .fold<double>(0.0, (sum, e) => sum + e.amount);
   }
 
-  Future<Map<ExpenseCategory, double>> getCategoryBreakdown(String batchId) async {
+  Future<Map<ExpenseCategory, double>> getCategoryBreakdown(
+      String batchId) async {
     final expenses = HiveService.getExpensesForBatch(batchId);
     final Map<ExpenseCategory, double> breakdown = {};
-    
+
     for (final e in expenses) {
       breakdown[e.category] = (breakdown[e.category] ?? 0.0) + e.amount;
     }

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../shared/widgets/animations.dart';
+import 'package:go_router/go_router.dart';
+import '../../../shared/widgets/empty_state.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/date_formatter.dart';
@@ -32,19 +35,40 @@ class ReportsScreen extends ConsumerWidget {
             Text('Financial Reports', style: AppTypography.headlineLg),
             Text(
               'Professional summaries and ROI tracking.',
-              style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
             ),
             const SizedBox(height: 20),
             SizedBox(
               width: double.infinity,
               height: 56,
               child: ElevatedButton.icon(
-                onPressed: () => _generatePDFReport(context, ref),
+                onPressed: () {
+                  HapticFeedback.mediumImpact();
+                  _generatePDFReport(context, ref);
+                },
                 icon: const Icon(Icons.picture_as_pdf, size: 20),
                 label: const Text('Generate PDF Report'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: OutlinedButton.icon(
+                onPressed: () {
+                  HapticFeedback.lightImpact();
+                  context.push('/home/reports/analytics');
+                },
+                icon: const Icon(Icons.analytics_outlined, size: 20),
+                label: const Text('View Detailed Analytics'),
+                style: OutlinedButton.styleFrom(
+                  side: const BorderSide(color: AppColors.primary),
+                  foregroundColor: AppColors.primary,
                 ),
               ),
             ),
@@ -54,7 +78,11 @@ class ReportsScreen extends ConsumerWidget {
                 children: [
                   MetricCard(
                     label: 'TOTAL FARM PROFIT',
-                    value: CurrencyFormatter.format(summary.totalProfit),
+                    value: CountUpText(
+                      value: summary.totalProfit,
+                      prefix: '\$',
+                      style: AppTypography.displayStat,
+                    ),
                     trend: '+12% vs last quarter',
                     trendDirection: TrendDirection.up,
                     icon: Container(
@@ -63,13 +91,18 @@ class ReportsScreen extends ConsumerWidget {
                         color: AppColors.successBackground,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.account_balance_wallet, color: AppColors.primary, size: 20),
+                      child: const Icon(Icons.account_balance_wallet,
+                          color: AppColors.primary, size: 20),
                     ),
                   ),
                   const SizedBox(height: 12),
                   MetricCard(
                     label: 'ROI',
-                    value: '${summary.overallROI.toStringAsFixed(1)}%',
+                    value: CountUpText(
+                      value: summary.overallROI,
+                      suffix: '%',
+                      style: AppTypography.displayStat,
+                    ),
                     trend: '+2.1% YoY',
                     trendDirection: TrendDirection.up,
                     icon: Container(
@@ -78,13 +111,15 @@ class ReportsScreen extends ConsumerWidget {
                         color: AppColors.successBackground,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.trending_up, color: AppColors.primary, size: 20),
+                      child: const Icon(Icons.trending_up,
+                          color: AppColors.primary, size: 20),
                     ),
                   ),
                   const SizedBox(height: 12),
                   MetricCard(
                     label: 'AVG. COST / CHICKEN',
-                    value: CurrencyFormatter.formatPerBird(summary.avgCostPerBird),
+                    value:
+                        CurrencyFormatter.formatPerBird(summary.avgCostPerBird),
                     trend: '-0.05 vs target',
                     trendDirection: TrendDirection.down,
                     icon: Container(
@@ -93,7 +128,8 @@ class ReportsScreen extends ConsumerWidget {
                         color: AppColors.activeChipBg,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Icon(Icons.pets, color: AppColors.secondary, size: 20),
+                      child: const Icon(Icons.pets,
+                          color: AppColors.secondary, size: 20),
                     ),
                   ),
                 ],
@@ -107,10 +143,11 @@ class ReportsScreen extends ConsumerWidget {
                   LoadingSkeleton.skeletonCard(),
                 ],
               ),
-              error: (e, __) => Center(child: Text('Error loading summary: $e')),
+              error: (e, __) =>
+                  Center(child: Text('Error loading summary: $e')),
             ),
             const SizedBox(height: 24),
-            _buildBatchPerformanceTable(performanceAsync),
+            _buildBatchPerformanceTable(context, performanceAsync),
             const SizedBox(height: 100),
           ],
         ),
@@ -118,7 +155,8 @@ class ReportsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildBatchPerformanceTable(AsyncValue<List<BatchPerformanceRow>> performanceAsync) {
+  Widget _buildBatchPerformanceTable(BuildContext context,
+      AsyncValue<List<BatchPerformanceRow>> performanceAsync) {
     return Card(
       child: Column(
         children: [
@@ -126,7 +164,8 @@ class ReportsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Text('Batch Performance Breakdown', style: AppTypography.headlineMd),
+                Text('Batch Performance Breakdown',
+                    style: AppTypography.headlineMd),
                 const Spacer(),
                 const Icon(Icons.filter_list),
               ],
@@ -137,20 +176,49 @@ class ReportsScreen extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             child: Row(
               children: [
-                Expanded(flex: 2, child: Text('BATCH ID', style: AppTypography.labelBold)),
-                Expanded(flex: 2, child: Text('DATE RANGE', style: AppTypography.labelBold)),
-                Expanded(flex: 2, child: Text('REVENUE', style: AppTypography.labelBold)),
-                Expanded(flex: 2, child: Text('COSTS', style: AppTypography.labelBold)),
-                Expanded(flex: 2, child: Text('NET PRO...', style: AppTypography.labelBold)),
+                Expanded(
+                    flex: 2,
+                    child: Text('BATCH ID', style: AppTypography.labelBold)),
+                Expanded(
+                    flex: 2,
+                    child: Text('DATE RANGE', style: AppTypography.labelBold)),
+                Expanded(
+                    flex: 2,
+                    child: Text('REVENUE', style: AppTypography.labelBold)),
+                Expanded(
+                    flex: 2,
+                    child: Text('COSTS', style: AppTypography.labelBold)),
+                Expanded(
+                    flex: 2,
+                    child: Text('NET PRO...', style: AppTypography.labelBold)),
               ],
             ),
           ),
           performanceAsync.when(
-            data: (rows) => Column(
-              children: rows.map((row) => _buildTableRow(row)).toList(),
-            ),
-            loading: () => const Center(child: Padding(padding: EdgeInsets.all(20), child: CircularProgressIndicator())),
-            error: (e, __) => Padding(padding: const EdgeInsets.all(20), child: Text('Error: $e')),
+            data: (rows) {
+              if (rows.isEmpty) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40),
+                  child: EmptyState(
+                    title: 'No Data Yet',
+                    message:
+                        'Once you start a batch, financial reports will appear here.',
+                    actionLabel: 'Start First Batch',
+                    onAction: () => context.push('/home/batches/new'),
+                    icon: Icons.analytics_outlined,
+                  ),
+                );
+              }
+              return Column(
+                children: rows.map((row) => _buildTableRow(row)).toList(),
+              );
+            },
+            loading: () => const Center(
+                child: Padding(
+                    padding: EdgeInsets.all(20),
+                    child: CircularProgressIndicator())),
+            error: (e, __) => Padding(
+                padding: const EdgeInsets.all(20), child: Text('Error: $e')),
           ),
         ],
       ),
@@ -161,7 +229,8 @@ class ReportsScreen extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       decoration: const BoxDecoration(
-        border: Border(bottom: BorderSide(color: AppColors.surfaceContainerHigh)),
+        border:
+            Border(bottom: BorderSide(color: AppColors.surfaceContainerHigh)),
       ),
       child: Row(
         children: [
@@ -175,7 +244,8 @@ class ReportsScreen extends ConsumerWidget {
           Expanded(
             flex: 2,
             child: Text(
-              DateFormatter.toDateRange(row.startDate, row.endDate ?? DateTime.now()),
+              DateFormatter.toDateRange(
+                  row.startDate, row.endDate ?? DateTime.now()),
               style: AppTypography.bodyMd,
             ),
           ),
@@ -198,7 +268,9 @@ class ReportsScreen extends ConsumerWidget {
             child: Text(
               CurrencyFormatter.format(row.netProfit),
               style: AppTypography.bodyMd.copyWith(
-                color: row.netProfit >= 0 ? AppColors.successText : AppColors.error,
+                color: row.netProfit >= 0
+                    ? AppColors.successText
+                    : AppColors.error,
               ),
             ),
           ),
@@ -216,7 +288,8 @@ class ReportsScreen extends ConsumerWidget {
 
     try {
       final summary = await ref.read(farmSummaryProvider.future);
-      final performanceRows = await ref.read(batchPerformanceListProvider.future);
+      final performanceRows =
+          await ref.read(batchPerformanceListProvider.future);
       final farm = ref.read(currentFarmProvider);
       final engine = ref.read(calculationEngineProvider);
 
@@ -234,6 +307,16 @@ class ReportsScreen extends ConsumerWidget {
         batches: performanceRows,
         detailedBatches: detailedBatches,
       );
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Report ready — tap to share'),
+            backgroundColor: AppColors.successText,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
     } catch (e) {
       if (context.mounted) Navigator.pop(context);
       if (context.mounted) {

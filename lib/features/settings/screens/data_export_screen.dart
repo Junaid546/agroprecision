@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../services/hive_service.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
@@ -25,7 +24,8 @@ class DataExportScreen extends ConsumerWidget {
             Text('Data Export', style: AppTypography.headlineLg),
             Text(
               'Download reports and historical data.',
-              style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
             ),
             const SizedBox(height: 24),
             _buildExportOption(
@@ -84,7 +84,9 @@ class DataExportScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)),
+                    Text(title,
+                        style: AppTypography.bodyLg
+                            .copyWith(fontWeight: FontWeight.bold)),
                     Text(subtitle, style: AppTypography.bodyMd),
                   ],
                 ),
@@ -101,15 +103,17 @@ class DataExportScreen extends ConsumerWidget {
     try {
       final data = HiveService.exportToJson();
       final jsonString = jsonEncode(data);
-      
+
       final directory = await getApplicationDocumentsDirectory();
-      final file = File('${directory.path}/agro_precision_backup_${DateTime.now().millisecondsSinceEpoch}.json');
+      final file = File(
+          '${directory.path}/agro_precision_backup_${DateTime.now().millisecondsSinceEpoch}.json');
       await file.writeAsString(jsonString);
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Data exported to ${file.path.split('/').last}. Size: ${(jsonString.length / 1024).toStringAsFixed(2)} KB'),
+            content: Text(
+                'Data exported to ${file.path.split('/').last}. Size: ${(jsonString.length / 1024).toStringAsFixed(2)} KB'),
             action: SnackBarAction(label: 'OK', onPressed: () {}),
           ),
         );

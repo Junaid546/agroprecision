@@ -2,6 +2,10 @@ import '../../services/hive_service.dart';
 import '../models/task_model.dart';
 
 class TaskRepository {
+  Future<TaskModel?> getById(String id) async {
+    return HiveService.taskBox.get(id);
+  }
+
   Future<TaskModel> create(TaskModel task) async {
     await HiveService.taskBox.put(task.id, task);
     return task;

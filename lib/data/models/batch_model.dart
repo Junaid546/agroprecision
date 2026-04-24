@@ -148,7 +148,9 @@ class BatchModel extends HiveObject {
       createdAt: DateTime.parse(json['createdAt']),
       updatedAt: DateTime.parse(json['updatedAt']),
       breed: json['breed'],
-      targetWeightKg: json['targetWeightKg'] != null ? (json['targetWeightKg'] as num).toDouble() : null,
+      targetWeightKg: json['targetWeightKg'] != null
+          ? (json['targetWeightKg'] as num).toDouble()
+          : null,
       targetDays: json['targetDays'],
     );
   }
@@ -189,4 +191,3 @@ class BatchModel extends HiveObject {
     );
   }
 }
-

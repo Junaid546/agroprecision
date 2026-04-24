@@ -82,7 +82,9 @@ class ShedModel extends HiveObject {
       name: json['name'],
       farmId: json['farmId'],
       capacity: json['capacity'],
-      areaSqMeters: json['areaSqMeters'] != null ? (json['areaSqMeters'] as num).toDouble() : null,
+      areaSqMeters: json['areaSqMeters'] != null
+          ? (json['areaSqMeters'] as num).toDouble()
+          : null,
       activeBatchId: json['activeBatchId'],
       createdAt: DateTime.parse(json['createdAt']),
       notes: json['notes'],
@@ -114,4 +116,3 @@ class ShedModel extends HiveObject {
     );
   }
 }
-

@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../shared/providers/app_state_provider.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
-import '../../../data/models/farm_model.dart';
 
 class FarmProfileScreen extends ConsumerStatefulWidget {
   const FarmProfileScreen({super.key});
@@ -28,7 +26,7 @@ class _FarmProfileScreenState extends ConsumerState<FarmProfileScreen> {
     _nameController = TextEditingController(text: farm?.name ?? '');
     _ownerController = TextEditingController(text: farm?.ownerName ?? '');
     _locationController = TextEditingController(text: farm?.location ?? '');
-    _contactController = TextEditingController(text: farm?.contactInfo ?? '');
+    _contactController = TextEditingController(text: farm?.phone ?? '');
   }
 
   @override
@@ -46,13 +44,12 @@ class _FarmProfileScreenState extends ConsumerState<FarmProfileScreen> {
     final currentFarm = ref.read(currentFarmProvider);
     if (currentFarm == null) return;
 
-    final updatedFarm = FarmModel(
-      id: currentFarm.id,
+    final updatedFarm = currentFarm.copyWith(
       name: _nameController.text,
       ownerName: _ownerController.text,
       location: _locationController.text,
-      contactInfo: _contactController.text,
-      createdAt: currentFarm.createdAt,
+      phone: _contactController.text,
+      updatedAt: DateTime.now(),
     );
 
     await ref.read(currentFarmProvider.notifier).updateFarm(updatedFarm);
@@ -79,7 +76,8 @@ class _FarmProfileScreenState extends ConsumerState<FarmProfileScreen> {
               Text('Farm Profile', style: AppTypography.headlineLg),
               Text(
                 'Manage your farm details and contact info.',
-                style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                style: AppTypography.bodyMd
+                    .copyWith(color: AppColors.onSurfaceVariant),
               ),
               const SizedBox(height: 24),
               TextFormField(
@@ -101,7 +99,8 @@ class _FarmProfileScreenState extends ConsumerState<FarmProfileScreen> {
               const SizedBox(height: 16),
               TextFormField(
                 controller: _contactController,
-                decoration: const InputDecoration(labelText: 'Contact Information'),
+                decoration:
+                    const InputDecoration(labelText: 'Contact Information'),
               ),
               const SizedBox(height: 32),
               SizedBox(

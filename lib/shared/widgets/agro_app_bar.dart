@@ -20,7 +20,8 @@ class AgroAppBar extends StatelessWidget implements PreferredSizeWidget {
           bottom: BorderSide(color: AppColors.surfaceContainerHigh),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.containerPadding),
+      padding:
+          const EdgeInsets.symmetric(horizontal: AppSpacing.containerPadding),
       child: SafeArea(
         bottom: false,
         child: SizedBox(
@@ -46,10 +47,12 @@ class AgroAppBar extends StatelessWidget implements PreferredSizeWidget {
                   children: [
                     Text(
                       'Offline Ready',
-                      style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                      style: AppTypography.labelMd
+                          .copyWith(color: AppColors.onSurfaceVariant),
                     ),
                     const SizedBox(width: AppSpacing.xs),
-                    const Icon(Icons.cloud_off, color: AppColors.outline, size: 20),
+                    const Icon(Icons.cloud_off,
+                        color: AppColors.outline, size: 20),
                   ],
                 ),
             ],

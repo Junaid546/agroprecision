@@ -4,9 +4,9 @@ import '../models/growth_model.dart';
 class GrowthChartPoint {
   final int day;
   final double weightKg;
-  
+
   GrowthChartPoint({
-    required this.day, 
+    required this.day,
     required this.weightKg,
   });
 }
@@ -28,10 +28,12 @@ class GrowthRepository {
 
   Future<List<GrowthChartPoint>> getChartData(String batchId) async {
     final logs = HiveService.getGrowthForBatch(batchId);
-    return logs.map((g) => GrowthChartPoint(
-      day: g.batchDay,
-      weightKg: g.averageWeightKg,
-    )).toList();
+    return logs
+        .map((g) => GrowthChartPoint(
+              day: g.batchDay,
+              weightKg: g.averageWeightKg,
+            ))
+        .toList();
   }
 
   Future<void> delete(String id) async {

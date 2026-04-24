@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
@@ -32,13 +33,15 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final batchAsync = ref.watch(batchRepositoryProvider).getById(widget.batchId);
+    final batchAsync =
+        ref.watch(batchRepositoryProvider).getById(widget.batchId);
 
     return FutureBuilder<BatchModel?>(
       future: batchAsync,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(body: Center(child: CircularProgressIndicator()));
+          return const Scaffold(
+              body: Center(child: CircularProgressIndicator()));
         }
         final batch = snapshot.data;
         if (batch == null) {
@@ -92,7 +95,8 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
               borderRadius: BorderRadius.circular(8),
             ),
             child: IconButton(
-              icon: const Icon(Icons.edit_outlined, color: AppColors.onSurface, size: 20),
+              icon: const Icon(Icons.edit_outlined,
+                  color: AppColors.onSurface, size: 20),
               onPressed: () {}, // TODO: Edit batch
             ),
           ),
@@ -124,7 +128,10 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
   Widget _buildTabItem(int index, String label) {
     final isSelected = _selectedTabIndex == index;
     return GestureDetector(
-      onTap: () => setState(() => _selectedTabIndex = index),
+      onTap: () {
+        HapticFeedback.selectionClick();
+        setState(() => _selectedTabIndex = index);
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
         decoration: BoxDecoration(
@@ -149,11 +156,16 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
 
   Widget _buildTabContent(BatchModel batch) {
     switch (_selectedTabIndex) {
-      case 0: return _OverviewTab(batch: batch);
-      case 1: return _ExpensesTab(batch: batch);
-      case 2: return _MortalityTab(batch: batch);
-      case 3: return _SalesTab(batch: batch);
-      default: return const SizedBox();
+      case 0:
+        return _OverviewTab(batch: batch);
+      case 1:
+        return _ExpensesTab(batch: batch);
+      case 2:
+        return _MortalityTab(batch: batch);
+      case 3:
+        return _SalesTab(batch: batch);
+      default:
+        return const SizedBox();
     }
   }
 }
@@ -190,7 +202,10 @@ class _OverviewTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildInsightCard(WidgetRef ref, AsyncValue<BatchFinancials> financialsAsync, AsyncValue<List<ActionAlert>> alertsAsync) {
+  Widget _buildInsightCard(
+      WidgetRef ref,
+      AsyncValue<BatchFinancials> financialsAsync,
+      AsyncValue<List<ActionAlert>> alertsAsync) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -212,10 +227,12 @@ class _OverviewTab extends ConsumerWidget {
                 if (financials != null) {
                   if (financials.performanceScore >= 90) {
                     title = "Performance on track";
-                    message = "Current weight gain and mortality are optimized for this stage.";
+                    message =
+                        "Current weight gain and mortality are optimized for this stage.";
                   } else if (financials.mortalityRate > 3) {
                     title = "Mortality elevated";
-                    message = "Review ventilation and feeding schedule. Mortality exceeds target.";
+                    message =
+                        "Review ventilation and feeding schedule. Mortality exceeds target.";
                     type = AlertType.danger;
                   }
                 }
@@ -239,10 +256,11 @@ class _OverviewTab extends ConsumerWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        type == AlertType.danger ? Icons.warning_rounded : Icons.lightbulb_outline,
-                        color: color, 
-                        size: 20
-                      ),
+                          type == AlertType.danger
+                              ? Icons.warning_rounded
+                              : Icons.lightbulb_outline,
+                          color: color,
+                          size: 20),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -252,13 +270,15 @@ class _OverviewTab extends ConsumerWidget {
                           Text(
                             title,
                             style: AppTypography.bodyLg.copyWith(
-                              fontWeight: FontWeight.bold, 
-                              color: type == AlertType.info ? AppColors.primary : color
-                            ),
+                                fontWeight: FontWeight.bold,
+                                color: type == AlertType.info
+                                    ? AppColors.primary
+                                    : color),
                           ),
                           Text(
                             message,
-                            style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                            style: AppTypography.bodyMd
+                                .copyWith(color: AppColors.onSurfaceVariant),
                           ),
                         ],
                       ),
@@ -275,10 +295,14 @@ class _OverviewTab extends ConsumerWidget {
 
   Color _getAlertColor(AlertType type) {
     switch (type) {
-      case AlertType.danger: return AppColors.error;
-      case AlertType.warning: return Colors.orange;
-      case AlertType.success: return AppColors.primary;
-      default: return Colors.amber;
+      case AlertType.danger:
+        return AppColors.error;
+      case AlertType.warning:
+        return Colors.orange;
+      case AlertType.success:
+        return AppColors.primary;
+      default:
+        return Colors.amber;
     }
   }
 
@@ -296,13 +320,17 @@ class _OverviewTab extends ConsumerWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text("Growth Chart", style: AppTypography.headlineMd),
-                Text("Weight (kg) over time", style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant)),
+                Text("Weight (kg) over time",
+                    style: AppTypography.labelMd
+                        .copyWith(color: AppColors.onSurfaceVariant)),
               ],
             ),
             const SizedBox(height: 24),
             SizedBox(
               height: 200,
-              child: _GrowthLineChart(batchId: batch.id),
+              child: RepaintBoundary(
+                child: _GrowthLineChart(batchId: batch.id),
+              ),
             ),
           ],
         ),
@@ -310,7 +338,8 @@ class _OverviewTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildMortalityTrendCard(WidgetRef ref, AsyncValue<BatchFinancials> financialsAsync) {
+  Widget _buildMortalityTrendCard(
+      WidgetRef ref, AsyncValue<BatchFinancials> financialsAsync) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -333,16 +362,20 @@ class _OverviewTab extends ConsumerWidget {
               error: (_, __) => const Text('Error loading mortality'),
               data: (f) => Row(
                 children: [
-                  Text("${f.mortalityRate.toStringAsFixed(1)}%", style: AppTypography.displayStat),
+                  Text("${f.mortalityRate.toStringAsFixed(1)}%",
+                      style: AppTypography.displayStat),
                   const SizedBox(width: 8),
-                  const StatusChip(label: "-0.3% from avg", status: ChipStatus.active),
+                  const StatusChip(
+                      label: "-0.3% from avg", status: ChipStatus.active),
                 ],
               ),
             ),
             const SizedBox(height: 24),
             SizedBox(
               height: 120,
-              child: _MortalityBarChart(batchId: batch.id),
+              child: RepaintBoundary(
+                child: _MortalityBarChart(batchId: batch.id),
+              ),
             ),
           ],
         ),
@@ -350,7 +383,8 @@ class _OverviewTab extends ConsumerWidget {
     );
   }
 
-  Widget _buildExpenseBreakdownCard(WidgetRef ref, AsyncValue<BatchFinancials> financialsAsync) {
+  Widget _buildExpenseBreakdownCard(
+      WidgetRef ref, AsyncValue<BatchFinancials> financialsAsync) {
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -367,23 +401,28 @@ class _OverviewTab extends ConsumerWidget {
               error: (_, __) => const Text('Error loading expenses'),
               data: (f) {
                 final breakdown = f.categoryBreakdown;
-                if (breakdown.isEmpty) return const Center(child: Text('No expenses recorded'));
-                
+                if (breakdown.isEmpty) {
+                  return const Center(child: Text('No expenses recorded'));
+                }
+
                 final sortedEntries = breakdown.entries.toList()
                   ..sort((a, b) => b.value.compareTo(a.value));
-                
-                final maxAmount = sortedEntries.isNotEmpty ? sortedEntries.first.value : 1.0;
+
+                final maxAmount =
+                    sortedEntries.isNotEmpty ? sortedEntries.first.value : 1.0;
 
                 return Column(
-                  children: sortedEntries.map((e) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: ExpenseBarRow(
-                      category: e.key.name.toUpperCase(),
-                      amount: e.value,
-                      maxAmount: maxAmount,
-                      barColor: _getCategoryColor(e.key),
-                    ),
-                  )).toList(),
+                  children: sortedEntries
+                      .map((e) => Padding(
+                            padding: const EdgeInsets.only(bottom: 12),
+                            child: ExpenseBarRow(
+                              category: e.key.name.toUpperCase(),
+                              amount: e.value,
+                              maxAmount: maxAmount,
+                              barColor: _getCategoryColor(e.key),
+                            ),
+                          ))
+                      .toList(),
                 );
               },
             ),
@@ -395,11 +434,16 @@ class _OverviewTab extends ConsumerWidget {
 
   Color _getCategoryColor(ExpenseCategory category) {
     switch (category) {
-      case ExpenseCategory.feed: return AppColors.primary;
-      case ExpenseCategory.medication: return AppColors.secondary;
-      case ExpenseCategory.labor: return AppColors.tertiary;
-      case ExpenseCategory.utilities: return AppColors.outline;
-      default: return Colors.grey;
+      case ExpenseCategory.feed:
+        return AppColors.primary;
+      case ExpenseCategory.medication:
+        return AppColors.secondary;
+      case ExpenseCategory.labor:
+        return AppColors.tertiary;
+      case ExpenseCategory.utilities:
+        return AppColors.outline;
+      default:
+        return Colors.grey;
     }
   }
 }
@@ -413,18 +457,22 @@ class _GrowthLineChart extends ConsumerWidget {
     return FutureBuilder<List<GrowthChartPoint>>(
       future: ref.read(growthRepositoryProvider).getChartData(batchId),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
         final points = snapshot.data!;
-        
+
         // Use dummy data for demonstration if empty
-        final spots = points.isEmpty ? [
-          const FlSpot(0, 0.05),
-          const FlSpot(7, 0.2),
-          const FlSpot(14, 0.5),
-          const FlSpot(21, 1.1),
-          const FlSpot(28, 1.8),
-          const FlSpot(35, 2.4),
-        ] : points.map((p) => FlSpot(p.day.toDouble(), p.weightKg)).toList();
+        final spots = points.isEmpty
+            ? [
+                const FlSpot(0, 0.05),
+                const FlSpot(7, 0.2),
+                const FlSpot(14, 0.5),
+                const FlSpot(21, 1.1),
+                const FlSpot(28, 1.8),
+                const FlSpot(35, 2.4),
+              ]
+            : points.map((p) => FlSpot(p.day.toDouble(), p.weightKg)).toList();
 
         final maxDay = spots.last.x;
         final maxWeight = spots.map((e) => e.y).reduce((a, b) => a > b ? a : b);
@@ -439,14 +487,17 @@ class _GrowthLineChart extends ConsumerWidget {
               show: true,
               drawHorizontalLine: true,
               horizontalInterval: 0.5,
-              getDrawingHorizontalLine: (value) => const FlLine(color: AppColors.surfaceContainerHigh, strokeWidth: 1),
+              getDrawingHorizontalLine: (value) => const FlLine(
+                  color: AppColors.surfaceContainerHigh, strokeWidth: 1),
               drawVerticalLine: false,
             ),
             titlesData: const FlTitlesData(
               leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
               topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              bottomTitles:
+                  AxisTitles(sideTitles: SideTitles(showTitles: false)),
             ),
             borderData: FlBorderData(show: false),
             lineBarsData: [
@@ -460,7 +511,10 @@ class _GrowthLineChart extends ConsumerWidget {
                 belowBarData: BarAreaData(
                   show: true,
                   gradient: LinearGradient(
-                    colors: [AppColors.primary.withOpacity(0.2), AppColors.primary.withOpacity(0.0)],
+                    colors: [
+                      AppColors.primary.withOpacity(0.2),
+                      AppColors.primary.withOpacity(0.0)
+                    ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
                   ),
@@ -471,13 +525,13 @@ class _GrowthLineChart extends ConsumerWidget {
                     // Only show dot at latest point
                     if (spot.x == maxDay) {
                       return FlDotCirclePainter(
-                        radius: 6, 
-                        color: AppColors.primary, 
-                        strokeWidth: 2, 
-                        strokeColor: Colors.white
-                      );
+                          radius: 6,
+                          color: AppColors.primary,
+                          strokeWidth: 2,
+                          strokeColor: Colors.white);
                     }
-                    return FlDotCirclePainter(radius: 0, color: Colors.transparent);
+                    return FlDotCirclePainter(
+                        radius: 0, color: Colors.transparent);
                   },
                 ),
               ),
@@ -485,10 +539,12 @@ class _GrowthLineChart extends ConsumerWidget {
             lineTouchData: LineTouchData(
               touchTooltipData: LineTouchTooltipData(
                 getTooltipColor: (spot) => AppColors.primary,
-                getTooltipItems: (spots) => spots.map((s) => LineTooltipItem(
-                  '${s.y.toStringAsFixed(2)} kg\nDay ${s.x.toInt()}',
-                  const TextStyle(color: Colors.white, fontSize: 12),
-                )).toList(),
+                getTooltipItems: (spots) => spots
+                    .map((s) => LineTooltipItem(
+                          '${s.y.toStringAsFixed(2)} kg\nDay ${s.x.toInt()}',
+                          const TextStyle(color: Colors.white, fontSize: 12),
+                        ))
+                    .toList(),
               ),
             ),
           ),
@@ -507,26 +563,36 @@ class _MortalityBarChart extends ConsumerWidget {
     return FutureBuilder<List<WeeklyMortalityData>>(
       future: ref.read(mortalityRepositoryProvider).getWeeklyBreakdown(batchId),
       builder: (context, snapshot) {
-        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
         final breakdown = snapshot.data!;
-        
+
         // Calculate average for color coding
-        final avg = breakdown.isEmpty ? 0.0 : breakdown.fold<int>(0, (sum, w) => sum + w.count) / breakdown.length;
+        final avg = breakdown.isEmpty
+            ? 0.0
+            : breakdown.fold<int>(0, (sum, w) => sum + w.count) /
+                breakdown.length;
 
         return BarChart(
           BarChartData(
             gridData: const FlGridData(show: false),
             titlesData: FlTitlesData(
-              leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              leftTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              topTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+              rightTitles:
+                  const AxisTitles(sideTitles: SideTitles(showTitles: false)),
               bottomTitles: AxisTitles(
                 sideTitles: SideTitles(
                   showTitles: true,
                   getTitlesWidget: (value, meta) {
                     return Padding(
                       padding: const EdgeInsets.only(top: 8),
-                      child: Text('W${value.toInt()}', style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant)),
+                      child: Text('W${value.toInt()}',
+                          style: AppTypography.labelMd
+                              .copyWith(color: AppColors.onSurfaceVariant)),
                     );
                   },
                 ),
@@ -540,9 +606,11 @@ class _MortalityBarChart extends ConsumerWidget {
                 barRods: [
                   BarChartRodData(
                     toY: w.count.toDouble(),
-                    color: isAboveAvg ? AppColors.error : AppColors.errorContainer,
+                    color:
+                        isAboveAvg ? AppColors.error : AppColors.errorContainer,
                     width: 16,
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                    borderRadius:
+                        const BorderRadius.vertical(top: Radius.circular(4)),
                   ),
                 ],
               );
@@ -560,17 +628,22 @@ class _ExpensesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final expensesAsync = ref.watch(expenseRepositoryProvider).getByBatch(batch.id);
+    final expensesAsync =
+        ref.watch(expenseRepositoryProvider).getByBatch(batch.id);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: FutureBuilder<List<ExpenseModel>>(
         future: expensesAsync,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
           final expenses = snapshot.data!;
           if (expenses.isEmpty) {
-            return Center(child: Text('No expenses recorded', style: AppTypography.bodyMd));
+            return Center(
+                child:
+                    Text('No expenses recorded', style: AppTypography.bodyMd));
           }
 
           return ListView.builder(
@@ -588,24 +661,30 @@ class _ExpensesTab extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    Text(DateFormatter.toDisplayDate(e.date), style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant)),
+                    Text(DateFormatter.toDisplayDate(e.date),
+                        style: AppTypography.labelMd
+                            .copyWith(color: AppColors.onSurfaceVariant)),
                     const SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.surfaceContainerLow,
                         borderRadius: BorderRadius.circular(6),
                       ),
-                      child: Text(e.category.name.toUpperCase(), style: AppTypography.labelBold.copyWith(fontSize: 10)),
+                      child: Text(e.category.name.toUpperCase(),
+                          style:
+                              AppTypography.labelBold.copyWith(fontSize: 10)),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: Text(e.description ?? 'Expense', style: AppTypography.bodyMd, overflow: TextOverflow.ellipsis),
+                      child: Text(e.description ?? 'Expense',
+                          style: AppTypography.bodyMd,
+                          overflow: TextOverflow.ellipsis),
                     ),
-                    Text(
-                      NumberFormat.currency(symbol: '\$').format(e.amount), 
-                      style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)
-                    ),
+                    Text(NumberFormat.currency(symbol: '\$').format(e.amount),
+                        style: AppTypography.bodyLg
+                            .copyWith(fontWeight: FontWeight.bold)),
                   ],
                 ),
               );
@@ -614,7 +693,10 @@ class _ExpensesTab extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/home/batches/${batch.id}/add-expense'),
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          context.push('/home/batches/${batch.id}/add-expense');
+        },
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -628,17 +710,22 @@ class _MortalityTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logsAsync = ref.watch(mortalityRepositoryProvider).getByBatch(batch.id);
+    final logsAsync =
+        ref.watch(mortalityRepositoryProvider).getByBatch(batch.id);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: FutureBuilder<List<MortalityModel>>(
         future: logsAsync,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
           final logs = snapshot.data!;
           if (logs.isEmpty) {
-            return Center(child: Text('No mortality logs recorded', style: AppTypography.bodyMd));
+            return Center(
+                child: Text('No mortality logs recorded',
+                    style: AppTypography.bodyMd));
           }
 
           return ListView.builder(
@@ -656,17 +743,23 @@ class _MortalityTab extends ConsumerWidget {
                 ),
                 child: Row(
                   children: [
-                    Text(DateFormatter.toDisplayDate(log.date), style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant)),
+                    Text(DateFormatter.toDisplayDate(log.date),
+                        style: AppTypography.labelMd
+                            .copyWith(color: AppColors.onSurfaceVariant)),
                     const SizedBox(width: 24),
-                    Text(
-                      "${log.count} Birds", 
-                      style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold, color: AppColors.error)
-                    ),
+                    Text("${log.count} Birds",
+                        style: AppTypography.bodyLg.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.error)),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Text(log.cause ?? 'Unknown cause', style: AppTypography.bodyMd, overflow: TextOverflow.ellipsis),
+                      child: Text(log.cause ?? 'Unknown cause',
+                          style: AppTypography.bodyMd,
+                          overflow: TextOverflow.ellipsis),
                     ),
-                    if (log.notes != null) const Icon(Icons.note_alt_outlined, size: 18, color: AppColors.onSurfaceVariant),
+                    if (log.notes != null)
+                      const Icon(Icons.note_alt_outlined,
+                          size: 18, color: AppColors.onSurfaceVariant),
                   ],
                 ),
               );
@@ -675,7 +768,10 @@ class _MortalityTab extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/home/batches/${batch.id}/add-mortality'),
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          context.push('/home/batches/${batch.id}/add-mortality');
+        },
         backgroundColor: AppColors.error,
         child: const Icon(Icons.warning_amber_rounded, color: Colors.white),
       ),
@@ -696,57 +792,76 @@ class _SalesTab extends ConsumerWidget {
       body: FutureBuilder<List<SaleModel>>(
         future: salesAsync,
         builder: (context, snapshot) {
-          if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
           final sales = snapshot.data!;
-          
+
           return Column(
             children: [
               if (sales.isNotEmpty) _buildSalesSummary(sales),
               Expanded(
-                child: sales.isEmpty 
-                  ? Center(child: Text('No sales recorded yet', style: AppTypography.bodyMd))
-                  : ListView.builder(
-                      padding: const EdgeInsets.all(20),
-                      itemCount: sales.length,
-                      itemBuilder: (context, i) {
-                        final s = sales[i];
-                        return Container(
-                          margin: const EdgeInsets.only(bottom: 12),
-                          padding: const EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.surfaceContainerHigh),
-                          ),
-                          child: Row(
-                            children: [
-                              Text(DateFormatter.toDisplayDate(s.saleDate), style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant)),
-                              const SizedBox(width: 24),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text("${s.birdsSold} Birds Sold", style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)),
-                                    Text("\$${s.pricePerKg.toStringAsFixed(2)} per kg", style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant)),
-                                  ],
+                child: sales.isEmpty
+                    ? Center(
+                        child: Text('No sales recorded yet',
+                            style: AppTypography.bodyMd))
+                    : ListView.builder(
+                        padding: const EdgeInsets.all(20),
+                        itemCount: sales.length,
+                        itemBuilder: (context, i) {
+                          final s = sales[i];
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                  color: AppColors.surfaceContainerHigh),
+                            ),
+                            child: Row(
+                              children: [
+                                Text(DateFormatter.toDisplayDate(s.saleDate),
+                                    style: AppTypography.labelMd.copyWith(
+                                        color: AppColors.onSurfaceVariant)),
+                                const SizedBox(width: 24),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text("${s.birdsSold} Birds Sold",
+                                          style: AppTypography.bodyLg.copyWith(
+                                              fontWeight: FontWeight.bold)),
+                                      Text(
+                                          "\$${s.pricePerKg.toStringAsFixed(2)} per kg",
+                                          style: AppTypography.labelMd.copyWith(
+                                              color:
+                                                  AppColors.onSurfaceVariant)),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                NumberFormat.currency(symbol: '\$').format(s.totalRevenue), 
-                                style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold, color: AppColors.primary)
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
+                                Text(
+                                    NumberFormat.currency(symbol: '\$')
+                                        .format(s.totalRevenue),
+                                    style: AppTypography.bodyLg.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: AppColors.primary)),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
               ),
             ],
           );
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => context.push('/home/batches/${batch.id}/add-sale'),
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          context.push('/home/batches/${batch.id}/add-sale');
+        },
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.sell_outlined, color: Colors.white),
       ),
@@ -755,9 +870,14 @@ class _SalesTab extends ConsumerWidget {
 
   Widget _buildSalesSummary(List<SaleModel> sales) {
     final totalBirds = sales.fold<int>(0, (sum, s) => sum + s.birdsSold);
-    final totalRevenue = sales.fold<double>(0, (sum, s) => sum + s.totalRevenue);
-    final avgPrice = sales.isEmpty ? 0.0 : totalRevenue / sales.fold<double>(0, (sum, s) => sum + (s.birdsSold * s.averageWeightKg));
-    
+    final totalRevenue =
+        sales.fold<double>(0, (sum, s) => sum + s.totalRevenue);
+    final avgPrice = sales.isEmpty
+        ? 0.0
+        : totalRevenue /
+            sales.fold<double>(
+                0, (sum, s) => sum + (s.birdsSold * s.averageWeightKg));
+
     return Container(
       margin: const EdgeInsets.all(20),
       padding: const EdgeInsets.all(20),
@@ -769,7 +889,8 @@ class _SalesTab extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           _summaryItem("Birds Sold", totalBirds.toString()),
-          _summaryItem("Total Revenue", NumberFormat.compactCurrency(symbol: '\$').format(totalRevenue)),
+          _summaryItem("Total Revenue",
+              NumberFormat.compactCurrency(symbol: '\$').format(totalRevenue)),
           _summaryItem("Avg Price/kg", "\$${avgPrice.toStringAsFixed(2)}"),
         ],
       ),
@@ -779,9 +900,15 @@ class _SalesTab extends ConsumerWidget {
   Widget _summaryItem(String label, String value) {
     return Column(
       children: [
-        Text(label, style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
+        Text(label,
+            style:
+                TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(value,
+            style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold)),
       ],
     );
   }

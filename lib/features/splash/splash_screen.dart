@@ -86,7 +86,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     await Future.delayed(const Duration(milliseconds: 400));
     _badgeController.forward();
 
-    // Total sequence time: ~900ms animations + delays. 
+    // Total sequence time: ~900ms animations + delays.
     // Requirement: Show minimum 1800ms total.
     await Future.delayed(const Duration(milliseconds: 1200));
     _completeSplash();
@@ -194,7 +194,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                 position: _badgeSlideAnimation,
                 child: Center(
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(999),
@@ -209,7 +210,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.cloud_done, color: AppColors.primary, size: 16),
+                        const Icon(Icons.cloud_done,
+                            color: AppColors.primary, size: 16),
                         const SizedBox(width: 8),
                         Text(
                           'POWERED BY OFFLINE-FIRST TECHNOLOGY',
@@ -231,4 +233,3 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
     );
   }
 }
-

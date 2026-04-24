@@ -35,8 +35,8 @@ class _ExpenseBarRowState extends State<ExpenseBarRow> {
 
   @override
   Widget build(BuildContext context) {
-    final double percentage = widget.maxAmount > 0 
-        ? (widget.amount / widget.maxAmount).clamp(0.0, 1.0) 
+    final double percentage = widget.maxAmount > 0
+        ? (widget.amount / widget.maxAmount).clamp(0.0, 1.0)
         : 0.0;
 
     return Padding(

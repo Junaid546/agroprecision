@@ -32,20 +32,23 @@ class AgroAppBar extends ConsumerWidget implements PreferredSizeWidget {
       ),
       child: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.containerPadding),
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.containerPadding),
           child: SizedBox(
             height: kToolbarHeight,
             child: Row(
               children: [
                 if (showBackButton)
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+                    icon:
+                        const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
                     onPressed: () => Navigator.of(context).pop(),
                     padding: EdgeInsets.zero,
                     constraints: const BoxConstraints(),
                   )
                 else
-                  const Icon(Icons.agriculture_rounded, color: AppColors.primary, size: 24),
+                  const Icon(Icons.agriculture_rounded,
+                      color: AppColors.primary, size: 24),
                 const SizedBox(width: AppSpacing.md),
                 Expanded(
                   child: Text(
@@ -57,13 +60,13 @@ class AgroAppBar extends ConsumerWidget implements PreferredSizeWidget {
                   AnimatedSwitcher(
                     duration: const Duration(milliseconds: 300),
                     child: isOnline
-                        ? const Icon(Icons.cloud_done_rounded, 
-                            key: ValueKey('online'), 
-                            color: AppColors.primary, 
+                        ? const Icon(Icons.cloud_done_rounded,
+                            key: ValueKey('online'),
+                            color: AppColors.primary,
                             size: 24)
-                        : const Icon(Icons.cloud_off_rounded, 
-                            key: ValueKey('offline'), 
-                            color: AppColors.onSurfaceVariant, 
+                        : const Icon(Icons.cloud_off_rounded,
+                            key: ValueKey('offline'),
+                            color: AppColors.onSurfaceVariant,
                             size: 24),
                   ),
                 if (actions != null) ...actions!,

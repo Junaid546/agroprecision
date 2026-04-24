@@ -4,7 +4,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
 import '../../core/constants/app_spacing.dart';
 
-class CircularProgressRing extends StatelessWidget {
+class CircularProgressRing extends StatefulWidget {
   final double percentage;
   final String label;
   final double size;
@@ -18,46 +18,94 @@ class CircularProgressRing extends StatelessWidget {
     this.color,
   });
 
-  Color _getStatusColor() {
-    if (color != null) return color!;
-    if (percentage >= 90) return const Color(0xFF14532D);
-    if (percentage >= 70) return const Color(0xFFFEA619);
+  @override
+  State<CircularProgressRing> createState() => _CircularProgressRingState();
+}
+
+class _CircularProgressRingState extends State<CircularProgressRing>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 800),
+    );
+    _animation = Tween<double>(begin: 0, end: widget.percentage).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeOut),
+    );
+    _controller.forward();
+  }
+
+  @override
+  void didUpdateWidget(CircularProgressRing oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.percentage != widget.percentage) {
+      _animation = Tween<double>(
+        begin: oldWidget.percentage,
+        end: widget.percentage,
+      ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
+      _controller.reset();
+      _controller.forward();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Color _getStatusColor(double currentVal) {
+    if (widget.color != null) return widget.color!;
+    if (currentVal >= 90) return const Color(0xFF14532D);
+    if (currentVal >= 70) return const Color(0xFFFEA619);
     return const Color(0xFFBA1A1A);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SizedBox(
-          width: size,
-          height: size,
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              CustomPaint(
-                size: Size(size, size),
-                painter: _ProgressRingPainter(
-                  percentage: percentage,
-                  color: _getStatusColor(),
-                  backgroundColor: AppColors.surfaceContainerHighest,
-                  strokeWidth: 4,
-                ),
+    return AnimatedBuilder(
+      animation: _animation,
+      builder: (context, child) {
+        final currentPercentage = _animation.value;
+        return Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(
+              width: widget.size,
+              height: widget.size,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  CustomPaint(
+                    size: Size(widget.size, widget.size),
+                    painter: _ProgressRingPainter(
+                      percentage: currentPercentage,
+                      color: _getStatusColor(currentPercentage),
+                      backgroundColor: AppColors.surfaceContainerHighest,
+                      strokeWidth: 4,
+                    ),
+                  ),
+                  Text(
+                    "${currentPercentage.toStringAsFixed(0)}%",
+                    style: AppTypography.labelBold,
+                  ),
+                ],
               ),
-              Text(
-                "${percentage.toStringAsFixed(0)}%",
-                style: AppTypography.labelBold,
-              ),
-            ],
-          ),
-        ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          label,
-          style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant),
-        ),
-      ],
+            ),
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              widget.label,
+              style: AppTypography.labelMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -105,5 +153,6 @@ class _ProgressRingPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(covariant _ProgressRingPainter oldDelegate) =>
+      oldDelegate.percentage != percentage;
 }

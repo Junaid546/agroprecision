@@ -15,16 +15,16 @@ enum TaskPriority {
   critical;
 
   String get displayLabel => {
-    TaskPriority.routine: 'ROUTINE',
-    TaskPriority.priority: 'PRIORITY',
-    TaskPriority.critical: 'CRITICAL'
-  }[this]!;
+        TaskPriority.routine: 'ROUTINE',
+        TaskPriority.priority: 'PRIORITY',
+        TaskPriority.critical: 'CRITICAL'
+      }[this]!;
 
   Color get chipColor => {
-    TaskPriority.routine: AppColors.onSurfaceVariant,
-    TaskPriority.priority: AppColors.secondary,
-    TaskPriority.critical: AppColors.error
-  }[this]!;
+        TaskPriority.routine: AppColors.onSurfaceVariant,
+        TaskPriority.priority: AppColors.secondary,
+        TaskPriority.critical: AppColors.error
+      }[this]!;
 }
 
 @HiveType(typeId: 11)
@@ -165,7 +165,9 @@ class TaskModel extends HiveObject {
       scheduledTime: json['scheduledTime'],
       isRecurring: json['isRecurring'] ?? false,
       recurringPattern: json['recurringPattern'],
-      completedAt: json['completedAt'] != null ? DateTime.parse(json['completedAt']) : null,
+      completedAt: json['completedAt'] != null
+          ? DateTime.parse(json['completedAt'])
+          : null,
       createdAt: DateTime.parse(json['createdAt']),
       notificationId: json['notificationId'],
       shedId: json['shedId'],

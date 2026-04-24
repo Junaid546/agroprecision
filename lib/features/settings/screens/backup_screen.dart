@@ -41,8 +41,13 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Future<void> _refreshBackupList() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
-      final files = directory.listSync().whereType<File>().where((f) => f.path.endsWith('.json')).toList();
-      files.sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
+      final files = directory
+          .listSync()
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.json'))
+          .toList();
+      files
+          .sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
       setState(() {
         _backups = files.take(3).toList();
       });
@@ -61,9 +66,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     try {
       final data = HiveService.exportToJson();
       final jsonString = jsonEncode(data);
-      
+
       final directory = await getApplicationDocumentsDirectory();
-      final fileName = 'agro_precision_backup_${DateTime.now().millisecondsSinceEpoch}.json';
+      final fileName =
+          'agro_precision_backup_${DateTime.now().millisecondsSinceEpoch}.json';
       final file = File('${directory.path}/$fileName');
       await file.writeAsString(jsonString);
 
@@ -113,7 +119,8 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             Text('System Backup', style: AppTypography.headlineLg),
             Text(
               'Manage your data security and automated backups.',
-              style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
             ),
             const SizedBox(height: 24),
             Card(
@@ -128,10 +135,12 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Last Backup', style: AppTypography.labelBold),
-                            Text(_lastBackupDate, style: AppTypography.headlineMd),
+                            Text(_lastBackupDate,
+                                style: AppTypography.headlineMd),
                           ],
                         ),
-                        const Icon(Icons.cloud_done, size: 48, color: AppColors.primary),
+                        const Icon(Icons.cloud_done,
+                            size: 48, color: AppColors.primary),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -152,15 +161,19 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             ),
             const SizedBox(height: 24),
             SwitchListTile(
-              title: Text('Auto-Backup', style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)),
+              title: Text('Auto-Backup',
+                  style: AppTypography.bodyLg
+                      .copyWith(fontWeight: FontWeight.bold)),
               subtitle: const Text('Automatically backup data every 24 hours'),
               value: _autoBackup,
               onChanged: _toggleAutoBackup,
-              activeColor: AppColors.primary,
+              activeThumbColor: AppColors.primary,
             ),
             const Divider(),
             const SizedBox(height: 24),
-            Text('RECENT BACKUPS', style: AppTypography.labelBold.copyWith(color: AppColors.primary)),
+            Text('RECENT BACKUPS',
+                style:
+                    AppTypography.labelBold.copyWith(color: AppColors.primary)),
             const SizedBox(height: 12),
             if (_backups.isEmpty)
               const Center(child: Text('No backups found.'))
@@ -173,12 +186,14 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   }
 
   Widget _buildBackupItem(File file) {
-    final date = DateFormat('MMM dd, yyyy • HH:mm').format(file.lastModifiedSync());
+    final date =
+        DateFormat('MMM dd, yyyy • HH:mm').format(file.lastModifiedSync());
     final size = (file.lengthSync() / 1024).toStringAsFixed(1);
 
     return ListTile(
       leading: const Icon(Icons.insert_drive_file, color: AppColors.outline),
-      title: Text(file.path.split('/').last, style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.bold)),
+      title: Text(file.path.split('/').last,
+          style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.bold)),
       subtitle: Text('$date • $size KB'),
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline, color: AppColors.error),

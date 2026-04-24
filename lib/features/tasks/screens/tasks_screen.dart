@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
@@ -31,16 +32,20 @@ class TasksScreen extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeader(ref, selectedDate, farm?.name ?? 'Unknown Farm', progressAsync),
+            _buildHeader(
+                ref, selectedDate, farm?.name ?? 'Unknown Farm', progressAsync),
             const SizedBox(height: 8),
             _buildProgressBar(progressAsync),
             const SizedBox(height: 20),
-            _buildTasksCard(ref, tasksAsync, selectedDate),
+            _buildTasksCard(context, ref, tasksAsync, selectedDate),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showAddTaskBottomSheet(context, ref, selectedDate),
+        onPressed: () {
+          HapticFeedback.mediumImpact();
+          _showAddTaskBottomSheet(context, ref, selectedDate);
+        },
         icon: const Icon(Icons.add),
         label: const Text('Add Task'),
         backgroundColor: AppColors.primary,
@@ -49,7 +54,8 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(WidgetRef ref, DateTime selectedDate, String farmName, AsyncValue<TaskProgress> progressAsync) {
+  Widget _buildHeader(WidgetRef ref, DateTime selectedDate, String farmName,
+      AsyncValue<TaskProgress> progressAsync) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -75,11 +81,13 @@ class TasksScreen extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Icon(Icons.done_all, color: AppColors.inversePrimary, size: 16),
+                const Icon(Icons.done_all,
+                    color: AppColors.inversePrimary, size: 16),
                 const SizedBox(width: 6),
                 Text(
                   progress.label,
-                  style: AppTypography.labelBold.copyWith(color: AppColors.inversePrimary),
+                  style: AppTypography.labelBold
+                      .copyWith(color: AppColors.inversePrimary),
                 ),
               ],
             ),
@@ -107,7 +115,8 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTasksCard(WidgetRef ref, AsyncValue<List<TaskModel>> tasksAsync, DateTime selectedDate) {
+  Widget _buildTasksCard(BuildContext context, WidgetRef ref,
+      AsyncValue<List<TaskModel>> tasksAsync, DateTime selectedDate) {
     return Card(
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -120,8 +129,15 @@ class TasksScreen extends ConsumerWidget {
                 Text('Pending Tasks', style: AppTypography.headlineMd),
                 const Spacer(),
                 TextButton(
-                  onPressed: () => ref.read(taskActionProvider.notifier).markAllDone(selectedDate),
-                  child: Text('Select All', style: AppTypography.bodyMd.copyWith(color: AppColors.primary)),
+                  onPressed: () {
+                    HapticFeedback.selectionClick();
+                    ref
+                        .read(taskActionProvider.notifier)
+                        .markAllDone(selectedDate);
+                  },
+                  child: Text('Select All',
+                      style: AppTypography.bodyMd
+                          .copyWith(color: AppColors.primary)),
                 ),
               ],
             ),
@@ -130,24 +146,38 @@ class TasksScreen extends ConsumerWidget {
           tasksAsync.when(
             data: (tasks) {
               if (tasks.isEmpty) {
-                return const Padding(
-                  padding: EdgeInsets.all(32),
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40),
                   child: EmptyState(
-                    message: 'All tasks completed for today!',
+                    title: 'No Tasks Today',
+                    message:
+                        'You have completed all scheduled tasks for this date!',
+                    actionLabel: 'Add Custom Task',
+                    onAction: () =>
+                        _showAddTaskBottomSheet(context, ref, selectedDate),
                     icon: Icons.check_circle_outline,
                   ),
                 );
               }
-              return Column(
-                children: [
-                  for (final task in tasks) ...[
-                    _TaskRow(task: task),
-                    const Divider(),
-                  ],
-                ],
+              return ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: tasks.length,
+                itemBuilder: (context, index) {
+                  final task = tasks[index];
+                  return Column(
+                    children: [
+                      _TaskRow(task: task),
+                      if (index < tasks.length - 1) const Divider(height: 1),
+                    ],
+                  );
+                },
               );
             },
-            loading: () => const Center(child: Padding(padding: EdgeInsets.all(32), child: CircularProgressIndicator())),
+            loading: () => const Center(
+                child: Padding(
+                    padding: EdgeInsets.all(32),
+                    child: CircularProgressIndicator())),
             error: (e, __) => Center(child: Text('Error: $e')),
           ),
         ],
@@ -155,7 +185,8 @@ class TasksScreen extends ConsumerWidget {
     );
   }
 
-  void _showAddTaskBottomSheet(BuildContext context, WidgetRef ref, DateTime initialDate) {
+  void _showAddTaskBottomSheet(
+      BuildContext context, WidgetRef ref, DateTime initialDate) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -180,17 +211,27 @@ class _TaskRow extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           GestureDetector(
-            onTap: () => ref.read(taskActionProvider.notifier).toggleTask(task.id, !isDone),
+            onTap: () {
+              HapticFeedback.selectionClick();
+              ref
+                  .read(taskActionProvider.notifier)
+                  .toggleTask(task.id, !isDone);
+            },
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 200),
               width: 24,
               height: 24,
               decoration: BoxDecoration(
                 color: isDone ? AppColors.primaryContainer : Colors.transparent,
-                border: !isDone ? Border.all(color: AppColors.outline, width: 1.5) : null,
+                border: !isDone
+                    ? Border.all(color: AppColors.outline, width: 1.5)
+                    : null,
                 borderRadius: BorderRadius.circular(6),
               ),
-              child: isDone ? const Icon(Icons.check, color: AppColors.inversePrimary, size: 16) : null,
+              child: isDone
+                  ? const Icon(Icons.check,
+                      color: AppColors.inversePrimary, size: 16)
+                  : null,
             ),
           ),
           const SizedBox(width: 12),
@@ -210,16 +251,21 @@ class _TaskRow extends ConsumerWidget {
                 const SizedBox(height: 2),
                 Row(
                   children: [
-                    const Icon(Icons.schedule, size: 12, color: AppColors.onSurfaceVariant),
+                    const Icon(Icons.schedule,
+                        size: 12, color: AppColors.onSurfaceVariant),
                     const SizedBox(width: 4),
-                    Text(task.scheduledTime ?? '', style: AppTypography.labelMd),
+                    Text(task.scheduledTime ?? '',
+                        style: AppTypography.labelMd),
                     if (task.shedId != null) ...[
-                      const Text(' • ', style: AppTypography.labelMd),
-                      const Icon(Icons.warehouse_outlined, size: 12, color: AppColors.onSurfaceVariant),
+                      Text(' • ', style: AppTypography.labelMd),
+                      const Icon(Icons.warehouse_outlined,
+                          size: 12, color: AppColors.onSurfaceVariant),
                       const SizedBox(width: 2),
                       FutureBuilder(
                         future: _getShedName(ref, task.shedId!),
-                        builder: (context, snapshot) => Text(snapshot.data ?? '...', style: AppTypography.labelMd),
+                        builder: (context, snapshot) => Text(
+                            snapshot.data ?? '...',
+                            style: AppTypography.labelMd),
                       ),
                     ],
                   ],
@@ -234,7 +280,9 @@ class _TaskRow extends ConsumerWidget {
                 ? ChipStatus.done
                 : (task.priority == TaskPriority.critical
                     ? ChipStatus.critical
-                    : (task.priority == TaskPriority.priority ? ChipStatus.priority : ChipStatus.routine)),
+                    : (task.priority == TaskPriority.priority
+                        ? ChipStatus.priority
+                        : ChipStatus.routine)),
           ),
         ],
       ),
@@ -243,7 +291,9 @@ class _TaskRow extends ConsumerWidget {
 
   Future<String> _getShedName(WidgetRef ref, String shedId) async {
     final sheds = await ref.read(shedListProvider.future);
-    return sheds.firstWhere((s) => s.id == shedId, orElse: () => throw Exception()).name;
+    return sheds
+        .firstWhere((s) => s.id == shedId, orElse: () => throw Exception())
+        .name;
   }
 }
 
@@ -252,7 +302,8 @@ class _AddTaskBottomSheet extends ConsumerStatefulWidget {
   const _AddTaskBottomSheet({required this.initialDate});
 
   @override
-  ConsumerState<_AddTaskBottomSheet> createState() => _AddTaskBottomSheetState();
+  ConsumerState<_AddTaskBottomSheet> createState() =>
+      _AddTaskBottomSheetState();
 }
 
 class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
@@ -339,7 +390,8 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
                       onTap: _pickTime,
                       child: InputDecorator(
                         decoration: const InputDecoration(labelText: 'Time'),
-                        child: Text(_selectedTime?.format(context) ?? 'Set Time'),
+                        child:
+                            Text(_selectedTime?.format(context) ?? 'Set Time'),
                       ),
                     ),
                   ),
@@ -359,7 +411,9 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
                       onSelected: (val) => setState(() => _priority = p),
                       selectedColor: AppColors.primaryContainer,
                       labelStyle: TextStyle(
-                        color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
+                        color: isSelected
+                            ? Colors.white
+                            : AppColors.onSurfaceVariant,
                       ),
                     ),
                   );
@@ -368,9 +422,13 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
               const SizedBox(height: 16),
               batchesAsync.when(
                 data: (batches) => DropdownButtonFormField<String>(
-                  value: _selectedBatchId,
-                  decoration: const InputDecoration(labelText: 'Link to Batch (Optional)'),
-                  items: batches.map((b) => DropdownMenuItem(value: b.id, child: Text(b.name))).toList(),
+                  initialValue: _selectedBatchId,
+                  decoration: const InputDecoration(
+                      labelText: 'Link to Batch (Optional)'),
+                  items: batches
+                      .map((b) => DropdownMenuItem(
+                          value: b.id, child: Text('Batch #${b.batchNumber}')))
+                      .toList(),
                   onChanged: (v) => setState(() => _selectedBatchId = v),
                 ),
                 loading: () => const LinearProgressIndicator(),
@@ -379,9 +437,13 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
               const SizedBox(height: 16),
               shedsAsync.when(
                 data: (sheds) => DropdownButtonFormField<String>(
-                  value: _selectedShedId,
-                  decoration: const InputDecoration(labelText: 'Shed (Optional)'),
-                  items: sheds.map((s) => DropdownMenuItem(value: s.id, child: Text(s.name))).toList(),
+                  initialValue: _selectedShedId,
+                  decoration:
+                      const InputDecoration(labelText: 'Shed (Optional)'),
+                  items: sheds
+                      .map((s) =>
+                          DropdownMenuItem(value: s.id, child: Text(s.name)))
+                      .toList(),
                   onChanged: (v) => setState(() => _selectedShedId = v),
                 ),
                 loading: () => const SizedBox(),
@@ -396,7 +458,7 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
               ),
               if (_isRecurring)
                 DropdownButtonFormField<String>(
-                  value: _recurringPattern,
+                  initialValue: _recurringPattern,
                   decoration: const InputDecoration(labelText: 'Pattern'),
                   items: const [
                     DropdownMenuItem(value: 'Daily', child: Text('Daily')),

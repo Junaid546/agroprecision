@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../shared/widgets/animations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../data/models/batch_model.dart';
-import '../../../shared/providers/repository_providers.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
 import '../../../shared/widgets/status_chip.dart';
 import '../../../shared/widgets/progress_ring.dart';
 import '../../../shared/widgets/loading_skeleton.dart';
+import '../../../shared/widgets/empty_state.dart';
 import '../providers/batch_providers.dart';
 
 class BatchListScreen extends ConsumerStatefulWidget {
@@ -42,7 +44,10 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
         padding: const EdgeInsets.only(bottom: 16, right: 8),
         child: FloatingActionButton(
           backgroundColor: AppColors.primary,
-          onPressed: () => context.push('/home/batches/new'),
+          onPressed: () {
+            HapticFeedback.mediumImpact();
+            context.push('/home/batches/new');
+          },
           child: const Icon(Icons.add_rounded, color: Colors.white, size: 28),
         ),
       ),
@@ -79,8 +84,11 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
                     selected: _filter,
                     onChanged: (v) => setState(() => _filter = v),
                     allCount: all.length,
-                    activeCount: all.where((b) => b.status == BatchStatus.active).length,
-                    completedCount: all.where((b) => b.status == BatchStatus.completed).length,
+                    activeCount:
+                        all.where((b) => b.status == BatchStatus.active).length,
+                    completedCount: all
+                        .where((b) => b.status == BatchStatus.completed)
+                        .length,
                   ),
                   const SizedBox(height: 16),
                 ],
@@ -99,9 +107,14 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 100),
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (ctx, i) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _BatchCard(batch: filtered[i]),
+                  (ctx, i) => FadeInSlide(
+                    delay: Duration(milliseconds: i * 50),
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 12),
+                      child: RepaintBoundary(
+                        child: _BatchCard(batch: filtered[i]),
+                      ),
+                    ),
                   ),
                   childCount: filtered.length,
                 ),
@@ -114,49 +127,13 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
 
   Widget _buildEmptyState(String filter, bool isCompletelyEmpty) {
     if (isCompletelyEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 80, height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerLow,
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Icon(Icons.inventory_2_outlined,
-                  color: AppColors.onSurfaceVariant, size: 40),
-              ),
-              const SizedBox(height: 20),
-              Text('No Batches Yet',
-                style: AppTypography.headlineMd,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Start tracking your first batch of birds.\nTap the + button to begin.',
-                style: AppTypography.bodyMd,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 24),
-              ElevatedButton.icon(
-                icon: const Icon(Icons.add_rounded, size: 18),
-                label: const Text('Start First Batch'),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryContainer,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                ),
-                onPressed: () => context.push('/home/batches/new'),
-              ),
-            ],
-          ),
-        ),
+      return EmptyState(
+        title: 'No Batches Yet',
+        message:
+            'Start tracking your first batch of birds. Tap the button below to begin.',
+        actionLabel: 'Start First Batch',
+        onAction: () => context.push('/home/batches/new'),
+        icon: Icons.inventory_2_outlined,
       );
     }
 
@@ -165,7 +142,7 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(Icons.filter_list_off_rounded,
-            color: AppColors.onSurfaceVariant, size: 48),
+              color: AppColors.onSurfaceVariant, size: 48),
           const SizedBox(height: 16),
           Text(
             'No ${filter == 'active' ? 'active' : 'completed'} batches',
@@ -175,7 +152,7 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
           TextButton(
             onPressed: () => setState(() => _filter = 'all'),
             child: Text('Show all batches',
-              style: AppTypography.bodyMd.copyWith(color: AppColors.primary)),
+                style: AppTypography.bodyMd.copyWith(color: AppColors.primary)),
           ),
         ],
       ),
@@ -189,21 +166,32 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 24),
-          Container(height: 28, width: 100, decoration: BoxDecoration(
-            color: AppColors.surfaceContainerHigh,
-            borderRadius: BorderRadius.circular(8),
-          )),
+          Container(
+              height: 28,
+              width: 100,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerHigh,
+                borderRadius: BorderRadius.circular(8),
+              )),
           const SizedBox(height: 16),
-          Row(children: List.generate(3, (i) => Container(
-            height: 32, width: 80, margin: const EdgeInsets.only(right: 8),
-            decoration: BoxDecoration(color: AppColors.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(999)),
-          ))),
+          Row(
+              children: List.generate(
+                  3,
+                  (i) => Container(
+                        height: 32,
+                        width: 80,
+                        margin: const EdgeInsets.only(right: 8),
+                        decoration: BoxDecoration(
+                            color: AppColors.surfaceContainerHigh,
+                            borderRadius: BorderRadius.circular(999)),
+                      ))),
           const SizedBox(height: 16),
-          ...List.generate(3, (i) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: LoadingSkeleton.skeletonCard(),
-          )),
+          ...List.generate(
+              3,
+              (i) => Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: LoadingSkeleton.skeletonCard(),
+                  )),
         ],
       ),
     );
@@ -216,11 +204,13 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline_rounded, color: AppColors.error, size: 48),
+            const Icon(Icons.error_outline_rounded,
+                color: AppColors.error, size: 48),
             const SizedBox(height: 16),
             Text('Could not load batches', style: AppTypography.headlineMd),
             const SizedBox(height: 8),
-            Text(e.toString(), style: AppTypography.bodyMd, textAlign: TextAlign.center),
+            Text(e.toString(),
+                style: AppTypography.bodyMd, textAlign: TextAlign.center),
             const SizedBox(height: 24),
             ElevatedButton(
               onPressed: () => ref.read(allBatchesProvider.notifier).refresh(),
@@ -254,11 +244,26 @@ class _FilterChips extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       child: Row(
         children: [
-          _Chip(label: 'All Batches', count: allCount, value: 'all', selected: selected, onTap: onChanged),
+          _Chip(
+              label: 'All Batches',
+              count: allCount,
+              value: 'all',
+              selected: selected,
+              onTap: onChanged),
           const SizedBox(width: 8),
-          _Chip(label: 'Active', count: activeCount, value: 'active', selected: selected, onTap: onChanged),
+          _Chip(
+              label: 'Active',
+              count: activeCount,
+              value: 'active',
+              selected: selected,
+              onTap: onChanged),
           const SizedBox(width: 8),
-          _Chip(label: 'Completed', count: completedCount, value: 'completed', selected: selected, onTap: onChanged),
+          _Chip(
+              label: 'Completed',
+              count: completedCount,
+              value: 'completed',
+              selected: selected,
+              onTap: onChanged),
         ],
       ),
     );
@@ -341,8 +346,8 @@ class _BatchCard extends ConsumerWidget {
               Container(
                 height: 3,
                 color: isActive
-                  ? AppColors.secondaryContainer
-                  : AppColors.surfaceContainerHigh,
+                    ? AppColors.secondaryContainer
+                    : AppColors.surfaceContainerHigh,
               ),
 
               Padding(
@@ -352,31 +357,31 @@ class _BatchCard extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Text(batch.batchNumber, style: AppTypography.headlineMd),
+                        Text(batch.batchNumber,
+                            style: AppTypography.headlineMd),
                         const Spacer(),
                         StatusChip(
                           label: isActive ? 'Active' : 'Completed',
-                          status: isActive ? ChipStatus.active : ChipStatus.completed,
+                          status: isActive
+                              ? ChipStatus.active
+                              : ChipStatus.completed,
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 8),
-
                     Row(
                       children: [
                         const Icon(Icons.calendar_today_rounded,
-                          size: 12, color: AppColors.onSurfaceVariant),
+                            size: 12, color: AppColors.onSurfaceVariant),
                         const SizedBox(width: 6),
                         Text(
                           'Started ${DateFormatter.toDisplayDate(batch.startDate)}',
-                          style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+                          style: AppTypography.bodyMd
+                              .copyWith(color: AppColors.onSurfaceVariant),
                         ),
                       ],
                     ),
-
                     const SizedBox(height: 16),
-
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -391,18 +396,21 @@ class _BatchCard extends ConsumerWidget {
                               children: [
                                 Text(
                                   isActive ? 'Chickens Alive' : 'Total Harvest',
-                                  style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                                  style: AppTypography.labelMd.copyWith(
+                                      color: AppColors.onSurfaceVariant),
                                 ),
                                 const SizedBox(height: 4),
                                 aliveAsync.when(
                                   loading: () => Container(
-                                    height: 32, width: 60,
+                                    height: 32,
+                                    width: 60,
                                     decoration: BoxDecoration(
                                       color: AppColors.surfaceContainerHigh,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                   ),
-                                  error: (_, __) => Text('—', style: AppTypography.displayStat),
+                                  error: (_, __) => Text('—',
+                                      style: AppTypography.displayStat),
                                   data: (count) => Text(
                                     NumberFormat('#,###').format(count),
                                     style: AppTypography.displayStat,
@@ -411,10 +419,10 @@ class _BatchCard extends ConsumerWidget {
                               ],
                             ),
                           ),
-
                           financialsAsync.when(
                             loading: () => const SizedBox(
-                              width: 64, height: 64,
+                              width: 64,
+                              height: 64,
                               child: CircularProgressIndicator(
                                 strokeWidth: 2,
                                 color: AppColors.surfaceContainerHigh,
@@ -430,12 +438,11 @@ class _BatchCard extends ConsumerWidget {
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 16),
-
                     financialsAsync.when(
                       loading: () => Container(
-                        height: 20, width: 140,
+                        height: 20,
+                        width: 140,
                         decoration: BoxDecoration(
                           color: AppColors.surfaceContainerHigh,
                           borderRadius: BorderRadius.circular(6),
@@ -449,12 +456,15 @@ class _BatchCard extends ConsumerWidget {
                                 ? f.netProfit / f.currentAlive
                                 : 0.0;
                         final isPositive = profitPerBird >= 0;
-                        final color = isPositive ? AppColors.primary : AppColors.error;
+                        final color =
+                            isPositive ? AppColors.primary : AppColors.error;
 
                         return Row(
                           children: [
                             Icon(
-                              isPositive ? Icons.trending_up_rounded : Icons.money_off_rounded,
+                              isPositive
+                                  ? Icons.trending_up_rounded
+                                  : Icons.money_off_rounded,
                               size: 16,
                               color: color,
                             ),
@@ -463,15 +473,19 @@ class _BatchCard extends ConsumerWidget {
                               text: TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: '${isActive ? 'Est.' : 'Actual'} \$${profitPerBird.abs().toStringAsFixed(2)} per bird ',
+                                    text:
+                                        '${isActive ? 'Est.' : 'Actual'} \$${profitPerBird.abs().toStringAsFixed(2)} per bird ',
                                     style: AppTypography.bodyMd.copyWith(
                                       color: color,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                   TextSpan(
-                                    text: isActive ? 'Profit projection' : 'Final profit',
-                                    style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                                    text: isActive
+                                        ? 'Profit projection'
+                                        : 'Final profit',
+                                    style: AppTypography.labelMd.copyWith(
+                                        color: AppColors.onSurfaceVariant),
                                   ),
                                 ],
                               ),

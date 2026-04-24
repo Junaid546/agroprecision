@@ -5,7 +5,7 @@ class WeeklyMortalityData {
   final int week;
   final int count;
   final DateTime weekStart;
-  
+
   WeeklyMortalityData({
     required this.week,
     required this.count,
@@ -23,7 +23,8 @@ class MortalityRepository {
     return HiveService.getMortalityForBatch(batchId);
   }
 
-  Future<List<MortalityModel>> getByDateRange(String batchId, DateTime start, DateTime end) async {
+  Future<List<MortalityModel>> getByDateRange(
+      String batchId, DateTime start, DateTime end) async {
     return HiveService.getMortalityForBatch(batchId)
         .where((m) => m.date.isAfter(start) && m.date.isBefore(end))
         .toList();
@@ -33,7 +34,7 @@ class MortalityRepository {
     return HiveService.getMortalityForBatch(batchId)
         .fold<int>(0, (sum, m) => sum + m.count);
   }
-  
+
   // Weekly mortality breakdown for chart (W1, W2, W3...)
   Future<List<WeeklyMortalityData>> getWeeklyBreakdown(String batchId) async {
     final batch = HiveService.batchBox.get(batchId);
@@ -41,7 +42,7 @@ class MortalityRepository {
 
     final logs = HiveService.getMortalityForBatch(batchId);
     final Map<int, int> weeklyCounts = {};
-    
+
     for (final log in logs) {
       final daysSinceStart = log.date.difference(batch.startDate).inDays;
       final weekNum = (daysSinceStart / 7).floor() + 1;
@@ -51,11 +52,11 @@ class MortalityRepository {
     final List<WeeklyMortalityData> breakdown = [];
     final currentAgeDays = DateTime.now().difference(batch.startDate).inDays;
     final currentWeek = (currentAgeDays / 7).floor() + 1;
-    
-    final lastLogWeek = weeklyCounts.keys.isEmpty 
-        ? 0 
+
+    final lastLogWeek = weeklyCounts.keys.isEmpty
+        ? 0
         : weeklyCounts.keys.reduce((a, b) => a > b ? a : b);
-    
+
     final maxWeek = currentWeek > lastLogWeek ? currentWeek : lastLogWeek;
 
     for (int w = 1; w <= maxWeek; w++) {
@@ -68,12 +69,15 @@ class MortalityRepository {
 
     return breakdown;
   }
-  
+
   Future<int> getTodaysMortality(String batchId) async {
     final today = DateTime.now();
     final logs = await getByBatch(batchId);
     return logs
-        .where((m) => m.date.year == today.year && m.date.month == today.month && m.date.day == today.day)
+        .where((m) =>
+            m.date.year == today.year &&
+            m.date.month == today.month &&
+            m.date.day == today.day)
         .fold<int>(0, (sum, m) => sum + m.count);
   }
 

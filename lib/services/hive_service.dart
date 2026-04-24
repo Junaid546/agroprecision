@@ -24,30 +24,46 @@ class HiveService {
   static Box<FarmModel> get farmBox => Hive.box<FarmModel>(farmBoxName);
   static Box<ShedModel> get shedBox => Hive.box<ShedModel>(shedBoxName);
   static Box<BatchModel> get batchBox => Hive.box<BatchModel>(batchBoxName);
-  static Box<ExpenseModel> get expenseBox => Hive.box<ExpenseModel>(expenseBoxName);
-  static Box<MortalityModel> get mortalityBox => Hive.box<MortalityModel>(mortalityBoxName);
+  static Box<ExpenseModel> get expenseBox =>
+      Hive.box<ExpenseModel>(expenseBoxName);
+  static Box<MortalityModel> get mortalityBox =>
+      Hive.box<MortalityModel>(mortalityBoxName);
   static Box<GrowthModel> get growthBox => Hive.box<GrowthModel>(growthBoxName);
   static Box<SaleModel> get saleBox => Hive.box<SaleModel>(saleBoxName);
   static Box<TaskModel> get taskBox => Hive.box<TaskModel>(taskBoxName);
 
   static Future<void> init() async {
     await Hive.initFlutter();
-    
+
     // Enums FIRST (they are referenced by model adapters)
-    if (!Hive.isAdapterRegistered(8))  Hive.registerAdapter(BatchStatusAdapter());
-    if (!Hive.isAdapterRegistered(9))  Hive.registerAdapter(ExpenseCategoryAdapter());
-    if (!Hive.isAdapterRegistered(10)) Hive.registerAdapter(TaskPriorityAdapter());
-    if (!Hive.isAdapterRegistered(11)) Hive.registerAdapter(TaskStatusAdapter());
+    if (!Hive.isAdapterRegistered(8)) {
+      Hive.registerAdapter(BatchStatusAdapter());
+    }
+    if (!Hive.isAdapterRegistered(9)) {
+      Hive.registerAdapter(ExpenseCategoryAdapter());
+    }
+    if (!Hive.isAdapterRegistered(10)) {
+      Hive.registerAdapter(TaskPriorityAdapter());
+    }
+    if (!Hive.isAdapterRegistered(11)) {
+      Hive.registerAdapter(TaskStatusAdapter());
+    }
 
     // Models
-    if (!Hive.isAdapterRegistered(0))  Hive.registerAdapter(FarmModelAdapter());
-    if (!Hive.isAdapterRegistered(1))  Hive.registerAdapter(ShedModelAdapter());
-    if (!Hive.isAdapterRegistered(2))  Hive.registerAdapter(BatchModelAdapter());
-    if (!Hive.isAdapterRegistered(3))  Hive.registerAdapter(ExpenseModelAdapter());
-    if (!Hive.isAdapterRegistered(4))  Hive.registerAdapter(MortalityModelAdapter());
-    if (!Hive.isAdapterRegistered(5))  Hive.registerAdapter(GrowthModelAdapter());
-    if (!Hive.isAdapterRegistered(6))  Hive.registerAdapter(SaleModelAdapter());
-    if (!Hive.isAdapterRegistered(7))  Hive.registerAdapter(TaskModelAdapter());
+    if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(FarmModelAdapter());
+    if (!Hive.isAdapterRegistered(1)) Hive.registerAdapter(ShedModelAdapter());
+    if (!Hive.isAdapterRegistered(2)) Hive.registerAdapter(BatchModelAdapter());
+    if (!Hive.isAdapterRegistered(3)) {
+      Hive.registerAdapter(ExpenseModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(4)) {
+      Hive.registerAdapter(MortalityModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(5)) {
+      Hive.registerAdapter(GrowthModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(6)) Hive.registerAdapter(SaleModelAdapter());
+    if (!Hive.isAdapterRegistered(7)) Hive.registerAdapter(TaskModelAdapter());
 
     // Open boxes
     await Future.wait([
@@ -65,35 +81,29 @@ class HiveService {
 
   // Box query helpers
   static List<ExpenseModel> getExpensesForBatch(String batchId) {
-    return expenseBox.values
-        .where((e) => e.batchId == batchId)
-        .toList()
+    return expenseBox.values.where((e) => e.batchId == batchId).toList()
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
   static List<MortalityModel> getMortalityForBatch(String batchId) {
-    return mortalityBox.values
-        .where((m) => m.batchId == batchId)
-        .toList()
+    return mortalityBox.values.where((m) => m.batchId == batchId).toList()
       ..sort((a, b) => b.date.compareTo(a.date));
   }
 
   static List<GrowthModel> getGrowthForBatch(String batchId) {
-    return growthBox.values
-        .where((g) => g.batchId == batchId)
-        .toList()
+    return growthBox.values.where((g) => g.batchId == batchId).toList()
       ..sort((a, b) => a.batchDay.compareTo(b.batchDay));
   }
 
   static List<TaskModel> getTasksForDate(DateTime date) {
     final day = DateTime(date.year, date.month, date.day);
-    return taskBox.values
-        .where((t) {
-          final tDay = DateTime(t.scheduledDate.year, t.scheduledDate.month, t.scheduledDate.day);
-          return tDay == day;
-        })
-        .toList()
-      ..sort((a, b) => (a.scheduledTime ?? '').compareTo(b.scheduledTime ?? ''));
+    return taskBox.values.where((t) {
+      final tDay = DateTime(
+          t.scheduledDate.year, t.scheduledDate.month, t.scheduledDate.day);
+      return tDay == day;
+    }).toList()
+      ..sort(
+          (a, b) => (a.scheduledTime ?? '').compareTo(b.scheduledTime ?? ''));
   }
 
   static List<TaskModel> getTasksForBatch(String batchId) {

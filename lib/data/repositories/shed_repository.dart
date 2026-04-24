@@ -8,9 +8,7 @@ class ShedRepository {
   }
 
   Future<List<ShedModel>> getByFarm(String farmId) async {
-    return HiveService.shedBox.values
-        .where((s) => s.farmId == farmId)
-        .toList()
+    return HiveService.shedBox.values.where((s) => s.farmId == farmId).toList()
       ..sort((a, b) => a.name.compareTo(b.name));
   }
 

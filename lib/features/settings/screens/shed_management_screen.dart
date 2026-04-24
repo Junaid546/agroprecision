@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../shared/providers/app_state_provider.dart';
 import '../../../shared/providers/repository_providers.dart';
@@ -26,7 +25,8 @@ class ShedManagementScreen extends ConsumerWidget {
             Text('Shed Management', style: AppTypography.headlineLg),
             Text(
               'Register and configure your poultry houses.',
-              style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
             ),
             const SizedBox(height: 24),
             shedsAsync.when(
@@ -35,11 +35,15 @@ class ShedManagementScreen extends ConsumerWidget {
                   ...sheds.map((shed) => Card(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: ListTile(
-                          leading: const Icon(Icons.warehouse, color: AppColors.primary),
-                          title: Text(shed.name, style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.bold)),
+                          leading: const Icon(Icons.warehouse,
+                              color: AppColors.primary),
+                          title: Text(shed.name,
+                              style: AppTypography.bodyLg
+                                  .copyWith(fontWeight: FontWeight.bold)),
                           subtitle: Text('Capacity: ${shed.capacity} birds'),
                           trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline, color: AppColors.error),
+                            icon: const Icon(Icons.delete_outline,
+                                color: AppColors.error),
                             onPressed: () => _deleteShed(context, ref, shed),
                           ),
                         ),
@@ -75,7 +79,9 @@ class ShedManagementScreen extends ConsumerWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Shed Name')),
+            TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Shed Name')),
             const SizedBox(height: 16),
             TextField(
               controller: capacityController,
@@ -85,7 +91,9 @@ class ShedManagementScreen extends ConsumerWidget {
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           TextButton(
             onPressed: () async {
               final farm = ref.read(currentFarmProvider);
@@ -115,14 +123,17 @@ class ShedManagementScreen extends ConsumerWidget {
         title: const Text('Delete Shed'),
         content: Text('Are you sure you want to delete ${shed.name}?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Cancel')),
           TextButton(
             onPressed: () async {
               await ref.read(shedRepositoryProvider).delete(shed.id);
               ref.invalidate(shedListProvider);
               if (context.mounted) Navigator.pop(context);
             },
-            child: const Text('Delete', style: TextStyle(color: AppColors.error)),
+            child:
+                const Text('Delete', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),

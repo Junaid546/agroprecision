@@ -19,14 +19,16 @@ class AlertBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final bool isDanger = type == AlertType.danger;
-    
+
     return Container(
       padding: const EdgeInsets.all(AppSpacing.cardPadding),
       decoration: BoxDecoration(
-        color: isDanger ? AppColors.errorContainer : AppColors.secondaryContainer,
+        color:
+            isDanger ? AppColors.errorContainer : AppColors.secondaryContainer,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (isDanger ? AppColors.error : AppColors.secondary).withValues(alpha: 0.2),
+          color: (isDanger ? AppColors.error : AppColors.secondary)
+              .withValues(alpha: 0.2),
         ),
       ),
       child: Row(
@@ -45,7 +47,9 @@ class AlertBanner extends StatelessWidget {
                 Text(
                   title,
                   style: AppTypography.headlineMd.copyWith(
-                    color: isDanger ? AppColors.error : AppColors.onSecondaryContainer,
+                    color: isDanger
+                        ? AppColors.error
+                        : AppColors.onSecondaryContainer,
                     fontSize: 18,
                   ),
                 ),

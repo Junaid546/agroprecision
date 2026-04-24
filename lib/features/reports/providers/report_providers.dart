@@ -5,6 +5,7 @@ import '../../../shared/providers/app_state_provider.dart';
 
 // Farm-wide summary for reports screen
 final farmSummaryProvider = FutureProvider<FarmSummaryFinancials>((ref) async {
+  ref.keepAlive();
   final farm = ref.watch(currentFarmProvider);
   if (farm == null) {
     return FarmSummaryFinancials(

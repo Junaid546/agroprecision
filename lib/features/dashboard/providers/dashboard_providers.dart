@@ -26,14 +26,16 @@ class DashboardSummary {
 }
 
 final farmSummaryProvider = FutureProvider<FarmSummaryFinancials>((ref) async {
+  ref.keepAlive();
   final farm = ref.watch(currentFarmProvider);
   if (farm == null) throw Exception('No farm active');
-  
+
   final engine = ref.watch(calculationEngineProvider);
   return engine.computeFarmSummary(farm.id);
 });
 
 final dashboardSummaryProvider = FutureProvider<DashboardSummary>((ref) async {
+  ref.keepAlive();
   final activeBatch = ref.watch(autoSelectedBatchProvider);
   if (activeBatch == null) return DashboardSummary();
 
@@ -44,21 +46,27 @@ final dashboardSummaryProvider = FutureProvider<DashboardSummary>((ref) async {
 
   final financials = await engine.computeForBatch(activeBatch.id);
   final alerts = await engine.analyzeAndAlert(activeBatch.id);
-  final todaysMortality = await mortalityRepo.getTodaysMortality(activeBatch.id);
-  
+  final todaysMortality =
+      await mortalityRepo.getTodaysMortality(activeBatch.id);
+
   // Use the tasks provider
   final todaysTasks = await taskRepo.getByDate(DateTime.now());
 
   // Get last 5 batches for the sparkline
   final allBatches = await batchRepo.getAll(); // sorted desc by default
-  final last5 = allBatches.where((b) => b.status == BatchStatus.completed).take(5).toList().reversed.toList();
-  
+  final last5 = allBatches
+      .where((b) => b.status == BatchStatus.completed)
+      .take(5)
+      .toList()
+      .reversed
+      .toList();
+
   List<double> last5Profit = [];
   for (var b in last5) {
     final fin = await engine.computeForBatch(b.id);
     last5Profit.add(fin.netProfit);
   }
-  
+
   // Add current active batch profit
   last5Profit.add(financials.netProfit);
 

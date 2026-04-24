@@ -64,7 +64,7 @@ class SaleModel extends HiveObject {
   }) {
     // Validation: totalRevenue must equal birdsSold * averageWeightKg * pricePerKg
     final totalRevenue = birdsSold * averageWeightKg * pricePerKg;
-    
+
     return SaleModel(
       id: const Uuid().v4(),
       batchId: batchId,

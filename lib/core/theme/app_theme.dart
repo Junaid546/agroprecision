@@ -63,7 +63,8 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
           ),
-          textStyle: AppTypography.labelBold.copyWith(color: AppColors.onPrimary),
+          textStyle:
+              AppTypography.labelBold.copyWith(color: AppColors.onPrimary),
           elevation: 0,
         ),
       ),
@@ -102,8 +103,10 @@ class AppTheme {
         shape: const StadiumBorder(),
         labelStyle: AppTypography.labelBold,
         backgroundColor: AppColors.surfaceContainerLow,
-        secondaryLabelStyle: AppTypography.labelBold.copyWith(color: AppColors.onPrimary),
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
+        secondaryLabelStyle:
+            AppTypography.labelBold.copyWith(color: AppColors.onPrimary),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
       ),
       dividerTheme: const DividerThemeData(
         color: AppColors.surfaceContainerHigh,

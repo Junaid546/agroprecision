@@ -9,9 +9,13 @@ import 'package:agro_precision/data/repositories/sale_repository.dart';
 import 'package:agro_precision/services/calculation_engine.dart';
 
 class MockBatchRepository extends Mock implements BatchRepository {}
+
 class MockExpenseRepository extends Mock implements ExpenseRepository {}
+
 class MockMortalityRepository extends Mock implements MortalityRepository {}
+
 class MockGrowthRepository extends Mock implements GrowthRepository {}
+
 class MockSaleRepository extends Mock implements SaleRepository {}
 
 void main() {
@@ -121,7 +125,7 @@ void main() {
 
   group('CalculationEngine Methods', () {
     test('computeForBatch gathers data correctly from repos', () async {
-      final batchId = 'batch-123';
+      const batchId = 'batch-123';
       final batch = BatchModel(
         id: batchId,
         shedId: 'shed-1',
@@ -136,12 +140,18 @@ void main() {
       );
 
       when(() => mockBatchRepo.getById(batchId)).thenAnswer((_) async => batch);
-      when(() => mockExpenseRepo.getTotalForBatch(batchId)).thenAnswer((_) async => 150.0);
-      when(() => mockSaleRepo.getTotalRevenueForBatch(batchId)).thenAnswer((_) async => 500.0);
-      when(() => mockSaleRepo.getTotalSoldForBatch(batchId)).thenAnswer((_) async => 50);
-      when(() => mockMortalityRepo.getTotalForBatch(batchId)).thenAnswer((_) async => 5);
-      when(() => mockGrowthRepo.getLatest(batchId)).thenAnswer((_) async => null);
-      when(() => mockExpenseRepo.getCategoryBreakdown(batchId)).thenAnswer((_) async => {});
+      when(() => mockExpenseRepo.getTotalForBatch(batchId))
+          .thenAnswer((_) async => 150.0);
+      when(() => mockSaleRepo.getTotalRevenueForBatch(batchId))
+          .thenAnswer((_) async => 500.0);
+      when(() => mockSaleRepo.getTotalSoldForBatch(batchId))
+          .thenAnswer((_) async => 50);
+      when(() => mockMortalityRepo.getTotalForBatch(batchId))
+          .thenAnswer((_) async => 5);
+      when(() => mockGrowthRepo.getLatest(batchId))
+          .thenAnswer((_) async => null);
+      when(() => mockExpenseRepo.getCategoryBreakdown(batchId))
+          .thenAnswer((_) async => {});
 
       final result = await engine.computeForBatch(batchId);
 

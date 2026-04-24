@@ -57,6 +57,13 @@ class LoadingSkeleton extends StatelessWidget {
     );
   }
 
+  static Widget skeletonAnalytics() {
+    return const LoadingSkeleton(
+      width: double.infinity,
+      height: 240,
+    );
+  }
+
   static Widget skeletonList() {
     return Column(
       children: List.generate(

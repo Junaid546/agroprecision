@@ -1,72 +1,73 @@
 import 'package:flutter/material.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
-import '../../core/constants/app_spacing.dart';
 
 class EmptyState extends StatelessWidget {
+  final String title;
   final String message;
+  final String actionLabel;
+  final VoidCallback onAction;
   final IconData icon;
-  final String? subMessage;
-  final VoidCallback? onAction;
-  final String? actionLabel;
 
   const EmptyState({
     super.key,
+    required this.title,
     required this.message,
-    required this.icon,
-    this.subMessage,
-    this.onAction,
-    this.actionLabel,
+    required this.actionLabel,
+    required this.onAction,
+    this.icon = Icons.inventory_2_outlined,
   });
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.all(AppSpacing.xl),
-            decoration: BoxDecoration(
-              color: AppColors.surfaceContainerLow,
-              shape: BoxShape.circle,
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(icon, color: AppColors.onSurfaceVariant, size: 40),
             ),
-            child: Icon(
-              icon,
-              size: 48,
-              color: AppColors.outline,
+            const SizedBox(height: 20),
+            Text(
+              title,
+              style: AppTypography.headlineMd,
+              textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            message,
-            style: AppTypography.headlineMd.copyWith(color: AppColors.onSurface),
-            textAlign: TextAlign.center,
-          ),
-          if (subMessage != null) ...[
-            const SizedBox(height: AppSpacing.xs),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.xxl),
-              child: Text(
-                subMessage!,
-                style: AppTypography.bodyMd,
-                textAlign: TextAlign.center,
+            const SizedBox(height: 8),
+            Text(
+              message,
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 56,
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.add_rounded, size: 18),
+                label: Text(actionLabel),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primaryContainer,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 0,
+                ),
+                onPressed: onAction,
               ),
             ),
           ],
-          if (onAction != null && actionLabel != null) ...[
-            const SizedBox(height: AppSpacing.xl),
-            ElevatedButton(
-              onPressed: onAction,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                minimumSize: const Size(200, 48),
-              ),
-              child: Text(actionLabel!),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

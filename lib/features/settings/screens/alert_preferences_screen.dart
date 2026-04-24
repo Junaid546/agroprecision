@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
 
@@ -9,10 +8,12 @@ class AlertPreferencesScreen extends ConsumerStatefulWidget {
   const AlertPreferencesScreen({super.key});
 
   @override
-  ConsumerState<AlertPreferencesScreen> createState() => _AlertPreferencesScreenState();
+  ConsumerState<AlertPreferencesScreen> createState() =>
+      _AlertPreferencesScreenState();
 }
 
-class _AlertPreferencesScreenState extends ConsumerState<AlertPreferencesScreen> {
+class _AlertPreferencesScreenState
+    extends ConsumerState<AlertPreferencesScreen> {
   bool _pushNotifications = true;
   bool _emailAlerts = false;
   bool _smsAlerts = false;
@@ -31,10 +32,13 @@ class _AlertPreferencesScreenState extends ConsumerState<AlertPreferencesScreen>
             Text('Alert Preferences', style: AppTypography.headlineLg),
             Text(
               'Configure how and when you receive notifications.',
-              style: AppTypography.bodyMd.copyWith(color: AppColors.onSurfaceVariant),
+              style: AppTypography.bodyMd
+                  .copyWith(color: AppColors.onSurfaceVariant),
             ),
             const SizedBox(height: 24),
-            Text('CHANNELS', style: AppTypography.labelBold.copyWith(color: AppColors.primary)),
+            Text('CHANNELS',
+                style:
+                    AppTypography.labelBold.copyWith(color: AppColors.primary)),
             const SizedBox(height: 8),
             Card(
               child: Column(
@@ -63,7 +67,9 @@ class _AlertPreferencesScreenState extends ConsumerState<AlertPreferencesScreen>
               ),
             ),
             const SizedBox(height: 24),
-            Text('ALERT TYPES', style: AppTypography.labelBold.copyWith(color: AppColors.primary)),
+            Text('ALERT TYPES',
+                style:
+                    AppTypography.labelBold.copyWith(color: AppColors.primary)),
             const SizedBox(height: 8),
             Card(
               child: Column(

@@ -123,7 +123,7 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
     });
 
     try {
-      final uuid = const Uuid();
+      const uuid = Uuid();
 
       final farm = FarmModel(
         id: uuid.v4(),
@@ -279,9 +279,11 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
   Widget _buildProgressIndicator() {
     return Row(
       children: [
-        _buildStepBadge(1, 'Farm Details', _currentStep == SetupStep.farmDetails),
+        _buildStepBadge(
+            1, 'Farm Details', _currentStep == SetupStep.farmDetails),
         const SizedBox(width: 8),
-        Expanded(child: Divider(color: AppColors.outlineVariant, thickness: 2)),
+        const Expanded(
+            child: Divider(color: AppColors.outlineVariant, thickness: 2)),
         const SizedBox(width: 8),
         _buildStepBadge(2, 'First Shed', _currentStep == SetupStep.firstShed),
       ],
@@ -327,7 +329,8 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
       children: [
         Text('Farm Details', style: AppTypography.headlineMd),
         const SizedBox(height: 8),
-        Text('Basic information about your operation', style: AppTypography.bodyMd),
+        Text('Basic information about your operation',
+            style: AppTypography.bodyMd),
         const SizedBox(height: 32),
         _buildTextField(
           controller: _farmNameController,
@@ -364,7 +367,7 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
           title: Text('Daily Feed Reminder', style: AppTypography.labelBold),
           subtitle: const Text('Get notified daily to feed your flock'),
           value: _enableDailyReminder,
-          activeColor: AppColors.primary,
+          activeThumbColor: AppColors.primary,
           onChanged: (v) => setState(() => _enableDailyReminder = v),
           contentPadding: EdgeInsets.zero,
         ),
@@ -438,7 +441,8 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
         Row(
           children: [
             Text(label, style: AppTypography.labelBold),
-            if (required) const Text(' *', style: TextStyle(color: AppColors.error)),
+            if (required)
+              const Text(' *', style: TextStyle(color: AppColors.error)),
           ],
         ),
         const SizedBox(height: 8),
@@ -452,11 +456,11 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
             filled: true,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.outlineVariant),
+              borderSide: const BorderSide(color: AppColors.outlineVariant),
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: AppColors.outlineVariant),
+              borderSide: const BorderSide(color: AppColors.outlineVariant),
             ),
           ),
         ),
@@ -464,4 +468,3 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
     );
   }
 }
-

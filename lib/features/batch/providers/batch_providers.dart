@@ -8,7 +8,8 @@ import '../../../shared/providers/app_state_provider.dart';
 // --- CORE BATCH LIST ---
 
 // Make this a proper AsyncNotifier so we can refresh it imperatively
-final allBatchesProvider = AsyncNotifierProvider<AllBatchesNotifier, List<BatchModel>>(
+final allBatchesProvider =
+    AsyncNotifierProvider<AllBatchesNotifier, List<BatchModel>>(
   AllBatchesNotifier.new,
 );
 
@@ -46,7 +47,7 @@ final activeBatchProvider = StateProvider<BatchModel?>((ref) => null);
 final autoSelectedBatchProvider = Provider<BatchModel?>((ref) {
   final manualBatch = ref.watch(activeBatchProvider);
   if (manualBatch != null) return manualBatch;
-  
+
   final batchesAsync = ref.watch(allBatchesProvider);
   return batchesAsync.when(
     data: (batches) {
@@ -74,21 +75,21 @@ final shedListProvider = FutureProvider<List<ShedModel>>((ref) async {
 // --- ANALYTICS (FAMILY) ---
 
 // Batch financials for a specific batch
-final batchFinancialsProvider =
-    FutureProvider.family<BatchFinancials, String>((ref, batchId) async {
+final batchFinancialsProvider = FutureProvider.autoDispose
+    .family<BatchFinancials, String>((ref, batchId) async {
   final engine = ref.watch(calculationEngineProvider);
   return engine.computeForBatch(batchId);
 });
 
 // Batch alive count
 final batchAliveCountProvider =
-    FutureProvider.family<int, String>((ref, batchId) async {
+    FutureProvider.autoDispose.family<int, String>((ref, batchId) async {
   return ref.watch(batchRepositoryProvider).getCurrentAliveCount(batchId);
 });
 
 // Decision engine alerts for active batch
-final batchAlertsProvider =
-    FutureProvider.family<List<ActionAlert>, String>((ref, batchId) async {
+final batchAlertsProvider = FutureProvider.autoDispose
+    .family<List<ActionAlert>, String>((ref, batchId) async {
   final engine = ref.watch(calculationEngineProvider);
   return engine.analyzeAndAlert(batchId);
 });

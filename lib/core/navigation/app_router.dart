@@ -12,6 +12,7 @@ import '../../features/batch/screens/create_batch_screen.dart';
 import '../../features/batch/screens/batch_detail_screen.dart';
 import '../../features/tasks/screens/tasks_screen.dart';
 import '../../features/reports/screens/reports_screen.dart';
+import '../../features/analytics/screens/analytics_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/settings/screens/farm_profile_screen.dart';
 import '../../features/settings/screens/shed_management_screen.dart';
@@ -19,7 +20,8 @@ import '../../features/settings/screens/alert_preferences_screen.dart';
 import '../../features/settings/screens/data_export_screen.dart';
 import '../../features/settings/screens/backup_screen.dart';
 
-// Imports for data/shared
+import '../../features/batch/screens/activity_screens.dart';
+import 'package:flutter/services.dart';
 import '../../shared/providers/app_state_provider.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
@@ -56,7 +58,8 @@ class AppTransitions {
           position: Tween<Offset>(
             begin: const Offset(1.0, 0.0),
             end: Offset.zero,
-          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
+          ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeInOut)),
           child: child,
         );
       },
@@ -77,7 +80,8 @@ class AppTransitions {
           position: Tween<Offset>(
             begin: const Offset(0.0, 1.0),
             end: Offset.zero,
-          ).animate(CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
+          ).animate(
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
           child: child,
         );
       },
@@ -86,48 +90,27 @@ class AppTransitions {
 }
 
 class AgroBottomNav extends StatelessWidget {
-  final Widget child;
+  final StatefulNavigationShell navigationShell;
 
-  const AgroBottomNav({super.key, required this.child});
+  const AgroBottomNav({super.key, required this.navigationShell});
 
-  int _getSelectedIndex(BuildContext context) {
-    final location = GoRouterState.of(context).matchedLocation;
-    if (location.startsWith('/home/batches')) return 1;
-    if (location.startsWith('/home/tasks')) return 2;
-    if (location.startsWith('/home/reports')) return 3;
-    if (location.startsWith('/home/settings')) return 4;
-    return 0; // Dashboard
-  }
-
-  void _onItemTapped(int index, BuildContext context) {
-    switch (index) {
-      case 0:
-        context.go('/home/dashboard');
-        break;
-      case 1:
-        context.go('/home/batches');
-        break;
-      case 2:
-        context.go('/home/tasks');
-        break;
-      case 3:
-        context.go('/home/reports');
-        break;
-      case 4:
-        context.go('/home/settings');
-        break;
-    }
+  void _onItemTapped(int index) {
+    HapticFeedback.selectionClick();
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
+      body: navigationShell,
       bottomNavigationBar: NavigationBar(
         elevation: 0,
         backgroundColor: Theme.of(context).colorScheme.surface,
-        selectedIndex: _getSelectedIndex(context),
-        onDestinationSelected: (index) => _onItemTapped(index, context),
+        selectedIndex: navigationShell.currentIndex,
+        onDestinationSelected: _onItemTapped,
         destinations: const [
           NavigationDestination(
             icon: Icon(Icons.dashboard_outlined),
@@ -168,25 +151,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     redirect: (context, state) {
       final location = state.matchedLocation;
-
-      // Allow Splash screen at / to handle its own navigation
       if (location == '/') return null;
-
-      // If no farm exists and not on onboarding, redirect to onboarding
       if (farm == null && !location.startsWith('/onboarding')) {
         return '/onboarding';
       }
-
-      // If farm exists and on onboarding, redirect to dashboard
       if (farm != null && location.startsWith('/onboarding')) {
         return '/home/dashboard';
       }
-
-      // Basic redirect for /home
-      if (location == '/home') {
-        return '/home/dashboard';
-      }
-
+      if (location == '/home') return '/home/dashboard';
       return null;
     },
     routes: [
@@ -204,143 +176,174 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
-      ShellRoute(
-        navigatorKey: _shellNavigatorKey,
-        builder: (context, state, child) => AgroBottomNav(child: child),
-        routes: [
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return AgroBottomNav(navigationShell: navigationShell);
+        },
+        branches: [
           // Dashboard
-          GoRoute(
-            path: '/home/dashboard',
-            pageBuilder: (context, state) => AppTransitions.fade(
-              key: state.pageKey,
-              child: const DashboardScreen(),
-            ),
-          ),
-          // Batches
-          GoRoute(
-            path: '/home/batches',
-            pageBuilder: (context, state) => AppTransitions.fade(
-              key: state.pageKey,
-              child: const BatchListScreen(),
-            ),
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'new',
-                parentNavigatorKey: _rootNavigatorKey, // Above bottom nav
-                pageBuilder: (context, state) => AppTransitions.slideRight(
+                path: '/home/dashboard',
+                pageBuilder: (context, state) => AppTransitions.fade(
                   key: state.pageKey,
-                  child: const CreateBatchScreen(),
+                  child: const DashboardScreen(),
                 ),
               ),
+            ],
+          ),
+          // Batches
+          StatefulShellBranch(
+            routes: [
               GoRoute(
-                path: ':batchId',
-                pageBuilder: (context, state) => AppTransitions.slideRight(
+                path: '/home/batches',
+                pageBuilder: (context, state) => AppTransitions.fade(
                   key: state.pageKey,
-                  child: BatchDetailScreen(batchId: state.pathParameters['batchId']!),
+                  child: const BatchListScreen(),
                 ),
                 routes: [
                   GoRoute(
-                    path: 'add-expense',
-                    parentNavigatorKey: _rootNavigatorKey, // Above bottom nav
-                    pageBuilder: (context, state) => AppTransitions.slideBottom(
+                    path: 'new',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
                       key: state.pageKey,
-                      child: const AddExpenseScreen(),
+                      child: const CreateBatchScreen(),
                     ),
                   ),
                   GoRoute(
-                    path: 'add-mortality',
-                    parentNavigatorKey: _rootNavigatorKey,
-                    pageBuilder: (context, state) => AppTransitions.slideBottom(
+                    path: ':batchId',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
                       key: state.pageKey,
-                      child: const AddMortalityScreen(),
+                      child: BatchDetailScreen(
+                          batchId: state.pathParameters['batchId']!),
                     ),
-                  ),
-                  GoRoute(
-                    path: 'add-growth',
-                    parentNavigatorKey: _rootNavigatorKey,
-                    pageBuilder: (context, state) => AppTransitions.slideBottom(
-                      key: state.pageKey,
-                      child: const AddGrowthScreen(),
-                    ),
-                  ),
-                  GoRoute(
-                    path: 'add-sale',
-                    parentNavigatorKey: _rootNavigatorKey,
-                    pageBuilder: (context, state) => AppTransitions.slideBottom(
-                      key: state.pageKey,
-                      child: const AddSaleScreen(),
-                    ),
+                    routes: [
+                      GoRoute(
+                        path: 'add-expense',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) =>
+                            AppTransitions.slideBottom(
+                          key: state.pageKey,
+                          child: const AddExpenseScreen(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'add-mortality',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) =>
+                            AppTransitions.slideBottom(
+                          key: state.pageKey,
+                          child: const AddMortalityScreen(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'add-growth',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) =>
+                            AppTransitions.slideBottom(
+                          key: state.pageKey,
+                          child: const AddGrowthScreen(),
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'add-sale',
+                        parentNavigatorKey: _rootNavigatorKey,
+                        pageBuilder: (context, state) =>
+                            AppTransitions.slideBottom(
+                          key: state.pageKey,
+                          child: const AddSaleScreen(),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ],
           ),
           // Tasks
-          GoRoute(
-            path: '/home/tasks',
-            pageBuilder: (context, state) => AppTransitions.fade(
-              key: state.pageKey,
-              child: const TasksScreen(),
-            ),
-          ),
-          // Reports
-          GoRoute(
-            path: '/home/reports',
-            pageBuilder: (context, state) => AppTransitions.fade(
-              key: state.pageKey,
-              child: const ReportsScreen(),
-            ),
-          ),
-          // Settings
-          GoRoute(
-            path: '/home/settings',
-            pageBuilder: (context, state) => AppTransitions.fade(
-              key: state.pageKey,
-              child: const SettingsScreen(),
-            ),
+          StatefulShellBranch(
             routes: [
               GoRoute(
-                path: 'farm-profile',
-                pageBuilder: (context, state) => AppTransitions.slideRight(
+                path: '/home/tasks',
+                pageBuilder: (context, state) => AppTransitions.fade(
                   key: state.pageKey,
-                  child: const FarmProfileScreen(),
-                ),
-              ),
-              GoRoute(
-                path: 'sheds',
-                pageBuilder: (context, state) => AppTransitions.slideRight(
-                  key: state.pageKey,
-                  child: const ShedManagementScreen(),
-                ),
-              ),
-              GoRoute(
-                path: 'alert-preferences',
-                pageBuilder: (context, state) => AppTransitions.slideRight(
-                  key: state.pageKey,
-                  child: const AlertPreferencesScreen(),
-                ),
-              ),
-              GoRoute(
-                path: 'data-export',
-                pageBuilder: (context, state) => AppTransitions.slideRight(
-                  key: state.pageKey,
-                  child: const DataExportScreen(),
-                ),
-              ),
-              GoRoute(
-                path: 'backup',
-                pageBuilder: (context, state) => AppTransitions.slideRight(
-                  key: state.pageKey,
-                  child: const BackupScreen(),
+                  child: const TasksScreen(),
                 ),
               ),
             ],
           ),
+          // Reports
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home/reports',
+                pageBuilder: (context, state) => AppTransitions.fade(
+                  key: state.pageKey,
+                  child: const ReportsScreen(),
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'analytics',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const AnalyticsScreen(),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          // Settings
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home/settings',
+                pageBuilder: (context, state) => AppTransitions.fade(
+                  key: state.pageKey,
+                  child: const SettingsScreen(),
+                ),
+                routes: [
+                  GoRoute(
+                    path: 'farm-profile',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const FarmProfileScreen(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'sheds',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const ShedManagementScreen(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'alert-preferences',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const AlertPreferencesScreen(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'data-export',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const DataExportScreen(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'backup',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const BackupScreen(),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ],
-      ),
-    ],
-  );
-});
       ),
     ],
   );

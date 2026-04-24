@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
@@ -7,6 +8,7 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/batch_model.dart';
 import '../../../data/models/expense_model.dart';
 import '../../../data/models/mortality_model.dart';
+import '../../../data/models/growth_model.dart';
 import '../../../shared/providers/app_state_provider.dart';
 import '../../../shared/providers/repository_providers.dart';
 import '../providers/dashboard_providers.dart';
@@ -72,11 +74,13 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
           ),
           child: Row(
             children: [
-              const Icon(Icons.auto_awesome_mosaic, size: 14, color: AppColors.outline),
+              const Icon(Icons.auto_awesome_mosaic,
+                  size: 14, color: AppColors.outline),
               const SizedBox(width: 4),
               Text(
                 'OFFLINE',
-                style: AppTypography.labelBold.copyWith(color: AppColors.outline),
+                style:
+                    AppTypography.labelBold.copyWith(color: AppColors.outline),
               ),
             ],
           ),
@@ -130,7 +134,10 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
   }) {
     final bool isSelected = _selectedAction == id;
     return GestureDetector(
-      onTap: () => setState(() => _selectedAction = id),
+      onTap: () {
+        HapticFeedback.lightImpact();
+        setState(() => _selectedAction = id);
+      },
       child: Container(
         decoration: BoxDecoration(
           color: isSelected ? color.withOpacity(0.1) : Colors.white,
@@ -149,7 +156,8 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
                 color: isSelected ? color : color.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: isSelected ? Colors.white : color, size: 24),
+              child: Icon(icon,
+                  color: isSelected ? Colors.white : color, size: 24),
             ),
             const SizedBox(height: 8),
             Text(
@@ -174,7 +182,7 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
         if (batches.isEmpty) {
           return _buildNoActiveBatchesState();
         }
-        
+
         switch (_selectedAction) {
           case 'feed':
             return const _AddFeedForm();
@@ -200,7 +208,8 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
       ),
       child: Column(
         children: [
-          const Icon(Icons.inventory_2_outlined, size: 48, color: AppColors.onSurfaceVariant),
+          const Icon(Icons.inventory_2_outlined,
+              size: 48, color: AppColors.onSurfaceVariant),
           const SizedBox(height: 16),
           Text('No Active Batches', style: AppTypography.headlineMd),
           const SizedBox(height: 8),
@@ -223,7 +232,8 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryContainer,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             ),
           ),
@@ -265,11 +275,15 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
           Text('Log Feed Usage', style: AppTypography.headlineMd),
           const SizedBox(height: 20),
           DropdownButtonFormField<BatchModel>(
-            value: _selectedBatch,
-            decoration: _inputDecoration('Select Batch', Icons.inventory_2_outlined),
+            initialValue: _selectedBatch,
+            decoration:
+                _inputDecoration('Select Batch', Icons.inventory_2_outlined),
             hint: const Text('Choose active batch...'),
             items: activeBatches.when(
-              data: (batches) => batches.map((b) => DropdownMenuItem(value: b, child: Text('Batch #${b.batchNumber}'))).toList(),
+              data: (batches) => batches
+                  .map((b) => DropdownMenuItem(
+                      value: b, child: Text('Batch #${b.batchNumber}')))
+                  .toList(),
               loading: () => [],
               error: (_, __) => [],
             ),
@@ -278,7 +292,7 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _feedType,
+            initialValue: _feedType,
             decoration: _inputDecoration('Feed Type', Icons.layers_outlined),
             hint: const Text('Select feed formulation...'),
             items: ['Starter', 'Grower', 'Finisher', 'Supplement']
@@ -307,13 +321,29 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
   Widget _buildStepper() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      decoration: BoxDecoration(border: Border.all(color: AppColors.outlineVariant), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+          border: Border.all(color: AppColors.outlineVariant),
+          borderRadius: BorderRadius.circular(12)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(icon: const Icon(Icons.remove_circle_outline), onPressed: _quantity >= 5 ? () => setState(() => _quantity -= 5) : null),
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline),
+            onPressed: _quantity >= 5
+                ? () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _quantity -= 5);
+                  }
+                : null,
+          ),
           Text('$_quantity kg', style: AppTypography.headlineMd),
-          IconButton(icon: const Icon(Icons.add_circle_outline), onPressed: () => setState(() => _quantity += 5)),
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              setState(() => _quantity += 5);
+            },
+          ),
         ],
       ),
     );
@@ -326,16 +356,24 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
       child: FilledButton(
         onPressed: _isLoading ? null : _save,
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary, 
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: AppColors.primary,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
-        child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('Save Entry', style: TextStyle(fontWeight: FontWeight.bold)),
+        child: _isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text('Save Entry',
+                style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate() || _selectedBatch == null || _quantity <= 0) return;
+    if (!_formKey.currentState!.validate() ||
+        _selectedBatch == null ||
+        _quantity <= 0) {
+      return;
+    }
     setState(() => _isLoading = true);
     try {
       final expense = ExpenseModel.create(
@@ -343,7 +381,8 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
         farmId: _selectedBatch!.farmId,
         amount: 0,
         category: ExpenseCategory.feed,
-        description: 'Feed: $_feedType, Qty: $_quantity kg. ${_notesController.text}',
+        description:
+            'Feed: $_feedType, Qty: $_quantity kg. ${_notesController.text}',
         date: DateTime.now(),
         quantity: _quantity.toDouble(),
         unit: 'kg',
@@ -352,7 +391,8 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
       ref.invalidate(dashboardSummaryProvider);
       if (mounted) Navigator.pop(context);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -397,10 +437,14 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
           Text('Log Mortality', style: AppTypography.headlineMd),
           const SizedBox(height: 20),
           DropdownButtonFormField<BatchModel>(
-            value: _selectedBatch,
-            decoration: _inputDecoration('Select Batch', Icons.inventory_2_outlined),
+            initialValue: _selectedBatch,
+            decoration:
+                _inputDecoration('Select Batch', Icons.inventory_2_outlined),
             items: activeBatches.when(
-              data: (batches) => batches.map((b) => DropdownMenuItem(value: b, child: Text('Batch #${b.batchNumber}'))).toList(),
+              data: (batches) => batches
+                  .map((b) => DropdownMenuItem(
+                      value: b, child: Text('Batch #${b.batchNumber}')))
+                  .toList(),
               loading: () => [],
               error: (_, __) => [],
             ),
@@ -414,7 +458,8 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
           const SizedBox(height: 16),
           TextFormField(
             onChanged: (val) => _cause = val,
-            decoration: _inputDecoration('Cause/Observation', Icons.bug_report_outlined),
+            decoration: _inputDecoration(
+                'Cause/Observation', Icons.bug_report_outlined),
           ),
           const SizedBox(height: 24),
           _buildSaveButton(),
@@ -426,13 +471,29 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
   Widget _buildStepper() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-      decoration: BoxDecoration(border: Border.all(color: AppColors.outlineVariant), borderRadius: BorderRadius.circular(12)),
+      decoration: BoxDecoration(
+          border: Border.all(color: AppColors.outlineVariant),
+          borderRadius: BorderRadius.circular(12)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          IconButton(icon: const Icon(Icons.remove_circle_outline), onPressed: _count > 0 ? () => setState(() => _count--) : null),
+          IconButton(
+            icon: const Icon(Icons.remove_circle_outline),
+            onPressed: _count > 0
+                ? () {
+                    HapticFeedback.selectionClick();
+                    setState(() => _count--);
+                  }
+                : null,
+          ),
           Text('$_count', style: AppTypography.headlineMd),
-          IconButton(icon: const Icon(Icons.add_circle_outline), onPressed: () => setState(() => _count++)),
+          IconButton(
+            icon: const Icon(Icons.add_circle_outline),
+            onPressed: () {
+              HapticFeedback.selectionClick();
+              setState(() => _count++);
+            },
+          ),
         ],
       ),
     );
@@ -445,16 +506,24 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
       child: FilledButton(
         onPressed: _isLoading ? null : _save,
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.error, 
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: AppColors.error,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
-        child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('Record Mortality', style: TextStyle(fontWeight: FontWeight.bold)),
+        child: _isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text('Record Mortality',
+                style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
 
   Future<void> _save() async {
-    if (!_formKey.currentState!.validate() || _selectedBatch == null || _count <= 0) return;
+    if (!_formKey.currentState!.validate() ||
+        _selectedBatch == null ||
+        _count <= 0) {
+      return;
+    }
     setState(() => _isLoading = true);
     try {
       final log = MortalityModel.create(
@@ -512,10 +581,14 @@ class _AddExpenseFormState extends ConsumerState<_AddExpenseForm> {
           Text('Log Expense', style: AppTypography.headlineMd),
           const SizedBox(height: 20),
           DropdownButtonFormField<BatchModel>(
-            value: _selectedBatch,
-            decoration: _inputDecoration('Select Batch', Icons.inventory_2_outlined),
+            initialValue: _selectedBatch,
+            decoration:
+                _inputDecoration('Select Batch', Icons.inventory_2_outlined),
             items: activeBatches.when(
-              data: (batches) => batches.map((b) => DropdownMenuItem(value: b, child: Text('Batch #${b.batchNumber}'))).toList(),
+              data: (batches) => batches
+                  .map((b) => DropdownMenuItem(
+                      value: b, child: Text('Batch #${b.batchNumber}')))
+                  .toList(),
               loading: () => [],
               error: (_, __) => [],
             ),
@@ -527,13 +600,18 @@ class _AddExpenseFormState extends ConsumerState<_AddExpenseForm> {
             keyboardType: TextInputType.number,
             onChanged: (val) => _amount = double.tryParse(val) ?? 0,
             decoration: _inputDecoration('Amount (\$)', Icons.attach_money),
-            validator: (val) => (double.tryParse(val ?? '') ?? 0) <= 0 ? 'Enter valid amount' : null,
+            validator: (val) => (double.tryParse(val ?? '') ?? 0) <= 0
+                ? 'Enter valid amount'
+                : null,
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<ExpenseCategory>(
-            value: _category,
+            initialValue: _category,
             decoration: _inputDecoration('Category', Icons.category_outlined),
-            items: ExpenseCategory.values.map((c) => DropdownMenuItem(value: c, child: Text(c.name.toUpperCase()))).toList(),
+            items: ExpenseCategory.values
+                .map((c) => DropdownMenuItem(
+                    value: c, child: Text(c.name.toUpperCase())))
+                .toList(),
             onChanged: (val) => setState(() => _category = val!),
           ),
           const SizedBox(height: 16),
@@ -556,10 +634,14 @@ class _AddExpenseFormState extends ConsumerState<_AddExpenseForm> {
       child: FilledButton(
         onPressed: _isLoading ? null : _save,
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary, 
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: AppColors.primary,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
-        child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('Save Expense', style: TextStyle(fontWeight: FontWeight.bold)),
+        child: _isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text('Save Expense',
+                style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -622,10 +704,14 @@ class _RecordGrowthFormState extends ConsumerState<_RecordGrowthForm> {
           Text('Record Growth', style: AppTypography.headlineMd),
           const SizedBox(height: 20),
           DropdownButtonFormField<BatchModel>(
-            value: _selectedBatch,
-            decoration: _inputDecoration('Select Batch', Icons.inventory_2_outlined),
+            initialValue: _selectedBatch,
+            decoration:
+                _inputDecoration('Select Batch', Icons.inventory_2_outlined),
             items: activeBatches.when(
-              data: (batches) => batches.map((b) => DropdownMenuItem(value: b, child: Text('Batch #${b.batchNumber}'))).toList(),
+              data: (batches) => batches
+                  .map((b) => DropdownMenuItem(
+                      value: b, child: Text('Batch #${b.batchNumber}')))
+                  .toList(),
               loading: () => [],
               error: (_, __) => [],
             ),
@@ -636,8 +722,11 @@ class _RecordGrowthFormState extends ConsumerState<_RecordGrowthForm> {
           TextFormField(
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             onChanged: (val) => _weight = double.tryParse(val) ?? 0,
-            decoration: _inputDecoration('Average Weight (kg)', Icons.monitor_weight_outlined),
-            validator: (val) => (double.tryParse(val ?? '') ?? 0) <= 0 ? 'Enter valid weight' : null,
+            decoration: _inputDecoration(
+                'Average Weight (kg)', Icons.monitor_weight_outlined),
+            validator: (val) => (double.tryParse(val ?? '') ?? 0) <= 0
+                ? 'Enter valid weight'
+                : null,
           ),
           const SizedBox(height: 24),
           _buildSaveButton(),
@@ -653,10 +742,14 @@ class _RecordGrowthFormState extends ConsumerState<_RecordGrowthForm> {
       child: FilledButton(
         onPressed: _isLoading ? null : _save,
         style: FilledButton.styleFrom(
-          backgroundColor: Colors.amber.shade700, 
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          backgroundColor: Colors.amber.shade700,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         ),
-        child: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('Save Record', style: TextStyle(fontWeight: FontWeight.bold)),
+        child: _isLoading
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text('Save Record',
+                style: TextStyle(fontWeight: FontWeight.bold)),
       ),
     );
   }
@@ -665,8 +758,21 @@ class _RecordGrowthFormState extends ConsumerState<_RecordGrowthForm> {
     if (!_formKey.currentState!.validate() || _selectedBatch == null) return;
     setState(() => _isLoading = true);
     try {
+      final day = DateTime.now().difference(_selectedBatch!.startDate).inDays;
+      final growth = GrowthModel.create(
+        batchId: _selectedBatch!.id,
+        farmId: _selectedBatch!.farmId,
+        averageWeightKg: _weight,
+        sampleSize: 10, // Default sample size
+        batchDay: day < 0 ? 0 : day,
+        date: DateTime.now(),
+      );
+      await ref.read(growthRepositoryProvider).create(growth);
       ref.invalidate(dashboardSummaryProvider);
       if (mounted) Navigator.pop(context);
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

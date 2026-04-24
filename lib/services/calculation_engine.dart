@@ -7,7 +7,6 @@ import '../data/repositories/growth_repository.dart';
 import '../data/repositories/mortality_repository.dart';
 import '../data/repositories/sale_repository.dart';
 
-
 enum AlertType { danger, warning, success, info }
 
 class BatchFinancials {
@@ -41,24 +40,25 @@ class BatchFinancials {
   double get purchaseCost => initialCount * initialCostPerBird;
   double get totalCost => purchaseCost + totalExpenses;
   double get netProfit => totalRevenue - totalCost;
-  double get mortalityRate => initialCount > 0 ? (totalMortality / initialCount) * 100 : 0.0;
+  double get mortalityRate =>
+      initialCount > 0 ? (totalMortality / initialCount) * 100 : 0.0;
   double get survivalRate => 100.0 - mortalityRate;
   double get costPerBird => (initialCount - totalMortality) > 0
       ? totalCost / (initialCount - totalMortality)
       : 0.0;
   double get revenuePerBird => totalSold > 0 ? totalRevenue / totalSold : 0.0;
   double get roi => totalCost > 0 ? (netProfit / totalCost) * 100 : 0.0;
-  
+
   double get breakEvenPricePerKg {
-    if (latestWeightKg == null || latestWeightKg! <= 0 || currentAlive <= 0) return 0;
+    if (latestWeightKg == null || latestWeightKg! <= 0 || currentAlive <= 0) {
+      return 0;
+    }
     return totalCost / (currentAlive * latestWeightKg!);
   }
 
   double get performanceScore {
-    final survivalScore = (survivalRate / 97.0).clamp(0.0, 1.0) * 40;
-    final roiScore = (roi / 25.0).clamp(0.0, 1.0) * 40;
-    // Note: FCR score would require target FCR comparison, using 20 as placeholder base
-    return (survivalScore + roiScore + 20).clamp(0.0, 100.0);
+    final score = (survivalRate * 0.4) + (roi * 0.4);
+    return score.clamp(0.0, 100.0);
   }
 
   bool get isProfitable => netProfit > 0;
@@ -122,9 +122,9 @@ class CalculationEngine {
     final expenses = await _expenseRepo.getTotalForBatch(batchId);
     final revenue = await _saleRepo.getTotalRevenueForBatch(batchId);
     final mortalityCount = await _mortalityRepo.getTotalForBatch(batchId);
-    
+
     final sales = await _saleRepo.getTotalSoldForBatch(batchId);
-        
+
     final latestGrowth = await _growthRepo.getLatest(batchId);
     final categoryBreakdown = await _expenseRepo.getCategoryBreakdown(batchId);
 
@@ -149,7 +149,7 @@ class CalculationEngine {
     double totalRevenue = 0;
     double totalCost = 0;
     int totalBirds = 0;
-    
+
     for (final batch in batches) {
       final f = await computeForBatch(batch.id);
       totalProfit += f.netProfit;
@@ -178,11 +178,13 @@ class CalculationEngine {
     // RULE 1: Mortality spike (> 1% in a single day)
     final todayMortality = await _mortalityRepo.getTodaysMortality(batchId);
     final dailyMortalityThreshold = (financials.initialCount * 0.01).ceil();
-    if (todayMortality >= dailyMortalityThreshold && financials.initialCount > 0) {
+    if (todayMortality >= dailyMortalityThreshold &&
+        financials.initialCount > 0) {
       alerts.add(ActionAlert(
         type: AlertType.danger,
         title: 'Mortality Warning',
-        message: "Today's mortality rate exceeds acceptable threshold. Immediate inspection required.",
+        message:
+            "Today's mortality rate exceeds acceptable threshold. Immediate inspection required.",
         metric: 'mortality',
       ));
     }
@@ -193,7 +195,8 @@ class CalculationEngine {
       alerts.add(ActionAlert(
         type: AlertType.warning,
         title: 'Low Feed Inefficiency',
-        message: 'Feed conversion ratio is dropping below target for Day ${latestGrowth.batchDay}.',
+        message:
+            'Feed conversion ratio is dropping below target for Day ${latestGrowth.batchDay}.',
         metric: 'fcr',
       ));
     }
@@ -203,7 +206,8 @@ class CalculationEngine {
       alerts.add(ActionAlert(
         type: AlertType.danger,
         title: 'High Cumulative Mortality',
-        message: '${financials.mortalityRate.toStringAsFixed(1)}% mortality rate exceeds 5% threshold.',
+        message:
+            '${financials.mortalityRate.toStringAsFixed(1)}% mortality rate exceeds 5% threshold.',
         metric: 'mortality_cumulative',
       ));
     }
@@ -213,7 +217,8 @@ class CalculationEngine {
       alerts.add(ActionAlert(
         type: AlertType.success,
         title: 'Strong ROI — Consider Reinvesting',
-        message: '${financials.roi.toStringAsFixed(1)}% ROI achieved. Consider scaling next batch.',
+        message:
+            '${financials.roi.toStringAsFixed(1)}% ROI achieved. Consider scaling next batch.',
         metric: 'roi_high',
       ));
     }
