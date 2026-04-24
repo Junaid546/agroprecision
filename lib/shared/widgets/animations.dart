@@ -116,9 +116,12 @@ class _CountUpTextState extends State<CountUpText> with SingleTickerProviderStat
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
-        final val = _animation.value.toStringAsFixed(widget.decimalDigits);
+        final val = _animation.value;
+        final isNegative = val < 0;
+        final absVal = val.abs().toStringAsFixed(widget.decimalDigits);
+        
         return Text(
-          '${widget.prefix}$val${widget.suffix}',
+          '${isNegative ? '-' : ''}${widget.prefix}$absVal${widget.suffix}',
           style: widget.style,
         );
       },

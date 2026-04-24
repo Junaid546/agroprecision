@@ -19,6 +19,7 @@ import '../../../shared/widgets/status_chip.dart';
 import '../../../shared/widgets/expense_bar_row.dart';
 import '../../../shared/widgets/loading_skeleton.dart';
 import '../providers/batch_providers.dart';
+import '../../../shared/widgets/animations.dart';
 
 class BatchDetailScreen extends ConsumerStatefulWidget {
   final String batchId;
@@ -69,37 +70,42 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
     return AppBar(
       backgroundColor: AppColors.surface,
       elevation: 0,
-      centerTitle: false,
+      centerTitle: true,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back, color: AppColors.onSurface),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: AppColors.onSurface, size: 20),
         onPressed: () => context.pop(),
       ),
-      title: Row(
+      title: Column(
         children: [
-          Text(batch.batchNumber, style: AppTypography.headlineMd),
-          const SizedBox(width: 12),
-          StatusChip(
-            label: isActive ? 'Active' : 'Completed',
-            status: isActive ? ChipStatus.active : ChipStatus.completed,
+          Text(batch.batchNumber, style: AppTypography.headlineMd.copyWith(fontWeight: FontWeight.w900)),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: isActive ? AppColors.primary : AppColors.outline,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              const SizedBox(width: 6),
+              Text(
+                isActive ? 'ACTIVE TRACKING' : 'COMPLETED BATCH',
+                style: AppTypography.labelBold.copyWith(
+                  fontSize: 10,
+                  color: AppColors.onSurfaceVariant,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ],
           ),
         ],
       ),
       actions: [
-        Padding(
-          padding: const EdgeInsets.only(right: 8),
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: AppColors.surfaceContainerHigh,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.edit_outlined,
-                  color: AppColors.onSurface, size: 20),
-              onPressed: () {}, // TODO: Edit batch
-            ),
-          ),
+        IconButton(
+          icon: const Icon(Icons.more_vert_rounded, color: AppColors.onSurface),
+          onPressed: () {},
         ),
       ],
     );
@@ -107,47 +113,56 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
 
   Widget _buildTabBar() {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: AppColors.surface,
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _buildTabItem(0, 'Overview'),
-              _buildTabItem(1, 'Expenses'),
-              _buildTabItem(2, 'Mortality'),
-              _buildTabItem(3, 'Sales'),
-            ],
-          ),
-          const Divider(height: 1, color: AppColors.surfaceContainerHigh),
-        ],
+      child: Container(
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceContainerLow,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          children: [
+            _buildTabItem(0, 'OVERVIEW'),
+            _buildTabItem(1, 'EXPENSES'),
+            _buildTabItem(2, 'MORTALITY'),
+            _buildTabItem(3, 'SALES'),
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildTabItem(int index, String label) {
     final isSelected = _selectedTabIndex == index;
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        setState(() => _selectedTabIndex = index);
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isSelected ? AppColors.primary : Colors.transparent,
-              width: 2,
-            ),
+    return Expanded(
+      child: GestureDetector(
+        onTap: () {
+          HapticFeedback.selectionClick();
+          setState(() => _selectedTabIndex = index);
+        },
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(
+            color: isSelected ? Colors.white : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: isSelected ? [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.05),
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              )
+            ] : [],
           ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? AppColors.primary : AppColors.onSurfaceVariant,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            fontSize: 14,
+          child: Text(
+            label,
+            textAlign: TextAlign.center,
+            style: AppTypography.labelBold.copyWith(
+              color: isSelected ? AppColors.primary : AppColors.onSurfaceVariant,
+              fontSize: 10,
+              letterSpacing: 0.5,
+            ),
           ),
         ),
       ),
@@ -206,13 +221,21 @@ class _OverviewTab extends ConsumerWidget {
       WidgetRef ref,
       AsyncValue<BatchFinancials> financialsAsync,
       AsyncValue<List<ActionAlert>> alertsAsync) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
-      shadowColor: Colors.black.withOpacity(0.05),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.surfaceContainerHigh),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(20),
         child: Column(
           children: [
             alertsAsync.when(
@@ -220,26 +243,23 @@ class _OverviewTab extends ConsumerWidget {
               error: (_, __) => const SizedBox.shrink(),
               data: (alerts) {
                 final financials = financialsAsync.value;
-                String title = "Performance on track";
+                String title = "PERFORMANCE ON TRACK";
                 String message = "Batch progressing normally.";
                 AlertType type = AlertType.info;
 
                 if (financials != null) {
                   if (financials.performanceScore >= 90) {
-                    title = "Performance on track";
-                    message =
-                        "Current weight gain and mortality are optimized for this stage.";
+                    title = "EXCELLENT PERFORMANCE";
+                    message = "Growth and mortality are optimized.";
                   } else if (financials.mortalityRate > 3) {
-                    title = "Mortality elevated";
-                    message =
-                        "Review ventilation and feeding schedule. Mortality exceeds target.";
+                    title = "MORTALITY ALERT";
+                    message = "Mortality exceeds target. Check conditions.";
                     type = AlertType.danger;
                   }
                 }
 
-                // If explicit alerts exist, override
                 if (alerts.isNotEmpty) {
-                  title = alerts.first.title;
+                  title = alerts.first.title.toUpperCase();
                   message = alerts.first.message;
                   type = alerts.first.type;
                 }
@@ -249,32 +269,33 @@ class _OverviewTab extends ConsumerWidget {
                 return Row(
                   children: [
                     Container(
-                      width: 32,
-                      height: 32,
+                      width: 44,
+                      height: 44,
                       decoration: BoxDecoration(
                         color: color.withOpacity(0.1),
-                        shape: BoxShape.circle,
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                           type == AlertType.danger
-                              ? Icons.warning_rounded
-                              : Icons.lightbulb_outline,
+                              ? Icons.warning_amber_rounded
+                              : Icons.auto_awesome_rounded,
                           color: color,
-                          size: 20),
+                          size: 24),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             title,
-                            style: AppTypography.bodyLg.copyWith(
-                                fontWeight: FontWeight.bold,
+                            style: AppTypography.labelBold.copyWith(
                                 color: type == AlertType.info
                                     ? AppColors.primary
-                                    : color),
+                                    : color,
+                                letterSpacing: 0.8),
                           ),
+                          const SizedBox(height: 2),
                           Text(
                             message,
                             style: AppTypography.bodyMd
@@ -307,25 +328,27 @@ class _OverviewTab extends ConsumerWidget {
   }
 
   Widget _buildGrowthChartCard(WidgetRef ref) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.surfaceContainerHigh),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text("Growth Chart", style: AppTypography.headlineMd),
-                Text("Weight (kg) over time",
-                    style: AppTypography.labelMd
-                        .copyWith(color: AppColors.onSurfaceVariant)),
+                Text("GROWTH PERFORMANCE", style: AppTypography.labelBold.copyWith(letterSpacing: 1.0)),
+                Text("WEIGHT (KG)",
+                    style: AppTypography.labelBold
+                        .copyWith(color: AppColors.onSurfaceVariant, fontSize: 10)),
               ],
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             SizedBox(
               height: 200,
               child: RepaintBoundary(
@@ -340,39 +363,51 @@ class _OverviewTab extends ConsumerWidget {
 
   Widget _buildMortalityTrendCard(
       WidgetRef ref, AsyncValue<BatchFinancials> financialsAsync) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.surfaceContainerHigh),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text("Mortality Trend", style: AppTypography.headlineMd),
-                const Icon(Icons.trending_down, color: AppColors.error),
-              ],
-            ),
-            const SizedBox(height: 12),
+            Text("MORTALITY TREND", style: AppTypography.labelBold.copyWith(letterSpacing: 1.0)),
+            const SizedBox(height: 16),
             financialsAsync.when(
               loading: () => LoadingSkeleton.skeletonCard(),
               error: (_, __) => const Text('Error loading mortality'),
               data: (f) => Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text("${f.mortalityRate.toStringAsFixed(1)}%",
-                      style: AppTypography.displayStat),
-                  const SizedBox(width: 8),
-                  const StatusChip(
-                      label: "-0.3% from avg", status: ChipStatus.active),
+                  CountUpText(
+                    value: f.mortalityRate,
+                    suffix: '%',
+                    style: AppTypography.displayStat.copyWith(fontSize: 32),
+                  ),
+                  const SizedBox(width: 12),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        "ON TARGET",
+                        style: AppTypography.labelBold.copyWith(color: AppColors.primary, fontSize: 10),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 32),
             SizedBox(
-              height: 120,
+              height: 140,
               child: RepaintBoundary(
                 child: _MortalityBarChart(batchId: batch.id),
               ),
@@ -385,16 +420,18 @@ class _OverviewTab extends ConsumerWidget {
 
   Widget _buildExpenseBreakdownCard(
       WidgetRef ref, AsyncValue<BatchFinancials> financialsAsync) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: Colors.white,
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.surfaceContainerHigh),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Expense Breakdown", style: AppTypography.headlineMd),
+            Text("EXPENSE BREAKDOWN", style: AppTypography.labelBold.copyWith(letterSpacing: 1.0)),
             const SizedBox(height: 24),
             financialsAsync.when(
               loading: () => LoadingSkeleton.skeletonCard(),
@@ -414,7 +451,7 @@ class _OverviewTab extends ConsumerWidget {
                 return Column(
                   children: sortedEntries
                       .map((e) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.only(bottom: 16),
                             child: ExpenseBarRow(
                               category: e.key.name.toUpperCase(),
                               amount: e.value,
@@ -432,19 +469,20 @@ class _OverviewTab extends ConsumerWidget {
     );
   }
 
-  Color _getCategoryColor(ExpenseCategory category) {
-    switch (category) {
-      case ExpenseCategory.feed:
-        return AppColors.primary;
-      case ExpenseCategory.medication:
-        return AppColors.secondary;
-      case ExpenseCategory.labor:
-        return AppColors.tertiary;
-      case ExpenseCategory.utilities:
-        return AppColors.outline;
-      default:
-        return Colors.grey;
-    }
+}
+
+Color _getCategoryColor(ExpenseCategory category) {
+  switch (category) {
+    case ExpenseCategory.feed:
+      return AppColors.primary;
+    case ExpenseCategory.medication:
+      return AppColors.secondary;
+    case ExpenseCategory.labor:
+      return AppColors.tertiary;
+    case ExpenseCategory.utilities:
+      return AppColors.outline;
+    default:
+      return Colors.grey;
   }
 }
 
@@ -653,38 +691,51 @@ class _ExpensesTab extends ConsumerWidget {
               final e = expenses[i];
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.surfaceContainerHigh),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.02),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Row(
                   children: [
-                    Text(DateFormatter.toDisplayDate(e.date),
-                        style: AppTypography.labelMd
-                            .copyWith(color: AppColors.onSurfaceVariant)),
-                    const SizedBox(width: 12),
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(6),
+                        color: _getCategoryColor(e.category).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Text(e.category.name.toUpperCase(),
-                          style:
-                              AppTypography.labelBold.copyWith(fontSize: 10)),
+                      child: Icon(Icons.receipt_long_rounded, 
+                        color: _getCategoryColor(e.category), size: 20),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(e.description ?? 'Expense',
+                              style: AppTypography.labelBold.copyWith(fontSize: 14),
+                              overflow: TextOverflow.ellipsis),
+                          const SizedBox(height: 2),
+                          Text(DateFormatter.toDisplayDate(e.date),
+                              style: AppTypography.labelMd
+                                  .copyWith(color: AppColors.onSurfaceVariant, fontSize: 10)),
+                        ],
+                      ),
                     ),
                     const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(e.description ?? 'Expense',
-                          style: AppTypography.bodyMd,
-                          overflow: TextOverflow.ellipsis),
-                    ),
                     Text(NumberFormat.currency(symbol: '\$').format(e.amount),
-                        style: AppTypography.bodyLg
-                            .copyWith(fontWeight: FontWeight.bold)),
+                        style: AppTypography.headlineMd.copyWith(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w900,
+                        )),
                   ],
                 ),
               );
@@ -735,31 +786,44 @@ class _MortalityTab extends ConsumerWidget {
               final log = logs[i];
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.surfaceContainerHigh),
                 ),
                 child: Row(
                   children: [
-                    Text(DateFormatter.toDisplayDate(log.date),
-                        style: AppTypography.labelMd
-                            .copyWith(color: AppColors.onSurfaceVariant)),
-                    const SizedBox(width: 24),
-                    Text("${log.count} Birds",
-                        style: AppTypography.bodyLg.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.error)),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.error.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.warning_amber_rounded, 
+                        color: AppColors.error, size: 20),
+                    ),
                     const SizedBox(width: 16),
                     Expanded(
-                      child: Text(log.cause ?? 'Unknown cause',
-                          style: AppTypography.bodyMd,
-                          overflow: TextOverflow.ellipsis),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text("${log.count} BIRDS",
+                              style: AppTypography.labelBold.copyWith(
+                                color: AppColors.error,
+                                fontSize: 14,
+                              )),
+                          const SizedBox(height: 2),
+                          Text(log.cause ?? 'Unknown cause',
+                              style: AppTypography.labelMd.copyWith(color: AppColors.onSurfaceVariant),
+                              overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
                     ),
-                    if (log.notes != null)
-                      const Icon(Icons.note_alt_outlined,
-                          size: 18, color: AppColors.onSurfaceVariant),
+                    const SizedBox(width: 16),
+                    Text(DateFormatter.toDisplayDate(log.date),
+                        style: AppTypography.labelBold
+                            .copyWith(color: AppColors.onSurfaceVariant, fontSize: 10)),
                   ],
                 ),
               );

@@ -291,21 +291,30 @@ class _Chip extends StatelessWidget {
     return GestureDetector(
       onTap: () => onTap(value),
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutCubic,
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary : Colors.transparent,
+          color: isSelected ? AppColors.primary : Colors.white,
           border: Border.all(
-            color: isSelected ? AppColors.primary : AppColors.outlineVariant,
+            color: isSelected ? AppColors.primary : AppColors.surfaceContainerHigh,
             width: 1.5,
           ),
-          borderRadius: BorderRadius.circular(999),
+          borderRadius: BorderRadius.circular(100),
+          boxShadow: isSelected ? [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.2),
+              blurRadius: 12,
+              offset: const Offset(0, 4),
+            )
+          ] : [],
         ),
         child: Text(
-          count > 0 ? '$label ($count)' : label,
+          count > 0 ? '${label.toUpperCase()} • $count' : label.toUpperCase(),
           style: AppTypography.labelBold.copyWith(
             color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
-            fontSize: 14,
+            fontSize: 12,
+            letterSpacing: 1.1,
           ),
         ),
       ),
@@ -328,28 +337,21 @@ class _BatchCard extends ConsumerWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
             ),
           ],
+          border: Border.all(color: AppColors.surfaceContainerHigh),
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // TOP ACCENT LINE
-              Container(
-                height: 3,
-                color: isActive
-                    ? AppColors.secondaryContainer
-                    : AppColors.surfaceContainerHigh,
-              ),
-
               Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
@@ -357,36 +359,46 @@ class _BatchCard extends ConsumerWidget {
                   children: [
                     Row(
                       children: [
-                        Text(batch.batchNumber,
-                            style: AppTypography.headlineMd),
-                        const Spacer(),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(batch.batchNumber,
+                                  style: AppTypography.headlineMd.copyWith(
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: -0.5,
+                                  )),
+                              const SizedBox(height: 4),
+                              Row(
+                                children: [
+                                  const Icon(Icons.calendar_today_rounded,
+                                      size: 10, color: AppColors.onSurfaceVariant),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    'Started ${DateFormatter.toDisplayDate(batch.startDate)}',
+                                    style: AppTypography.labelMd
+                                        .copyWith(color: AppColors.onSurfaceVariant),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
                         StatusChip(
-                          label: isActive ? 'Active' : 'Completed',
+                          label: isActive ? 'ACTIVE' : 'COMPLETED',
                           status: isActive
                               ? ChipStatus.active
                               : ChipStatus.completed,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        const Icon(Icons.calendar_today_rounded,
-                            size: 12, color: AppColors.onSurfaceVariant),
-                        const SizedBox(width: 6),
-                        Text(
-                          'Started ${DateFormatter.toDisplayDate(batch.startDate)}',
-                          style: AppTypography.bodyMd
-                              .copyWith(color: AppColors.onSurfaceVariant),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLow,
-                        borderRadius: BorderRadius.circular(12),
+                        color: AppColors.surfaceContainerLowest,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: AppColors.surfaceContainerHigh),
                       ),
                       child: Row(
                         children: [
@@ -395,44 +407,32 @@ class _BatchCard extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  isActive ? 'Chickens Alive' : 'Total Harvest',
-                                  style: AppTypography.labelMd.copyWith(
-                                      color: AppColors.onSurfaceVariant),
+                                  isActive ? 'CHICKENS ALIVE' : 'TOTAL HARVEST',
+                                  style: AppTypography.labelBold.copyWith(
+                                      color: AppColors.onSurfaceVariant,
+                                      fontSize: 10,
+                                      letterSpacing: 0.5),
                                 ),
                                 const SizedBox(height: 4),
                                 aliveAsync.when(
-                                  loading: () => Container(
-                                    height: 32,
-                                    width: 60,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.surfaceContainerHigh,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                  ),
-                                  error: (_, __) => Text('—',
-                                      style: AppTypography.displayStat),
-                                  data: (count) => Text(
-                                    NumberFormat('#,###').format(count),
-                                    style: AppTypography.displayStat,
+                                  loading: () => Container(height: 32, width: 60, color: AppColors.surfaceContainerHigh),
+                                  error: (_, __) => Text('—', style: AppTypography.displayStat),
+                                  data: (count) => CountUpText(
+                                    value: count.toDouble(),
+                                    decimalDigits: 0,
+                                    style: AppTypography.displayStat.copyWith(fontSize: 28),
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           financialsAsync.when(
-                            loading: () => const SizedBox(
-                              width: 64,
-                              height: 64,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: AppColors.surfaceContainerHigh,
-                              ),
-                            ),
+                            loading: () => const SizedBox(width: 40, height: 40, child: CircularProgressIndicator()),
                             error: (_, __) => const SizedBox.shrink(),
                             data: (f) => CircularProgressRing(
                               percentage: f.performanceScore,
-                              label: "Performance",
-                              size: 64,
+                              label: "PRO",
+                              size: 56,
                             ),
                           ),
                         ],
@@ -440,14 +440,7 @@ class _BatchCard extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     financialsAsync.when(
-                      loading: () => Container(
-                        height: 20,
-                        width: 140,
-                        decoration: BoxDecoration(
-                          color: AppColors.surfaceContainerHigh,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                      ),
+                      loading: () => const SizedBox(height: 20),
                       error: (_, __) => const SizedBox.shrink(),
                       data: (f) {
                         final profitPerBird = f.totalSold > 0
@@ -456,41 +449,33 @@ class _BatchCard extends ConsumerWidget {
                                 ? f.netProfit / f.currentAlive
                                 : 0.0;
                         final isPositive = profitPerBird >= 0;
-                        final color =
-                            isPositive ? AppColors.primary : AppColors.error;
+                        final color = isPositive ? AppColors.primary : AppColors.error;
 
-                        return Row(
-                          children: [
-                            Icon(
-                              isPositive
-                                  ? Icons.trending_up_rounded
-                                  : Icons.money_off_rounded,
-                              size: 16,
-                              color: color,
-                            ),
-                            const SizedBox(width: 8),
-                            RichText(
-                              text: TextSpan(
-                                children: [
-                                  TextSpan(
-                                    text:
-                                        '${isActive ? 'Est.' : 'Actual'} \$${profitPerBird.abs().toStringAsFixed(2)} per bird ',
-                                    style: AppTypography.bodyMd.copyWith(
-                                      color: color,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  TextSpan(
-                                    text: isActive
-                                        ? 'Profit projection'
-                                        : 'Final profit',
-                                    style: AppTypography.labelMd.copyWith(
-                                        color: AppColors.onSurfaceVariant),
-                                  ),
-                                ],
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: color.withOpacity(0.05),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isPositive ? Icons.trending_up_rounded : Icons.trending_down_rounded,
+                                size: 14,
+                                color: color,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 8),
+                              Text(
+                                '\$${profitPerBird.abs().toStringAsFixed(2)} PER BIRD',
+                                style: AppTypography.labelBold.copyWith(
+                                  color: color,
+                                  fontSize: 11,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
                         );
                       },
                     ),

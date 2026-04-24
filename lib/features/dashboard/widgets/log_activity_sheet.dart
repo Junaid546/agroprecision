@@ -255,6 +255,7 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
   String? _feedType;
   int _quantity = 0;
   final _notesController = TextEditingController();
+  final _quantityController = TextEditingController(text: '0');
   bool _isLoading = false;
 
   @override
@@ -272,46 +273,118 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Log Feed Usage', style: AppTypography.headlineMd),
-          const SizedBox(height: 20),
-          DropdownButtonFormField<BatchModel>(
-            initialValue: _selectedBatch,
-            decoration:
-                _inputDecoration('Select Batch', Icons.inventory_2_outlined),
-            hint: const Text('Choose active batch...'),
-            items: activeBatches.when(
-              data: (batches) => batches
-                  .map((b) => DropdownMenuItem(
-                      value: b, child: Text('Batch #${b.batchNumber}')))
-                  .toList(),
-              loading: () => [],
-              error: (_, __) => [],
-            ),
-            onChanged: (val) => setState(() => _selectedBatch = val),
-            validator: (val) => val == null ? 'Required' : null,
-          ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<String>(
-            initialValue: _feedType,
-            decoration: _inputDecoration('Feed Type', Icons.layers_outlined),
-            hint: const Text('Select feed formulation...'),
-            items: ['Starter', 'Grower', 'Finisher', 'Supplement']
-                .map((t) => DropdownMenuItem(value: t, child: Text(t)))
-                .toList(),
-            onChanged: (val) => setState(() => _feedType = val),
-            validator: (val) => val == null ? 'Required' : null,
-          ),
-          const SizedBox(height: 16),
-          Text('Quantity (kg)', style: AppTypography.labelBold),
-          const SizedBox(height: 8),
-          _buildStepper(),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _notesController,
-            decoration: _inputDecoration('Notes (Optional)', Icons.notes),
-            maxLines: 2,
+          Row(
+            children: [
+              const Icon(Icons.eco_rounded, color: AppColors.primary, size: 24),
+              const SizedBox(width: 8),
+              Text('Log Feed Usage', style: AppTypography.headlineMd),
+            ],
           ),
           const SizedBox(height: 24),
+          
+          // BATCH SELECTION
+          Text('SELECT ACTIVE BATCH', 
+            style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
+          activeBatches.when(
+            data: (batches) => SizedBox(
+              height: 70,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: batches.length,
+                itemBuilder: (context, index) {
+                  final b = batches[index];
+                  final isSelected = _selectedBatch?.id == b.id;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedBatch = b),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.only(right: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.primary : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? AppColors.primary : AppColors.surfaceContainerHigh,
+                          width: 1.5,
+                        ),
+                        boxShadow: isSelected ? [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          )
+                        ] : [],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('BATCH #${b.batchNumber}',
+                            style: AppTypography.labelBold.copyWith(
+                              color: isSelected ? Colors.white : AppColors.onSurface,
+                            )),
+                          Text('Day ${b.ageInDays}',
+                            style: AppTypography.labelMd.copyWith(
+                              color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.onSurfaceVariant,
+                            )),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            loading: () => const LinearProgressIndicator(),
+            error: (_, __) => const Text('Error loading batches'),
+          ),
+          
+          const SizedBox(height: 24),
+
+          // FEED TYPE SELECTION
+          Text('FEED FORMULATION', 
+            style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: ['Starter', 'Grower', 'Finisher', 'Supplement'].map((type) {
+              final isSelected = _feedType == type;
+              return FilterChip(
+                label: Text(type),
+                selected: isSelected,
+                onSelected: (val) => setState(() => _feedType = type),
+                selectedColor: AppColors.primary.withOpacity(0.1),
+                checkmarkColor: AppColors.primary,
+                labelStyle: AppTypography.labelBold.copyWith(
+                  color: isSelected ? AppColors.primary : AppColors.onSurface,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: isSelected ? AppColors.primary : AppColors.surfaceContainerHigh,
+                  ),
+                ),
+                backgroundColor: Colors.white,
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 24),
+          
+          Text('QUANTITY (KG)', 
+            style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
+          _buildStepper(),
+          
+          const SizedBox(height: 24),
+          
+          TextFormField(
+            controller: _notesController,
+            decoration: _inputDecoration('NOTES (OPTIONAL)', Icons.notes_rounded),
+            maxLines: 2,
+            style: AppTypography.bodyMd,
+          ),
+          const SizedBox(height: 32),
           _buildSaveButton(),
         ],
       ),
@@ -332,16 +405,40 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
             onPressed: _quantity >= 5
                 ? () {
                     HapticFeedback.selectionClick();
-                    setState(() => _quantity -= 5);
+                    setState(() {
+                      _quantity -= 5;
+                      _quantityController.text = _quantity.toString();
+                    });
                   }
                 : null,
           ),
-          Text('$_quantity kg', style: AppTypography.headlineMd),
+          Expanded(
+            child: TextField(
+              controller: _quantityController,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              style: AppTypography.headlineMd,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+                suffixText: 'kg',
+                suffixStyle: TextStyle(fontSize: 14, color: AppColors.outline),
+              ),
+              onChanged: (val) {
+                final n = int.tryParse(val) ?? 0;
+                setState(() => _quantity = n);
+              },
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             onPressed: () {
               HapticFeedback.selectionClick();
-              setState(() => _quantity += 5);
+              setState(() {
+                _quantity += 5;
+                _quantityController.text = _quantity.toString();
+              });
             },
           ),
         ],
@@ -417,6 +514,7 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
   final _formKey = GlobalKey<FormState>();
   BatchModel? _selectedBatch;
   int _count = 0;
+  final _countController = TextEditingController(text: '0');
   String? _cause;
   bool _isLoading = false;
 
@@ -434,34 +532,84 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Log Mortality', style: AppTypography.headlineMd),
-          const SizedBox(height: 20),
-          DropdownButtonFormField<BatchModel>(
-            initialValue: _selectedBatch,
-            decoration:
-                _inputDecoration('Select Batch', Icons.inventory_2_outlined),
-            items: activeBatches.when(
-              data: (batches) => batches
-                  .map((b) => DropdownMenuItem(
-                      value: b, child: Text('Batch #${b.batchNumber}')))
-                  .toList(),
-              loading: () => [],
-              error: (_, __) => [],
-            ),
-            onChanged: (val) => setState(() => _selectedBatch = val),
-            validator: (val) => val == null ? 'Required' : null,
+          Row(
+            children: [
+              const Icon(Icons.warning_rounded, color: AppColors.error, size: 24),
+              const SizedBox(width: 8),
+              Text('Log Mortality', style: AppTypography.headlineMd),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text('Death Count', style: AppTypography.labelBold),
-          const SizedBox(height: 8),
+          const SizedBox(height: 24),
+
+          // BATCH SELECTION
+          Text('SELECT ACTIVE BATCH', 
+            style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
+          activeBatches.when(
+            data: (batches) => SizedBox(
+              height: 70,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: batches.length,
+                itemBuilder: (context, index) {
+                  final b = batches[index];
+                  final isSelected = _selectedBatch?.id == b.id;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedBatch = b),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.only(right: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.error : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? AppColors.error : AppColors.surfaceContainerHigh,
+                          width: 1.5,
+                        ),
+                        boxShadow: isSelected ? [
+                          BoxShadow(
+                            color: AppColors.error.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          )
+                        ] : [],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('BATCH #${b.batchNumber}',
+                            style: AppTypography.labelBold.copyWith(
+                              color: isSelected ? Colors.white : AppColors.onSurface,
+                            )),
+                          Text('Day ${b.ageInDays}',
+                            style: AppTypography.labelMd.copyWith(
+                              color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.onSurfaceVariant,
+                            )),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            loading: () => const LinearProgressIndicator(),
+            error: (_, __) => const Text('Error loading batches'),
+          ),
+          
+          const SizedBox(height: 24),
+          Text('DEATH COUNT', 
+            style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
           _buildStepper(),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           TextFormField(
             onChanged: (val) => _cause = val,
             decoration: _inputDecoration(
-                'Cause/Observation', Icons.bug_report_outlined),
+                'CAUSE/OBSERVATION', Icons.bug_report_outlined),
+            style: AppTypography.bodyMd,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           _buildSaveButton(),
         ],
       ),
@@ -482,16 +630,38 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
             onPressed: _count > 0
                 ? () {
                     HapticFeedback.selectionClick();
-                    setState(() => _count--);
+                    setState(() {
+                      _count--;
+                      _countController.text = _count.toString();
+                    });
                   }
                 : null,
           ),
-          Text('$_count', style: AppTypography.headlineMd),
+          Expanded(
+            child: TextField(
+              controller: _countController,
+              textAlign: TextAlign.center,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              style: AppTypography.headlineMd,
+              decoration: const InputDecoration(
+                border: InputBorder.none,
+                isDense: true,
+              ),
+              onChanged: (val) {
+                final n = int.tryParse(val) ?? 0;
+                setState(() => _count = n);
+              },
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.add_circle_outline),
             onPressed: () {
               HapticFeedback.selectionClick();
-              setState(() => _count++);
+              setState(() {
+                _count++;
+                _countController.text = _count.toString();
+              });
             },
           ),
         ],
@@ -578,49 +748,118 @@ class _AddExpenseFormState extends ConsumerState<_AddExpenseForm> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Log Expense', style: AppTypography.headlineMd),
-          const SizedBox(height: 20),
-          DropdownButtonFormField<BatchModel>(
-            initialValue: _selectedBatch,
-            decoration:
-                _inputDecoration('Select Batch', Icons.inventory_2_outlined),
-            items: activeBatches.when(
-              data: (batches) => batches
-                  .map((b) => DropdownMenuItem(
-                      value: b, child: Text('Batch #${b.batchNumber}')))
-                  .toList(),
-              loading: () => [],
-              error: (_, __) => [],
-            ),
-            onChanged: (val) => setState(() => _selectedBatch = val),
-            validator: (val) => val == null ? 'Required' : null,
+          Row(
+            children: [
+              const Icon(Icons.account_balance_wallet_rounded, color: AppColors.primary, size: 24),
+              const SizedBox(width: 8),
+              Text('Log Expense', style: AppTypography.headlineMd),
+            ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
+
+          // BATCH SELECTION
+          Text('SELECT ACTIVE BATCH', 
+            style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
+          activeBatches.when(
+            data: (batches) => SizedBox(
+              height: 70,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: batches.length,
+                itemBuilder: (context, index) {
+                  final b = batches[index];
+                  final isSelected = _selectedBatch?.id == b.id;
+                  return GestureDetector(
+                    onTap: () => setState(() => _selectedBatch = b),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
+                      margin: const EdgeInsets.only(right: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: isSelected ? AppColors.primary : Colors.white,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                          color: isSelected ? AppColors.primary : AppColors.surfaceContainerHigh,
+                          width: 1.5,
+                        ),
+                        boxShadow: isSelected ? [
+                          BoxShadow(
+                            color: AppColors.primary.withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          )
+                        ] : [],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('BATCH #${b.batchNumber}',
+                            style: AppTypography.labelBold.copyWith(
+                              color: isSelected ? Colors.white : AppColors.onSurface,
+                            )),
+                          Text('Day ${b.ageInDays}',
+                            style: AppTypography.labelMd.copyWith(
+                              color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.onSurfaceVariant,
+                            )),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            loading: () => const LinearProgressIndicator(),
+            error: (_, __) => const Text('Error loading batches'),
+          ),
+
+          const SizedBox(height: 24),
           TextFormField(
             keyboardType: TextInputType.number,
             onChanged: (val) => _amount = double.tryParse(val) ?? 0,
-            decoration: _inputDecoration('Amount (\$)', Icons.attach_money),
+            decoration: _inputDecoration('AMOUNT (\$)', Icons.attach_money_rounded),
+            style: AppTypography.headlineMd,
             validator: (val) => (double.tryParse(val ?? '') ?? 0) <= 0
                 ? 'Enter valid amount'
                 : null,
           ),
-          const SizedBox(height: 16),
-          DropdownButtonFormField<ExpenseCategory>(
-            initialValue: _category,
-            decoration: _inputDecoration('Category', Icons.category_outlined),
-            items: ExpenseCategory.values
-                .map((c) => DropdownMenuItem(
-                    value: c, child: Text(c.name.toUpperCase())))
-                .toList(),
-            onChanged: (val) => setState(() => _category = val!),
-          ),
-          const SizedBox(height: 16),
-          TextFormField(
-            controller: _notesController,
-            decoration: _inputDecoration('Notes', Icons.notes),
-            maxLines: 2,
+          const SizedBox(height: 24),
+          Text('CATEGORY', 
+            style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: ExpenseCategory.values.map((c) {
+              final isSelected = _category == c;
+              return FilterChip(
+                label: Text(c.name.toUpperCase()),
+                selected: isSelected,
+                onSelected: (val) => setState(() => _category = c),
+                selectedColor: AppColors.primary.withOpacity(0.1),
+                checkmarkColor: AppColors.primary,
+                labelStyle: AppTypography.labelBold.copyWith(
+                  color: isSelected ? AppColors.primary : AppColors.onSurface,
+                  fontSize: 10,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(
+                    color: isSelected ? AppColors.primary : AppColors.surfaceContainerHigh,
+                  ),
+                ),
+                backgroundColor: Colors.white,
+              );
+            }).toList(),
           ),
           const SizedBox(height: 24),
+          TextFormField(
+            controller: _notesController,
+            decoration: _inputDecoration('NOTES', Icons.notes_rounded),
+            maxLines: 2,
+            style: AppTypography.bodyMd,
+          ),
+          const SizedBox(height: 32),
           _buildSaveButton(),
         ],
       ),

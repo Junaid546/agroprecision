@@ -16,6 +16,7 @@ import 'package:go_router/go_router.dart';
 import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/animations.dart';
 import '../../../data/models/task_model.dart';
+import '../../../core/utils/seed_data.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -57,7 +58,22 @@ class DashboardScreen extends ConsumerWidget {
         final batch = summary.activeBatch;
         if (batch == null) {
           return Scaffold(
-            appBar: const AgroAppBar(),
+            appBar: AgroAppBar(
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.storage_rounded, color: AppColors.primary),
+                  onPressed: () async {
+                    await SeedDataGenerator.seedDemoData(ref);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Demo data seeded successfully!')),
+                      );
+                    }
+                  },
+                  tooltip: 'Seed Demo Data',
+                ),
+              ],
+            ),
             body: EmptyState(
               title: 'No Active Batch',
               message:
@@ -71,7 +87,22 @@ class DashboardScreen extends ConsumerWidget {
 
         return Scaffold(
           backgroundColor: AppColors.surface,
-          appBar: const AgroAppBar(),
+          appBar: AgroAppBar(
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.storage_rounded, color: AppColors.primary),
+                onPressed: () async {
+                  await SeedDataGenerator.seedDemoData(ref);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Demo data seeded successfully!')),
+                    );
+                  }
+                },
+                tooltip: 'Seed Demo Data',
+              ),
+            ],
+          ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -83,35 +114,57 @@ class DashboardScreen extends ConsumerWidget {
                   children: [
                     Text('Dashboard', style: AppTypography.headlineLg),
                     Text(
-                      'Batch #${batch.batchNumber} (Day ${batch.ageInDays})',
-                      style: AppTypography.bodyMd,
+                      '${batch.batchNumber} • Day ${batch.ageInDays}',
+                      style: AppTypography.bodyMd.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 16),
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton.icon(
-                    icon: const Icon(Icons.add_rounded,
-                        color: Colors.white, size: 20),
-                    label: Text(
-                      'Log Activity',
-                      style: AppTypography.bodyLg.copyWith(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                  height: 60,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      gradient: LinearGradient(
+                        colors: [
+                          AppColors.primaryContainer,
+                          AppColors.primaryContainer.withOpacity(0.8),
+                        ],
                       ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primaryContainer.withOpacity(0.3),
+                          blurRadius: 12,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primaryContainer,
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16)),
-                      elevation: 0,
+                    child: ElevatedButton.icon(
+                      icon: const Icon(Icons.add_rounded,
+                          color: Colors.white, size: 24),
+                      label: Text(
+                        'LOG ACTIVITY',
+                        style: AppTypography.bodyLg.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.transparent,
+                        shadowColor: Colors.transparent,
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16)),
+                      ),
+                      onPressed: () {
+                        HapticFeedback.mediumImpact();
+                        showLogActivitySheet(context, ref);
+                      },
                     ),
-                    onPressed: () {
-                      HapticFeedback.mediumImpact();
-                      showLogActivitySheet(context, ref);
-                    },
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -153,11 +206,19 @@ class DashboardScreen extends ConsumerWidget {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.surfaceVariant),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.03),
+                          blurRadius: 30,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                      border: Border.all(color: AppColors.surfaceContainerHigh),
                     ),
                     child: ListView.builder(
                       shrinkWrap: true,
+                      padding: EdgeInsets.zero,
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: summary.todaysTasks.length > 3
                           ? 3
@@ -167,9 +228,13 @@ class DashboardScreen extends ConsumerWidget {
                         return Column(
                           children: [
                             _buildTaskRow(task, ref),
-                            if (index < 2 &&
-                                index < summary.todaysTasks.length - 1)
-                              const Divider(height: 1),
+                            if (index < summary.todaysTasks.length - 1 && index < 2)
+                              const Divider(
+                                height: 1,
+                                indent: 20,
+                                endIndent: 20,
+                                color: AppColors.surfaceContainerHigh,
+                              ),
                           ],
                         );
                       },

@@ -32,86 +32,114 @@ class MetricCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(AppSpacing.cardPadding),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
-              blurRadius: 20,
-              offset: const Offset(0, 4),
+              color: Colors.black.withOpacity(0.03),
+              blurRadius: 30,
+              offset: const Offset(0, 10),
             ),
           ],
-          border: borderLeftColor != null
-              ? Border(left: BorderSide(color: borderLeftColor!, width: 4))
-              : Border.all(color: AppColors.surfaceVariant),
+          border: Border.all(
+            color: borderLeftColor ?? AppColors.surfaceContainerHigh,
+            width: borderLeftColor != null ? 2 : 1,
+          ),
         ),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  label.toUpperCase(),
-                  style: AppTypography.labelBold.copyWith(
-                    color: AppColors.onSurfaceVariant,
-                    letterSpacing: 0.5,
+                Expanded(
+                  child: Text(
+                    label.toUpperCase(),
+                    style: AppTypography.labelBold.copyWith(
+                      color: AppColors.onSurfaceVariant,
+                      letterSpacing: 1.0,
+                      fontSize: 10,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder:
-                      (Widget child, Animation<double> animation) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-                  child: value is Widget
-                      ? value as Widget
-                      : Text(
-                          value.toString(),
-                          key: ValueKey<String>(value.toString()),
-                          style: isHero
-                              ? AppTypography.displayStat
-                              : AppTypography.headlineLg.copyWith(fontSize: 28),
-                        ),
-                ),
-                if (isHero && icon != null) icon!,
+                if (trend != null)
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryContainer.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (trendDirection == TrendDirection.up)
+                          const Icon(Icons.trending_up_rounded,
+                              size: 12, color: AppColors.primary),
+                        if (trendDirection == TrendDirection.down)
+                          const Icon(Icons.trending_down_rounded,
+                              size: 12, color: AppColors.error),
+                        if (trend != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 4),
+                            child: Text(
+                              trend!,
+                              style: AppTypography.labelBold.copyWith(
+                                color: trendDirection == TrendDirection.down
+                                    ? AppColors.error
+                                    : AppColors.primary,
+                                fontSize: 10,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
               ],
             ),
-            if (trend != null)
-              Positioned(
-                top: 0,
-                right: 0,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: AppColors.primaryContainer.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                  child: Row(
+            const SizedBox(height: 12),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      if (trendDirection == TrendDirection.up)
-                        const Icon(Icons.arrow_upward,
-                            size: 14, color: AppColors.primary),
-                      const SizedBox(width: 4),
-                      Text(
-                        trend!,
-                        style: AppTypography.labelBold
-                            .copyWith(color: AppColors.primary),
+                      AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: value is Widget
+                            ? value as Widget
+                            : Text(
+                                value.toString(),
+                                key: ValueKey<String>(value.toString()),
+                                style: isHero
+                                    ? AppTypography.displayStat
+                                    : AppTypography.headlineLg
+                                        .copyWith(fontSize: 24),
+                              ),
                       ),
+                      if (isHero && icon != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: icon!,
+                        ),
                     ],
                   ),
                 ),
-              ),
-            if (!isHero && icon != null)
-              Positioned(
-                bottom: 0,
-                right: 0,
-                child: icon!,
-              ),
+                if (!isHero && icon != null)
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: icon!,
+                  ),
+              ],
+            ),
           ],
         ),
       ),

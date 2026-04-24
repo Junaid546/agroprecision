@@ -161,7 +161,7 @@ class SettingsScreen extends ConsumerWidget {
 
                       if (confirmed == true) {
                         try {
-                          await SeedDataGenerator.seedDemoData();
+                          await SeedDataGenerator.seedDemoData(ref);
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(

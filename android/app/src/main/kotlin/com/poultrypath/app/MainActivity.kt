@@ -1,4 +1,4 @@
-package com.agroprecision.agro_precision
+package com.poultrypath.app
 
 import io.flutter.embedding.android.FlutterActivity
 

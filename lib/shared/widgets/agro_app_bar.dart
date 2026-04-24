@@ -8,24 +8,25 @@ import '../../core/constants/app_strings.dart';
 class AgroAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String? title;
   final bool showOfflineIndicator;
+  final List<Widget>? actions;
 
   const AgroAppBar({
     super.key,
     this.title,
     this.showOfflineIndicator = true,
+    this.actions,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
-        border: Border(
-          bottom: BorderSide(color: AppColors.surfaceContainerHigh),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.9),
+        border: const Border(
+          bottom: BorderSide(color: AppColors.surfaceContainerHigh, width: 1.5),
         ),
       ),
-      padding:
-          const EdgeInsets.symmetric(horizontal: AppSpacing.containerPadding),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SafeArea(
         bottom: false,
         child: SizedBox(
@@ -35,34 +36,59 @@ class AgroAppBar extends StatelessWidget implements PreferredSizeWidget {
             children: [
               Row(
                 children: [
-                  Image.asset(
-                    'assets/images/app logo.png',
-                    height: 32,
-                    width: 32,
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withOpacity(0.05),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Image.asset(
+                      'assets/images/app logo.png',
+                      height: 28,
+                      width: 28,
+                    ),
                   ),
-                  const SizedBox(width: AppSpacing.sm),
+                  const SizedBox(width: 12),
                   Text(
                     title ?? AppStrings.appName,
                     style: AppTypography.headlineLg.copyWith(
                       color: AppColors.primary,
                       fontWeight: FontWeight.w900,
+                      fontSize: 22,
+                      letterSpacing: -0.5,
                     ),
                   ),
                 ],
               ),
-              if (showOfflineIndicator)
-                Row(
-                  children: [
-                    Text(
-                      'Offline Ready',
-                      style: AppTypography.labelMd
-                          .copyWith(color: AppColors.onSurfaceVariant),
+              Row(
+                children: [
+                  if (actions != null) ...actions!,
+                  if (showOfflineIndicator) ...[
+                    const SizedBox(width: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: AppColors.surfaceContainerLow,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.bolt_rounded,
+                              color: AppColors.primary, size: 14),
+                          const SizedBox(width: 4),
+                          Text(
+                            'OFFLINE',
+                            style: AppTypography.labelBold.copyWith(
+                                color: AppColors.onSurfaceVariant,
+                                fontSize: 10),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(width: AppSpacing.xs),
-                    const Icon(Icons.cloud_off,
-                        color: AppColors.outline, size: 20),
                   ],
-                ),
+                ],
+              ),
             ],
           ),
         ),
