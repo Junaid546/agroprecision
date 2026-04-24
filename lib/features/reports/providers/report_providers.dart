@@ -6,13 +6,16 @@ import '../../../shared/providers/app_state_provider.dart';
 // Farm-wide summary for reports screen
 final farmSummaryProvider = FutureProvider<FarmSummaryFinancials>((ref) async {
   final farm = ref.watch(currentFarmProvider);
-  if (farm == null)
+  if (farm == null) {
     return FarmSummaryFinancials(
-        totalProfit: 0,
-        totalRevenue: 0,
-        totalCost: 0,
-        overallROI: 0,
-        batchCount: 0);
+      totalProfit: 0,
+      totalRevenue: 0,
+      totalCost: 0,
+      overallROI: 0,
+      batchCount: 0,
+      avgCostPerBird: 0,
+    );
+  }
   return ref.watch(calculationEngineProvider).computeFarmSummary(farm.id);
 });
 

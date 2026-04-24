@@ -58,11 +58,24 @@ class TaskActionNotifier extends StateNotifier<AsyncValue<void>> {
     }
   }
 
+  Future<void> markAllDone(DateTime date) async {
+    state = const AsyncValue.loading();
+    try {
+      await _repo.markAllDoneForDate(date);
+      _ref.invalidate(tasksForDateProvider);
+      _ref.invalidate(taskProgressProvider);
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      state = AsyncValue.error(e, st);
+    }
+  }
+
   Future<void> createTask(TaskModel task) async {
     state = const AsyncValue.loading();
     try {
       await _repo.create(task);
       _ref.invalidate(tasksForDateProvider);
+      _ref.invalidate(taskProgressProvider);
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);

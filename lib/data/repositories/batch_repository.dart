@@ -14,9 +14,7 @@ class BatchRepository {
   }
 
   Future<List<BatchModel>> getByFarm(String farmId) async {
-    return HiveService.batchBox.values
-        .where((b) => b.farmId == farmId)
-        .toList()
+    return HiveService.batchBox.values.where((b) => b.farmId == farmId).toList()
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
   }
 
@@ -48,17 +46,16 @@ class BatchRepository {
     final soldCount = HiveService.saleBox.values
         .where((s) => s.batchId == batchId)
         .fold<int>(0, (sum, s) => sum + s.birdsSold);
-    return (batch.initialCount - totalMortality - soldCount).clamp(0, batch.initialCount);
+    return (batch.initialCount - totalMortality - soldCount)
+        .clamp(0, batch.initialCount);
   }
 
   Future<int> getTodaysMortality(String batchId) async {
     final today = DateTime.now();
-    return HiveService.getMortalityForBatch(batchId)
-        .where((m) {
-          return m.date.year == today.year &&
-                 m.date.month == today.month &&
-                 m.date.day == today.day;
-        })
-        .fold<int>(0, (sum, m) => sum + m.count);
+    return HiveService.getMortalityForBatch(batchId).where((m) {
+      return m.date.year == today.year &&
+          m.date.month == today.month &&
+          m.date.day == today.day;
+    }).fold<int>(0, (sum, m) => sum + m.count);
   }
 }

@@ -10,6 +10,14 @@ import '../../features/dashboard/dashboard_screen.dart';
 import '../../features/batch/screens/batch_list_screen.dart';
 import '../../features/batch/screens/create_batch_screen.dart';
 import '../../features/batch/screens/batch_detail_screen.dart';
+import '../../features/tasks/screens/tasks_screen.dart';
+import '../../features/reports/screens/reports_screen.dart';
+import '../../features/settings/screens/settings_screen.dart';
+import '../../features/settings/screens/farm_profile_screen.dart';
+import '../../features/settings/screens/shed_management_screen.dart';
+import '../../features/settings/screens/alert_preferences_screen.dart';
+import '../../features/settings/screens/data_export_screen.dart';
+import '../../features/settings/screens/backup_screen.dart';
 
 // Imports for data/shared
 import '../../shared/providers/app_state_provider.dart';
@@ -333,105 +341,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
-// --- SCREEN STUBS (To be moved to features/ as implemented) ---
-
-
-// These will be implemented in their respective feature folders
-class AddExpenseScreen extends StatelessWidget {
-  const AddExpenseScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Add Expense')),
-        body: const Center(child: Text('Add Expense Form')),
-      );
-}
-
-class AddMortalityScreen extends StatelessWidget {
-  const AddMortalityScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Add Mortality')),
-        body: const Center(child: Text('Add Mortality Form')),
-      );
-}
-
-class AddGrowthScreen extends StatelessWidget {
-  const AddGrowthScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Add Growth')),
-        body: const Center(child: Text('Add Growth Form')),
-      );
-}
-
-class AddSaleScreen extends StatelessWidget {
-  const AddSaleScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Add Sale')),
-        body: const Center(child: Text('Add Sale Form')),
-      );
-}
-
-class TasksScreen extends StatelessWidget {
-  const TasksScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Tasks')));
-}
-
-class ReportsScreen extends StatelessWidget {
-  const ReportsScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Reports')));
-}
-
-class SettingsScreen extends StatelessWidget {
-  const SettingsScreen({super.key});
-  @override
-  Widget build(BuildContext context) => const Scaffold(body: Center(child: Text('Settings')));
-}
-
-class FarmProfileScreen extends StatelessWidget {
-  const FarmProfileScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Farm Profile')),
-        body: const Center(child: Text('Farm Profile Settings')),
-      );
-}
-
-class ShedManagementScreen extends StatelessWidget {
-  const ShedManagementScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Shed Management')),
-        body: const Center(child: Text('Shed List and Management')),
-      );
-}
-
-class AlertPreferencesScreen extends StatelessWidget {
-  const AlertPreferencesScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Alert Preferences')),
-        body: const Center(child: Text('Notification and Alert Settings')),
-      );
-}
-
-class DataExportScreen extends StatelessWidget {
-  const DataExportScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Data Export')),
-        body: const Center(child: Text('Export Data to CSV/Excel')),
-      );
-}
-
-class BackupScreen extends StatelessWidget {
-  const BackupScreen({super.key});
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(title: const Text('Backup & Restore')),
-        body: const Center(child: Text('Database Backup Settings')),
-      );
-}
+      ),
+    ],
+  );
+});

@@ -54,6 +54,17 @@ class TaskRepository {
     return task;
   }
 
+  Future<void> markAllDoneForDate(DateTime date) async {
+    final tasks = await getByDate(date);
+    for (final task in tasks) {
+      if (task.status != TaskStatus.done) {
+        task.status = TaskStatus.done;
+        task.completedAt = DateTime.now();
+        await task.save();
+      }
+    }
+  }
+
   Future<TaskModel> update(TaskModel task) async {
     await task.save();
     return task;

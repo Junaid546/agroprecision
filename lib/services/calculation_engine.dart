@@ -70,6 +70,7 @@ class FarmSummaryFinancials {
   final double totalCost;
   final double overallROI;
   final int batchCount;
+  final double avgCostPerBird;
 
   FarmSummaryFinancials({
     required this.totalProfit,
@@ -77,6 +78,7 @@ class FarmSummaryFinancials {
     required this.totalCost,
     required this.overallROI,
     required this.batchCount,
+    required this.avgCostPerBird,
   });
 }
 
@@ -146,15 +148,18 @@ class CalculationEngine {
     double totalProfit = 0;
     double totalRevenue = 0;
     double totalCost = 0;
+    int totalBirds = 0;
     
     for (final batch in batches) {
       final f = await computeForBatch(batch.id);
       totalProfit += f.netProfit;
       totalRevenue += f.totalRevenue;
       totalCost += f.totalCost;
+      totalBirds += (f.initialCount - f.totalMortality);
     }
 
     final overallROI = totalCost > 0 ? (totalProfit / totalCost) * 100 : 0.0;
+    final avgCostPerBird = totalBirds > 0 ? totalCost / totalBirds : 0.0;
 
     return FarmSummaryFinancials(
       totalProfit: totalProfit,
@@ -162,6 +167,7 @@ class CalculationEngine {
       totalCost: totalCost,
       overallROI: overallROI,
       batchCount: batches.length,
+      avgCostPerBird: avgCostPerBird,
     );
   }
 

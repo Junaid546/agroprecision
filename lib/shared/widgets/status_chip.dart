@@ -3,7 +3,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_typography.dart';
 import '../../core/constants/app_spacing.dart';
 
-enum ChipStatus { active, completed, priority, routine, done }
+enum ChipStatus { active, completed, priority, routine, done, critical }
 
 class StatusChip extends StatelessWidget {
   final String label;
@@ -45,6 +45,11 @@ class StatusChip extends StatelessWidget {
         bgColor = AppColors.surfaceContainerLow;
         textColor = AppColors.outline;
         textStyle = textStyle.copyWith(decoration: TextDecoration.lineThrough);
+        break;
+      case ChipStatus.critical:
+        bgColor = AppColors.errorContainer;
+        textColor = AppColors.onErrorContainer;
+        border = const BorderSide(color: AppColors.error);
         break;
     }
 
