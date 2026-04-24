@@ -749,7 +749,8 @@ class _ExpensesTab extends ConsumerWidget {
           context.push('/home/batches/${batch.id}/add-expense');
         },
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
       ),
     );
   }
@@ -837,7 +838,8 @@ class _MortalityTab extends ConsumerWidget {
           context.push('/home/batches/${batch.id}/add-mortality');
         },
         backgroundColor: AppColors.error,
-        child: const Icon(Icons.warning_amber_rounded, color: Colors.white),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
       ),
     );
   }
@@ -927,7 +929,8 @@ class _SalesTab extends ConsumerWidget {
           context.push('/home/batches/${batch.id}/add-sale');
         },
         backgroundColor: AppColors.primary,
-        child: const Icon(Icons.sell_outlined, color: Colors.white),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add_rounded, color: Colors.white, size: 32),
       ),
     );
   }

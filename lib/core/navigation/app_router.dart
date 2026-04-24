@@ -225,7 +225,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         pageBuilder: (context, state) =>
                             AppTransitions.slideBottom(
                           key: state.pageKey,
-                          child: const AddExpenseScreen(),
+                          child: AddExpenseScreen(
+                              batchId: state.pathParameters['batchId']!),
                         ),
                       ),
                       GoRoute(
@@ -234,7 +235,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         pageBuilder: (context, state) =>
                             AppTransitions.slideBottom(
                           key: state.pageKey,
-                          child: const AddMortalityScreen(),
+                          child: AddMortalityScreen(
+                              batchId: state.pathParameters['batchId']!),
                         ),
                       ),
                       GoRoute(
@@ -243,7 +245,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         pageBuilder: (context, state) =>
                             AppTransitions.slideBottom(
                           key: state.pageKey,
-                          child: const AddGrowthScreen(),
+                          child: AddGrowthScreen(
+                              batchId: state.pathParameters['batchId']!),
                         ),
                       ),
                       GoRoute(
@@ -252,7 +255,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                         pageBuilder: (context, state) =>
                             AppTransitions.slideBottom(
                           key: state.pageKey,
-                          child: const AddSaleScreen(),
+                          child: AddSaleScreen(
+                              batchId: state.pathParameters['batchId']!),
                         ),
                       ),
                     ],
