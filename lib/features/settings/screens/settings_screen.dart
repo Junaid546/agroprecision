@@ -8,6 +8,7 @@ import '../../../shared/providers/app_state_provider.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
 import '../../batch/providers/batch_providers.dart';
 import '../../../data/models/shed_model.dart';
+import '../../../shared/providers/notification_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -45,7 +46,11 @@ class SettingsScreen extends ConsumerWidget {
                   iconBg: AppColors.surfaceContainerLow,
                   iconColor: AppColors.onSurfaceVariant,
                   title: 'Alert Preferences',
-                  subtitle: 'Email, SMS, and push notifications',
+                  subtitle: ref.watch(pendingNotificationsProvider).when(
+                        data: (list) => '${list.length} active reminders scheduled',
+                        loading: () => 'Loading reminders...',
+                        error: (_, __) => 'Email, SMS, and push notifications',
+                      ),
                   onTap: () => context.push('/home/settings/alert-preferences'),
                 ),
               ],

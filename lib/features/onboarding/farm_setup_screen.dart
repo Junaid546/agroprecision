@@ -8,6 +8,7 @@ import '../../../shared/providers/repository_providers.dart';
 import '../../../shared/providers/app_state_provider.dart';
 import '../../../data/models/farm_model.dart';
 import '../../../data/models/shed_model.dart';
+import '../../../services/notification_service.dart';
 
 enum SetupStep { farmDetails, firstShed }
 
@@ -36,6 +37,8 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
   String? _capacityError;
 
   bool _isLoading = false;
+  bool _enableDailyReminder = true; // Default ON
+  TimeOfDay _reminderTime = const TimeOfDay(hour: 6, minute: 0);
 
   @override
   void dispose() {
@@ -158,6 +161,13 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
       await ref.read(farmRepositoryProvider).update(updatedFarm);
 
       ref.read(currentFarmProvider.notifier).updateFarm(updatedFarm);
+
+      if (_enableDailyReminder) {
+        await NotificationService.scheduleDailyFeedReminder(
+          farmName: updatedFarm.name,
+          time: _reminderTime,
+        );
+      }
 
       if (mounted) {
         context.go('/home/dashboard');
@@ -347,8 +357,37 @@ class _FarmSetupScreenState extends ConsumerState<FarmSetupScreen> {
           keyboardType: TextInputType.phone,
           required: false,
         ),
+        const SizedBox(height: 24),
+        const Divider(),
+        const SizedBox(height: 16),
+        SwitchListTile(
+          title: Text('Daily Feed Reminder', style: AppTypography.labelBold),
+          subtitle: const Text('Get notified daily to feed your flock'),
+          value: _enableDailyReminder,
+          activeColor: AppColors.primary,
+          onChanged: (v) => setState(() => _enableDailyReminder = v),
+          contentPadding: EdgeInsets.zero,
+        ),
+        if (_enableDailyReminder)
+          InkWell(
+            onTap: _pickReminderTime,
+            child: InputDecorator(
+              decoration: const InputDecoration(labelText: 'Reminder Time'),
+              child: Text(_reminderTime.format(context)),
+            ),
+          ),
       ],
     );
+  }
+
+  Future<void> _pickReminderTime() async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: _reminderTime,
+    );
+    if (picked != null) {
+      setState(() => _reminderTime = picked);
+    }
   }
 
   Widget _buildShedForm() {

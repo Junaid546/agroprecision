@@ -448,27 +448,6 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
         ? '${_selectedTime!.hour.toString().padLeft(2, '0')}:${_selectedTime!.minute.toString().padLeft(2, '0')}'
         : null;
 
-    int? notificationId;
-    if (_selectedTime != null) {
-      final scheduledDateTime = DateTime(
-        _selectedDate.year,
-        _selectedDate.month,
-        _selectedDate.day,
-        _selectedTime!.hour,
-        _selectedTime!.minute,
-      );
-
-      if (scheduledDateTime.isAfter(DateTime.now())) {
-        notificationId = await NotificationService.scheduleTaskNotification(
-          taskId: DateTime.now().millisecondsSinceEpoch.toString(),
-          title: 'Task Reminder',
-          body: _titleController.text,
-          scheduledDateTime: scheduledDateTime,
-          priority: _priority,
-        );
-      }
-    }
-
     final task = TaskModel.create(
       farmId: farm.id,
       title: _titleController.text,
@@ -479,7 +458,6 @@ class _AddTaskBottomSheetState extends ConsumerState<_AddTaskBottomSheet> {
       shedId: _selectedShedId,
       isRecurring: _isRecurring,
       recurringPattern: _recurringPattern,
-      notificationId: notificationId,
     );
 
     await ref.read(taskActionProvider.notifier).createTask(task);

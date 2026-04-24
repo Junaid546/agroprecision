@@ -546,23 +546,26 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
           createdAt: DateTime.now(),
           shedId: selectedShedId,
         );
-        taskFutures.add(taskRepo.create(feedTask));
         
         if (i < 7) {
-          final notifIdFuture = NotificationService.scheduleTaskNotification(
-            taskId: feedTask.id,
-            title: feedTask.title,
-            body: 'Time for morning feed distribution for ${batchNumberController.text}',
-            scheduledDateTime: DateTime(
-              taskDate.year, taskDate.month, taskDate.day, 5, 45,
-            ),
-            priority: TaskPriority.routine,
+          final timeParts = feedTask.scheduledTime!.split(':');
+          final scheduledDateTime = DateTime(
+            taskDate.year, taskDate.month, taskDate.day, 
+            int.parse(timeParts[0]), int.parse(timeParts[1]),
           );
-          taskFutures.add(notifIdFuture.then((notifId) {
+          
+          if (scheduledDateTime.isAfter(DateTime.now())) {
+            final notifId = await NotificationService.scheduleTaskNotification(
+              taskId: feedTask.id,
+              title: feedTask.title,
+              body: 'Time for morning feed distribution for ${batchNumberController.text}',
+              scheduledDateTime: scheduledDateTime,
+              priority: TaskPriority.routine,
+            );
             feedTask.notificationId = notifId;
-            return taskRepo.update(feedTask);
-          }));
+          }
         }
+        taskFutures.add(taskRepo.create(feedTask));
       }
 
       if (createWaterTasks) {
@@ -615,7 +618,6 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       {'day': 28, 'name': 'Fowl Typhoid Vaccine'},
     ];
 
-    List<Future> vaxFutures = [];
     final farmId = ref.read(currentFarmProvider)!.id;
 
     for (final vax in vaccinations) {
@@ -623,6 +625,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       final name = vax['name'] as String;
       final vaxDate = startDate.add(Duration(days: day - 1));
       
+      // We also create a task for it
       final vaxTask = TaskModel(
         id: const Uuid().v4(),
         farmId: farmId,
@@ -637,17 +640,18 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
         createdAt: DateTime.now(),
         shedId: selectedShedId,
       );
-      vaxFutures.add(ref.read(taskRepositoryProvider).create(vaxTask));
-      
-      vaxFutures.add(NotificationService.scheduleVaccinationAlert(
+
+      // Schedule the actual notification
+      await NotificationService.scheduleVaccinationAlert(
         batchId: batchId,
         batchName: batchName,
         dayNumber: day,
         batchStartDate: startDate,
         vaccineName: name,
-      ));
+      );
+      
+      await ref.read(taskRepositoryProvider).create(vaxTask);
     }
-    await Future.wait(vaxFutures);
   }
 
   void _showError(String message) {
