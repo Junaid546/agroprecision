@@ -216,7 +216,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       decoration: BoxDecoration(
         color: AppColors.errorContainer,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.error.withOpacity(0.3)),
+        border: Border.all(color: AppColors.error.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -231,7 +231,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
                     style: AppTypography.bodyLg.copyWith(
                         fontWeight: FontWeight.bold, color: AppColors.error)),
                 const Text(
-                    'Go to Settings → Shed Management to add a shed first.',
+                    'Go to Settings â†’ Shed Management to add a shed first.',
                     style: TextStyle(color: AppColors.onErrorContainer)),
               ],
             ),
@@ -341,7 +341,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
       decoration: _inputDecoration('Target Days to Harvest (Optional)',
               Icons.schedule_rounded, 'e.g. 42')
           .copyWith(
-        helperText: "Industry standard: 35–42 days for broilers",
+        helperText: "Industry standard: 35â€“42 days for broilers",
       ),
     );
   }
@@ -453,7 +453,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
             top: BorderSide(color: AppColors.surfaceContainerHigh)),
         boxShadow: [
           BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 8,
               offset: const Offset(0, -2))
         ],
@@ -695,7 +695,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
         farmId: farmId,
         batchId: batchId,
         title: 'Vaccination: $name',
-        description: '$batchName — Day $day vaccination due today',
+        description: '$batchName â€” Day $day vaccination due today',
         priority: TaskPriority.priority,
         status: TaskStatus.pending,
         scheduledDate: vaxDate,
@@ -776,7 +776,7 @@ class _AutoTaskToggle extends StatelessWidget {
           width: 32,
           height: 32,
           decoration: BoxDecoration(
-            color: iconColor.withOpacity(0.15),
+            color: iconColor.withValues(alpha: 0.15),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(icon, color: iconColor, size: 18),
@@ -814,7 +814,7 @@ class _VaccinationRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text("$day — $vaccine",
+          Text("$day â€” $vaccine",
               style: AppTypography.bodyMd
                   .copyWith(color: AppColors.onSurfaceVariant)),
         ],

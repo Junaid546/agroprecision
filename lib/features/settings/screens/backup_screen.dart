@@ -1,14 +1,19 @@
-import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/intl.dart';
+
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
-import '../../../services/hive_service.dart';
+import '../../../features/batch/providers/batch_providers.dart';
+import '../../../features/dashboard/providers/dashboard_providers.dart';
+import '../../../features/security/providers/security_providers.dart';
+import '../../../features/shed_control/providers/shed_control_providers.dart';
+import '../../../shared/providers/app_state_provider.dart';
+import '../../../shared/providers/repository_providers.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
 
 class BackupScreen extends ConsumerStatefulWidget {
@@ -32,6 +37,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
 
   Future<void> _loadBackupSettings() async {
     final prefs = await SharedPreferences.getInstance();
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
       _autoBackup = prefs.getBool('auto_backup') ?? false;
       _lastBackupDate = prefs.getString('last_backup_date') ?? 'Never';
@@ -44,56 +53,54 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
       final files = directory
           .listSync()
           .whereType<File>()
-          .where((f) => f.path.endsWith('.json'))
-          .toList();
-      files
-          .sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
+          .where((file) => file.path.endsWith('.json'))
+          .toList()
+        ..sort((a, b) => b.lastModifiedSync().compareTo(a.lastModifiedSync()));
+
+      if (!mounted) {
+        return;
+      }
+
       setState(() {
-        _backups = files.take(3).toList();
+        _backups = files.take(5).toList();
       });
-    } catch (e) {
-      debugPrint('Error loading backup list: $e');
+    } catch (error) {
+      debugPrint('Error loading backups: $error');
     }
   }
 
   Future<void> _triggerBackup() async {
-    showDialog(
+    showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (context) => const Center(child: CircularProgressIndicator()),
     );
 
     try {
-      final data = HiveService.exportToJson();
-      final jsonString = jsonEncode(data);
-
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName =
-          'agro_precision_backup_${DateTime.now().millisecondsSinceEpoch}.json';
-      final file = File('${directory.path}/$fileName');
-      await file.writeAsString(jsonString);
+      await ref.read(backupRestoreServiceProvider).exportBackupFile();
 
       final prefs = await SharedPreferences.getInstance();
       final now = DateFormat('MMM dd, yyyy HH:mm').format(DateTime.now());
       await prefs.setString('last_backup_date', now);
 
-      setState(() {
-        _lastBackupDate = now;
-      });
-
+      if (mounted) {
+        setState(() {
+          _lastBackupDate = now;
+        });
+      }
       await _refreshBackupList();
 
-      if (mounted) Navigator.pop(context);
       if (mounted) {
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Backup completed successfully!')),
+          const SnackBar(content: Text('Backup completed successfully')),
         );
       }
-    } catch (e) {
-      if (mounted) Navigator.pop(context);
+    } catch (error) {
       if (mounted) {
+        Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Backup failed: $e')),
+          SnackBar(content: Text('Backup failed: $error')),
         );
       }
     }
@@ -102,6 +109,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   Future<void> _toggleAutoBackup(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('auto_backup', value);
+    if (!mounted) {
+      return;
+    }
+
     setState(() {
       _autoBackup = value;
     });
@@ -118,9 +129,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
           children: [
             Text('System Backup', style: AppTypography.headlineLg),
             Text(
-              'Manage your data security and automated backups.',
-              style: AppTypography.bodyMd
-                  .copyWith(color: AppColors.onSurfaceVariant),
+              'Create and restore backups while keeping compatibility with old AgroPrecision exports.',
+              style: AppTypography.bodyMd.copyWith(
+                color: AppColors.onSurfaceVariant,
+              ),
             ),
             const SizedBox(height: 24),
             Card(
@@ -135,12 +147,17 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text('Last Backup', style: AppTypography.labelBold),
-                            Text(_lastBackupDate,
-                                style: AppTypography.headlineMd),
+                            Text(
+                              _lastBackupDate,
+                              style: AppTypography.headlineMd,
+                            ),
                           ],
                         ),
-                        const Icon(Icons.cloud_done,
-                            size: 48, color: AppColors.primary),
+                        const Icon(
+                          Icons.cloud_done,
+                          size: 48,
+                          color: AppColors.primary,
+                        ),
                       ],
                     ),
                     const SizedBox(height: 20),
@@ -161,9 +178,12 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             ),
             const SizedBox(height: 24),
             SwitchListTile(
-              title: Text('Auto-Backup',
-                  style: AppTypography.bodyLg
-                      .copyWith(fontWeight: FontWeight.bold)),
+              title: Text(
+                'Auto-Backup',
+                style: AppTypography.bodyLg.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               subtitle: const Text('Automatically backup data every 24 hours'),
               value: _autoBackup,
               onChanged: _toggleAutoBackup,
@@ -171,14 +191,17 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             ),
             const Divider(),
             const SizedBox(height: 24),
-            Text('RECENT BACKUPS',
-                style:
-                    AppTypography.labelBold.copyWith(color: AppColors.primary)),
+            Text(
+              'RECENT BACKUPS',
+              style: AppTypography.labelBold.copyWith(
+                color: AppColors.primary,
+              ),
+            ),
             const SizedBox(height: 12),
             if (_backups.isEmpty)
               const Center(child: Text('No backups found.'))
             else
-              ..._backups.map((file) => _buildBackupItem(file)),
+              ..._backups.map(_buildBackupItem),
           ],
         ),
       ),
@@ -186,22 +209,89 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
   }
 
   Widget _buildBackupItem(File file) {
-    final date =
-        DateFormat('MMM dd, yyyy • HH:mm').format(file.lastModifiedSync());
+    final date = DateFormat('MMM dd, yyyy HH:mm').format(file.lastModifiedSync());
     final size = (file.lengthSync() / 1024).toStringAsFixed(1);
 
     return ListTile(
       leading: const Icon(Icons.insert_drive_file, color: AppColors.outline),
-      title: Text(file.path.split('/').last,
-          style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.bold)),
-      subtitle: Text('$date • $size KB'),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete_outline, color: AppColors.error),
-        onPressed: () async {
-          await file.delete();
-          await _refreshBackupList();
-        },
+      title: Text(
+        _fileName(file),
+        style: AppTypography.bodyMd.copyWith(fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text('$date | $size KB'),
+      trailing: Wrap(
+        spacing: 0,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.restore, color: AppColors.primary),
+            onPressed: () => _restoreBackup(file),
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline, color: AppColors.error),
+            onPressed: () async {
+              await file.delete();
+              await _refreshBackupList();
+            },
+          ),
+        ],
       ),
     );
+  }
+
+  Future<void> _restoreBackup(File file) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Restore Backup'),
+        content: Text(
+          'Restore ${_fileName(file)}? This replaces current local data.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Restore'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) {
+      return;
+    }
+
+    try {
+      await ref.read(backupRestoreServiceProvider).restoreFromFile(file);
+      ref.read(securityUnlockedProvider.notifier).state = true;
+      await ref.read(currentFarmProvider.notifier).reloadFarm();
+      ref.invalidate(shedListProvider);
+      ref.invalidate(allBatchesProvider);
+      ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(farmInventoryProvider);
+      ref.invalidate(lowStockItemsProvider);
+      ref.invalidate(farmTreatmentsProvider);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Backup restored successfully')),
+        );
+      }
+    } catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Restore failed: $error')),
+        );
+      }
+    }
+  }
+
+  String _fileName(File file) {
+    if (file.uri.pathSegments.isNotEmpty) {
+      return file.uri.pathSegments.last;
+    }
+    return file.path.split(Platform.pathSeparator).last;
   }
 }

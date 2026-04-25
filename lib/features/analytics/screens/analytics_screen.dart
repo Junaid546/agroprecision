@@ -91,10 +91,10 @@ class _AnalyticsCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.outlineVariant.withOpacity(0.5)),
+        border: Border.all(color: AppColors.outlineVariant.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -123,10 +123,11 @@ class _ProfitTrendChart extends ConsumerWidget {
 
     return trendAsync.when(
       data: (data) {
-        if (data.isEmpty)
+        if (data.isEmpty) {
           return const EmptyState(
               title: 'No Profit Data',
               message: 'Finish a batch to see trends.');
+        }
 
         return RepaintBoundary(
           child: LineChart(
@@ -135,7 +136,7 @@ class _ProfitTrendChart extends ConsumerWidget {
                 show: true,
                 drawVerticalLine: false,
                 getDrawingHorizontalLine: (value) => FlLine(
-                  color: AppColors.outlineVariant.withOpacity(0.3),
+                  color: AppColors.outlineVariant.withValues(alpha: 0.3),
                   strokeWidth: 1,
                   dashArray: [5, 5],
                 ),
@@ -152,8 +153,9 @@ class _ProfitTrendChart extends ConsumerWidget {
                     reservedSize: 30,
                     getTitlesWidget: (value, meta) {
                       final index = value.toInt();
-                      if (index < 0 || index >= data.length)
+                      if (index < 0 || index >= data.length) {
                         return const SizedBox();
+                      }
                       return Padding(
                         padding: const EdgeInsets.only(top: 8.0),
                         child: Text(
@@ -193,7 +195,7 @@ class _ProfitTrendChart extends ConsumerWidget {
                   dotData: const FlDotData(show: true),
                   belowBarData: BarAreaData(
                     show: true,
-                    color: AppColors.primary.withOpacity(0.1),
+                    color: AppColors.primary.withValues(alpha: 0.1),
                   ),
                 ),
               ],
@@ -255,10 +257,11 @@ class _ExpenseDistributionChart extends ConsumerWidget {
 
     return distributionAsync.when(
       data: (data) {
-        if (data.isEmpty)
+        if (data.isEmpty) {
           return const EmptyState(
               title: 'No Expenses',
               message: 'Log expenses to see distribution.');
+        }
 
         final total = data.values.fold(0.0, (a, b) => a + b);
 
@@ -345,10 +348,11 @@ class _MortalityTrendChart extends ConsumerWidget {
 
     return trendAsync.when(
       data: (data) {
-        if (data.isEmpty)
+        if (data.isEmpty) {
           return const EmptyState(
               title: 'No Mortality Data',
               message: 'Safe production starts here.');
+        }
 
         return RepaintBoundary(
           child: BarChart(
@@ -453,9 +457,10 @@ class _FCRTrendChart extends ConsumerWidget {
 
     return fcrAsync.when(
       data: (data) {
-        if (data.isEmpty)
+        if (data.isEmpty) {
           return const EmptyState(
               title: 'No Growth Logs', message: 'Record weights to track FCR.');
+        }
 
         return RepaintBoundary(
           child: LineChart(

@@ -9,14 +9,11 @@ import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../data/models/batch_model.dart';
 import '../../../data/models/expense_model.dart';
-import '../../../data/models/mortality_model.dart';
 import '../../../data/models/sale_model.dart';
-import '../../../data/models/growth_model.dart';
 import '../../../data/repositories/growth_repository.dart';
 import '../../../data/repositories/mortality_repository.dart';
 import '../../../services/calculation_engine.dart';
 import '../../../shared/providers/repository_providers.dart';
-import '../../../shared/widgets/status_chip.dart';
 import '../../../shared/widgets/expense_bar_row.dart';
 import '../../../shared/widgets/loading_skeleton.dart';
 import '../providers/batch_providers.dart';
@@ -145,7 +142,7 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
             borderRadius: BorderRadius.circular(12),
             boxShadow: isSelected ? [
               BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.black.withValues(alpha: 0.05),
                 blurRadius: 10,
                 offset: const Offset(0, 2),
               )
@@ -224,7 +221,7 @@ class _OverviewTab extends ConsumerWidget {
         border: Border.all(color: AppColors.surfaceContainerHigh),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.03),
+            color: Colors.black.withValues(alpha: 0.03),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -268,7 +265,7 @@ class _OverviewTab extends ConsumerWidget {
                       width: 44,
                       height: 44,
                       decoration: BoxDecoration(
-                        color: color.withOpacity(0.1),
+                        color: color.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
@@ -389,7 +386,7 @@ class _OverviewTab extends ConsumerWidget {
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(6),
                       ),
                       child: Text(
@@ -546,8 +543,8 @@ class _GrowthLineChart extends ConsumerWidget {
                   show: true,
                   gradient: LinearGradient(
                     colors: [
-                      AppColors.primary.withOpacity(0.2),
-                      AppColors.primary.withOpacity(0.0)
+                      AppColors.primary.withValues(alpha: 0.2),
+                      AppColors.primary.withValues(alpha: 0.0)
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
@@ -594,8 +591,6 @@ class _MortalityBarChart extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mortalityAsync = ref.watch(batchMortalityProvider(batchId));
-
     return FutureBuilder<List<WeeklyMortalityData>>(
       future: ref.read(mortalityRepositoryProvider).getWeeklyBreakdown(batchId),
       builder: (context, snapshot) {
@@ -692,7 +687,7 @@ class _ExpensesTab extends ConsumerWidget {
                   border: Border.all(color: AppColors.surfaceContainerHigh),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.02),
+                      color: Colors.black.withValues(alpha: 0.02),
                       blurRadius: 10,
                       offset: const Offset(0, 4),
                     ),
@@ -703,7 +698,7 @@ class _ExpensesTab extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: _getCategoryColor(e.category).withOpacity(0.1),
+                        color: _getCategoryColor(e.category).withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Icon(Icons.receipt_long_rounded, 
@@ -714,7 +709,7 @@ class _ExpensesTab extends ConsumerWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(e.description ?? 'Expense',
+                          Text(e.description,
                               style: AppTypography.labelBold.copyWith(fontSize: 14),
                               overflow: TextOverflow.ellipsis),
                           const SizedBox(height: 2),
@@ -789,7 +784,7 @@ class _MortalityTab extends ConsumerWidget {
                     Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: AppColors.error.withOpacity(0.1),
+                        color: AppColors.error.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: const Icon(Icons.warning_amber_rounded, 
@@ -958,7 +953,7 @@ class _SalesTab extends ConsumerWidget {
       children: [
         Text(label,
             style:
-                TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
+                TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 12)),
         const SizedBox(height: 4),
         Text(value,
             style: const TextStyle(

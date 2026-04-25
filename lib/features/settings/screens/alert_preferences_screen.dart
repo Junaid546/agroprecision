@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
+import '../../../shared/providers/farm_preferences_provider.dart';
+import '../../../shared/providers/repository_providers.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
 
 class AlertPreferencesScreen extends ConsumerStatefulWidget {
@@ -19,6 +21,21 @@ class _AlertPreferencesScreenState
   bool _smsAlerts = false;
   bool _mortalityAlerts = true;
   bool _feedAlerts = true;
+  bool _environmentAlerts = true;
+  bool _stockAlerts = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final prefs = ref.read(farmPreferencesProvider);
+    _pushNotifications = prefs.pushNotifications;
+    _emailAlerts = prefs.emailAlerts;
+    _smsAlerts = prefs.smsAlerts;
+    _mortalityAlerts = prefs.mortalityAlerts;
+    _feedAlerts = prefs.feedAlerts;
+    _environmentAlerts = prefs.environmentAlerts;
+    _stockAlerts = prefs.stockAlerts;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,6 +104,21 @@ class _AlertPreferencesScreenState
                     value: _feedAlerts,
                     onChanged: (v) => setState(() => _feedAlerts = v),
                   ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: const Text('Environment Alerts'),
+                    subtitle:
+                        const Text('Temperature, humidity, ammonia, and CO2'),
+                    value: _environmentAlerts,
+                    onChanged: (v) => setState(() => _environmentAlerts = v),
+                  ),
+                  const Divider(),
+                  SwitchListTile(
+                    title: const Text('Stock Alerts'),
+                    subtitle: const Text('Low feed, medicine, and vaccine stock'),
+                    value: _stockAlerts,
+                    onChanged: (v) => setState(() => _stockAlerts = v),
+                  ),
                 ],
               ),
             ),
@@ -94,7 +126,7 @@ class _AlertPreferencesScreenState
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
-                onPressed: () => Navigator.pop(context),
+                onPressed: _savePreferences,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
@@ -106,5 +138,24 @@ class _AlertPreferencesScreenState
         ),
       ),
     );
+  }
+
+  Future<void> _savePreferences() async {
+    await ref.read(farmPreferencesServiceProvider).saveAlertPreferences(
+          pushNotifications: _pushNotifications,
+          emailAlerts: _emailAlerts,
+          smsAlerts: _smsAlerts,
+          mortalityAlerts: _mortalityAlerts,
+          feedAlerts: _feedAlerts,
+          environmentAlerts: _environmentAlerts,
+          stockAlerts: _stockAlerts,
+        );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Alert preferences saved')),
+      );
+      Navigator.pop(context);
+    }
   }
 }

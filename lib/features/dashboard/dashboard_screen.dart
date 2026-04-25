@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 import 'package:fl_chart/fl_chart.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
@@ -114,7 +113,7 @@ class DashboardScreen extends ConsumerWidget {
                   children: [
                     Text('Dashboard', style: AppTypography.headlineLg),
                     Text(
-                      '${batch.batchNumber} • Day ${batch.ageInDays}',
+                      '${batch.batchNumber} â€¢ Day ${batch.ageInDays}',
                       style: AppTypography.bodyMd.copyWith(
                         color: AppColors.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
@@ -132,12 +131,12 @@ class DashboardScreen extends ConsumerWidget {
                       gradient: LinearGradient(
                         colors: [
                           AppColors.primaryContainer,
-                          AppColors.primaryContainer.withOpacity(0.8),
+                          AppColors.primaryContainer.withValues(alpha: 0.8),
                         ],
                       ),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primaryContainer.withOpacity(0.3),
+                          color: AppColors.primaryContainer.withValues(alpha: 0.3),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
@@ -177,6 +176,10 @@ class DashboardScreen extends ConsumerWidget {
                       ),
                     )),
                 const SizedBox(height: 8),
+                if (summary.shedSnapshot != null) ...[
+                  _buildShedOperationsCard(context, summary.shedSnapshot!),
+                  const SizedBox(height: 12),
+                ],
                 _buildProfitCard(
                     summary.financials, summary.last5BatchesProfit),
                 const SizedBox(height: 12),
@@ -209,7 +212,7 @@ class DashboardScreen extends ConsumerWidget {
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.03),
+                          color: Colors.black.withValues(alpha: 0.03),
                           blurRadius: 30,
                           offset: const Offset(0, 10),
                         ),
@@ -250,8 +253,6 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildProfitCard(dynamic financials, List<double> history) {
-    final formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
-
     return MetricCard(
       label: "ESTIMATED PROFIT",
       value: CountUpText(
@@ -279,7 +280,7 @@ class DashboardScreen extends ConsumerWidget {
                       toY: e.value,
                       color: isCurrent
                           ? AppColors.primary
-                          : AppColors.primaryContainer.withOpacity(0.4),
+                          : AppColors.primaryContainer.withValues(alpha: 0.4),
                       width: 12,
                       borderRadius:
                           const BorderRadius.vertical(top: Radius.circular(4)),
@@ -295,7 +296,6 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildAliveCard(dynamic financials) {
-    final numFormat = NumberFormat('#,###');
     final survivalRate = financials?.survivalRate ?? 0;
 
     return MetricCard(
@@ -328,7 +328,6 @@ class DashboardScreen extends ConsumerWidget {
   }
 
   Widget _buildExpensesCard(dynamic financials) {
-    final formatter = NumberFormat.currency(symbol: '\$', decimalDigits: 2);
     return MetricCard(
       label: "Total Expenses",
       value: CountUpText(
@@ -338,6 +337,93 @@ class DashboardScreen extends ConsumerWidget {
       ),
       icon: const Icon(Icons.account_balance_wallet,
           color: AppColors.onSurfaceVariant, size: 20),
+    );
+  }
+
+  Widget _buildShedOperationsCard(BuildContext context, dynamic shedSnapshot) {
+    final reading = shedSnapshot.latestReading;
+    final profile = shedSnapshot.profile;
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: AppColors.surfaceContainerHigh),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 24,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Shed Operations', style: AppTypography.headlineMd),
+                    Text(
+                      shedSnapshot.shed.name,
+                      style: AppTypography.bodyMd.copyWith(
+                        color: AppColors.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () =>
+                    context.push('/home/settings/sheds/${shedSnapshot.shed.id}/control'),
+                child: const Text('Open'),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          if (reading == null)
+            const Text('No environmental check logged yet.')
+          else
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              children: [
+                _buildOpsPill('Temp', '${reading.temperatureC.toStringAsFixed(1)}Â°C'),
+                _buildOpsPill(
+                    'Humidity', '${reading.humidityPercent.toStringAsFixed(0)}%'),
+                _buildOpsPill(
+                    'NH3', '${reading.ammoniaPpm?.toStringAsFixed(1) ?? '--'} ppm'),
+                _buildOpsPill(
+                    'Feed Bin',
+                    '${reading.feedBinLevelPercent?.toStringAsFixed(0) ?? '--'}%'),
+              ],
+            ),
+          const SizedBox(height: 12),
+          Text(
+            'Target ${profile.targetTempMinC.toStringAsFixed(1)}-${profile.targetTempMaxC.toStringAsFixed(1)}Â°C â€¢ '
+            '${shedSnapshot.lowStockItems.length} low-stock item(s) â€¢ '
+            '${shedSnapshot.treatmentCount} open treatment(s)',
+            style: AppTypography.bodyMd,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOpsPill(String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        '$label: $value',
+        style: AppTypography.labelMd.copyWith(fontWeight: FontWeight.w700),
+      ),
     );
   }
 

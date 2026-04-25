@@ -20,7 +20,12 @@ import '../../features/settings/screens/shed_management_screen.dart';
 import '../../features/settings/screens/alert_preferences_screen.dart';
 import '../../features/settings/screens/data_export_screen.dart';
 import '../../features/settings/screens/backup_screen.dart';
+import '../../features/settings/screens/staff_management_screen.dart';
+import '../../features/settings/screens/security_settings_screen.dart';
 import '../../features/reports/models/report_models.dart';
+import '../../features/inventory/screens/inventory_screen.dart';
+import '../../features/health/screens/health_treatments_screen.dart';
+import '../../features/shed_control/screens/shed_control_screen.dart';
 
 import '../../features/batch/screens/activity_screens.dart';
 import 'package:flutter/services.dart';
@@ -334,6 +339,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     ),
                   ),
                   GoRoute(
+                    path: 'sheds/:shedId/control',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: ShedControlScreen(
+                        shedId: state.pathParameters['shedId']!,
+                      ),
+                    ),
+                  ),
+                  GoRoute(
                     path: 'alert-preferences',
                     pageBuilder: (context, state) => AppTransitions.slideRight(
                       key: state.pageKey,
@@ -352,6 +366,34 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                     pageBuilder: (context, state) => AppTransitions.slideRight(
                       key: state.pageKey,
                       child: const BackupScreen(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'inventory',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const InventoryScreen(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'health',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const HealthTreatmentsScreen(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'staff',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const StaffManagementScreen(),
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'security',
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: const SecuritySettingsScreen(),
                     ),
                   ),
                 ],

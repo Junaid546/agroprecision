@@ -52,7 +52,7 @@ class TaskActionNotifier extends StateNotifier<AsyncValue<void>> {
           await NotificationService.cancelNotification(task.notificationId!);
         }
       } else {
-        final task = await _repo.markPending(taskId);
+        await _repo.markPending(taskId);
         // Reschedule if it's in the future?
         // For simplicity, we just toggle. But marking pending might need rescheduling.
       }

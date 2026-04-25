@@ -26,13 +26,15 @@ class ShedModelAdapter extends TypeAdapter<ShedModel> {
       createdAt: fields[6] as DateTime,
       notes: fields[7] as String?,
       isActive: fields[8] as bool,
+      controlProfile: (fields[9] as Map?)?.cast<String, dynamic>(),
+      updatedAt: fields[10] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ShedModel obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -50,7 +52,11 @@ class ShedModelAdapter extends TypeAdapter<ShedModel> {
       ..writeByte(7)
       ..write(obj.notes)
       ..writeByte(8)
-      ..write(obj.isActive);
+      ..write(obj.isActive)
+      ..writeByte(9)
+      ..write(obj.controlProfile)
+      ..writeByte(10)
+      ..write(obj.updatedAt);
   }
 
   @override

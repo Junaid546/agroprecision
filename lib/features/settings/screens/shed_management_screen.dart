@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../shared/providers/app_state_provider.dart';
@@ -37,14 +38,29 @@ class ShedManagementScreen extends ConsumerWidget {
                         child: ListTile(
                           leading: const Icon(Icons.warehouse,
                               color: AppColors.primary),
+                          onTap: () => context.push(
+                              '/home/settings/sheds/${shed.id}/control'),
                           title: Text(shed.name,
                               style: AppTypography.bodyLg
                                   .copyWith(fontWeight: FontWeight.bold)),
-                          subtitle: Text('Capacity: ${shed.capacity} birds'),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline,
-                                color: AppColors.error),
-                            onPressed: () => _deleteShed(context, ref, shed),
+                          subtitle: Text(
+                              'Capacity: ${shed.capacity} birds • Tap to manage'),
+                          trailing: Wrap(
+                            spacing: 0,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.tune,
+                                    color: AppColors.primary),
+                                onPressed: () => context.push(
+                                    '/home/settings/sheds/${shed.id}/control'),
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.delete_outline,
+                                    color: AppColors.error),
+                                onPressed: () =>
+                                    _deleteShed(context, ref, shed),
+                              ),
+                            ],
                           ),
                         ),
                       )),

@@ -9,10 +9,10 @@ import '../../../data/models/batch_model.dart';
 import '../../../data/models/expense_model.dart';
 import '../../../data/models/mortality_model.dart';
 import '../../../data/models/growth_model.dart';
-import '../../../shared/providers/app_state_provider.dart';
 import '../../../shared/providers/repository_providers.dart';
 import '../providers/dashboard_providers.dart';
 import '../../batch/providers/batch_providers.dart';
+import '../../shed_control/providers/shed_control_providers.dart';
 
 class LogActivitySheet extends ConsumerStatefulWidget {
   const LogActivitySheet({super.key});
@@ -140,7 +140,7 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: isSelected ? color.withOpacity(0.1) : Colors.white,
+          color: isSelected ? color.withValues(alpha: 0.1) : Colors.white,
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isSelected ? color : AppColors.outlineVariant,
@@ -153,7 +153,7 @@ class _LogActivitySheetState extends ConsumerState<LogActivitySheet> {
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: isSelected ? color : color.withOpacity(0.1),
+                color: isSelected ? color : color.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon,
@@ -310,7 +310,7 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
                         ),
                         boxShadow: isSelected ? [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           )
@@ -325,7 +325,7 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
                             )),
                           Text('Day ${b.ageInDays}',
                             style: AppTypography.labelMd.copyWith(
-                              color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.onSurfaceVariant,
+                              color: isSelected ? Colors.white.withValues(alpha: 0.8) : AppColors.onSurfaceVariant,
                             )),
                         ],
                       ),
@@ -353,7 +353,7 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
                 label: Text(type),
                 selected: isSelected,
                 onSelected: (val) => setState(() => _feedType = type),
-                selectedColor: AppColors.primary.withOpacity(0.1),
+                selectedColor: AppColors.primary.withValues(alpha: 0.1),
                 checkmarkColor: AppColors.primary,
                 labelStyle: AppTypography.labelBold.copyWith(
                   color: isSelected ? AppColors.primary : AppColors.onSurface,
@@ -485,11 +485,18 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
         unit: 'kg',
       );
       await ref.read(expenseRepositoryProvider).create(expense);
+      await ref.read(inventoryFlowServiceProvider).consumeFeedExpense(
+            expense,
+            shedId: _selectedBatch!.shedId,
+          );
       ref.invalidate(dashboardSummaryProvider);
       ref.invalidate(batchFinancialsProvider(_selectedBatch!.id));
       ref.invalidate(batchExpensesProvider(_selectedBatch!.id));
+      ref.invalidate(farmInventoryProvider);
+      ref.invalidate(lowStockItemsProvider);
       if (mounted) Navigator.pop(context);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
@@ -571,7 +578,7 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
                         ),
                         boxShadow: isSelected ? [
                           BoxShadow(
-                            color: AppColors.error.withOpacity(0.3),
+                            color: AppColors.error.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           )
@@ -586,7 +593,7 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
                             )),
                           Text('Day ${b.ageInDays}',
                             style: AppTypography.labelMd.copyWith(
-                              color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.onSurfaceVariant,
+                              color: isSelected ? Colors.white.withValues(alpha: 0.8) : AppColors.onSurfaceVariant,
                             )),
                         ],
                       ),
@@ -790,7 +797,7 @@ class _AddExpenseFormState extends ConsumerState<_AddExpenseForm> {
                         ),
                         boxShadow: isSelected ? [
                           BoxShadow(
-                            color: AppColors.primary.withOpacity(0.3),
+                            color: AppColors.primary.withValues(alpha: 0.3),
                             blurRadius: 8,
                             offset: const Offset(0, 4),
                           )
@@ -805,7 +812,7 @@ class _AddExpenseFormState extends ConsumerState<_AddExpenseForm> {
                             )),
                           Text('Day ${b.ageInDays}',
                             style: AppTypography.labelMd.copyWith(
-                              color: isSelected ? Colors.white.withOpacity(0.8) : AppColors.onSurfaceVariant,
+                              color: isSelected ? Colors.white.withValues(alpha: 0.8) : AppColors.onSurfaceVariant,
                             )),
                         ],
                       ),
@@ -841,7 +848,7 @@ class _AddExpenseFormState extends ConsumerState<_AddExpenseForm> {
                 label: Text(c.name.toUpperCase()),
                 selected: isSelected,
                 onSelected: (val) => setState(() => _category = c),
-                selectedColor: AppColors.primary.withOpacity(0.1),
+                selectedColor: AppColors.primary.withValues(alpha: 0.1),
                 checkmarkColor: AppColors.primary,
                 labelStyle: AppTypography.labelBold.copyWith(
                   color: isSelected ? AppColors.primary : AppColors.onSurface,
@@ -1017,6 +1024,7 @@ class _RecordGrowthFormState extends ConsumerState<_RecordGrowthForm> {
       ref.invalidate(batchGrowthProvider(_selectedBatch!.id));
       if (mounted) Navigator.pop(context);
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {

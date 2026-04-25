@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/date_formatter.dart';
 import '../../../data/models/task_model.dart';
@@ -12,8 +11,6 @@ import '../../../shared/widgets/empty_state.dart';
 import '../../../shared/widgets/status_chip.dart';
 import '../providers/task_providers.dart';
 import '../../batch/providers/batch_providers.dart';
-import '../../../services/notification_service.dart';
-import 'package:intl/intl.dart';
 
 class TasksScreen extends ConsumerWidget {
   const TasksScreen({super.key});

@@ -43,8 +43,8 @@ class DashboardSkeleton extends StatelessWidget {
 
   Widget _shimmerBox({double? width, double? height, double radius = 8}) {
     return Shimmer.fromColors(
-      baseColor: AppColors.surfaceVariant.withOpacity(0.5),
-      highlightColor: AppColors.surface.withOpacity(0.2),
+      baseColor: AppColors.surfaceVariant.withValues(alpha: 0.5),
+      highlightColor: AppColors.surface.withValues(alpha: 0.2),
       child: Container(
         width: width,
         height: height,

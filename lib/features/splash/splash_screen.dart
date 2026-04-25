@@ -121,7 +121,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           // Grid pattern background
           CustomPaint(
             painter: GridPainter(
-              gridColor: const Color(0xFF000000).withOpacity(0.03),
+              gridColor: const Color(0xFF000000).withValues(alpha: 0.03),
               gridSpacing: 32.0,
             ),
           ),
@@ -142,7 +142,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
+                          color: Colors.black.withValues(alpha: 0.08),
                           blurRadius: 24,
                           offset: const Offset(0, 8),
                         ),
@@ -203,7 +203,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       borderRadius: BorderRadius.circular(999),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.04),
+                          color: Colors.black.withValues(alpha: 0.04),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),

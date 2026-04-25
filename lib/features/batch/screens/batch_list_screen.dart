@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../shared/widgets/animations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/date_formatter.dart';
@@ -304,14 +303,14 @@ class _Chip extends StatelessWidget {
           borderRadius: BorderRadius.circular(100),
           boxShadow: isSelected ? [
             BoxShadow(
-              color: AppColors.primary.withOpacity(0.2),
+              color: AppColors.primary.withValues(alpha: 0.2),
               blurRadius: 12,
               offset: const Offset(0, 4),
             )
           ] : [],
         ),
         child: Text(
-          count > 0 ? '${label.toUpperCase()} • $count' : label.toUpperCase(),
+          count > 0 ? '${label.toUpperCase()} â€¢ $count' : label.toUpperCase(),
           style: AppTypography.labelBold.copyWith(
             color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
             fontSize: 12,
@@ -341,7 +340,7 @@ class _BatchCard extends ConsumerWidget {
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.04),
+              color: Colors.black.withValues(alpha: 0.04),
               blurRadius: 30,
               offset: const Offset(0, 10),
             ),
@@ -417,7 +416,7 @@ class _BatchCard extends ConsumerWidget {
                                 const SizedBox(height: 4),
                                 aliveAsync.when(
                                   loading: () => Container(height: 32, width: 60, color: AppColors.surfaceContainerHigh),
-                                  error: (_, __) => Text('—', style: AppTypography.displayStat),
+                                  error: (_, __) => Text('â€”', style: AppTypography.displayStat),
                                   data: (count) => CountUpText(
                                     value: count.toDouble(),
                                     decimalDigits: 0,
@@ -455,7 +454,7 @@ class _BatchCard extends ConsumerWidget {
                         return Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           decoration: BoxDecoration(
-                            color: color.withOpacity(0.05),
+                            color: color.withValues(alpha: 0.05),
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(

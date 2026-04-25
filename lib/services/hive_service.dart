@@ -7,6 +7,11 @@ import '../data/models/mortality_model.dart';
 import '../data/models/growth_model.dart';
 import '../data/models/sale_model.dart';
 import '../data/models/task_model.dart';
+import '../data/models/inventory_item_model.dart';
+import '../data/models/inventory_transaction_model.dart';
+import '../data/models/shed_environment_reading_model.dart';
+import '../data/models/health_treatment_model.dart';
+import '../data/models/staff_member_model.dart';
 
 class HiveService {
   // Box names
@@ -19,6 +24,11 @@ class HiveService {
   static const String saleBoxName = 'sales';
   static const String taskBoxName = 'tasks';
   static const String settingsBoxName = 'settings';
+  static const String environmentBoxName = 'shed_environment_readings';
+  static const String inventoryBoxName = 'inventory_items';
+  static const String inventoryTransactionBoxName = 'inventory_transactions';
+  static const String treatmentBoxName = 'health_treatments';
+  static const String staffBoxName = 'staff_members';
 
   // Box getters
   static Box<FarmModel> get farmBox => Hive.box<FarmModel>(farmBoxName);
@@ -31,6 +41,17 @@ class HiveService {
   static Box<GrowthModel> get growthBox => Hive.box<GrowthModel>(growthBoxName);
   static Box<SaleModel> get saleBox => Hive.box<SaleModel>(saleBoxName);
   static Box<TaskModel> get taskBox => Hive.box<TaskModel>(taskBoxName);
+  static Box<ShedEnvironmentReadingModel> get environmentBox =>
+      Hive.box<ShedEnvironmentReadingModel>(environmentBoxName);
+  static Box<InventoryItemModel> get inventoryBox =>
+      Hive.box<InventoryItemModel>(inventoryBoxName);
+  static Box<InventoryTransactionModel> get inventoryTransactionBox =>
+      Hive.box<InventoryTransactionModel>(inventoryTransactionBoxName);
+  static Box<HealthTreatmentModel> get treatmentBox =>
+      Hive.box<HealthTreatmentModel>(treatmentBoxName);
+  static Box<StaffMemberModel> get staffBox =>
+      Hive.box<StaffMemberModel>(staffBoxName);
+  static Box get settingsBox => Hive.box(settingsBoxName);
 
   static Future<void> init() async {
     await Hive.initFlutter();
@@ -48,6 +69,15 @@ class HiveService {
     if (!Hive.isAdapterRegistered(11)) {
       Hive.registerAdapter(TaskStatusAdapter());
     }
+    if (!Hive.isAdapterRegistered(12)) {
+      Hive.registerAdapter(InventoryCategoryAdapter());
+    }
+    if (!Hive.isAdapterRegistered(13)) {
+      Hive.registerAdapter(InventoryTransactionTypeAdapter());
+    }
+    if (!Hive.isAdapterRegistered(14)) {
+      Hive.registerAdapter(TreatmentTypeAdapter());
+    }
 
     // Models
     if (!Hive.isAdapterRegistered(0)) Hive.registerAdapter(FarmModelAdapter());
@@ -64,6 +94,21 @@ class HiveService {
     }
     if (!Hive.isAdapterRegistered(6)) Hive.registerAdapter(SaleModelAdapter());
     if (!Hive.isAdapterRegistered(7)) Hive.registerAdapter(TaskModelAdapter());
+    if (!Hive.isAdapterRegistered(15)) {
+      Hive.registerAdapter(ShedEnvironmentReadingModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(16)) {
+      Hive.registerAdapter(InventoryItemModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(17)) {
+      Hive.registerAdapter(InventoryTransactionModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(18)) {
+      Hive.registerAdapter(HealthTreatmentModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(19)) {
+      Hive.registerAdapter(StaffMemberModelAdapter());
+    }
 
     // Open boxes
     await Future.wait([
@@ -75,6 +120,11 @@ class HiveService {
       Hive.openBox<GrowthModel>(growthBoxName),
       Hive.openBox<SaleModel>(saleBoxName),
       Hive.openBox<TaskModel>(taskBoxName),
+      Hive.openBox<ShedEnvironmentReadingModel>(environmentBoxName),
+      Hive.openBox<InventoryItemModel>(inventoryBoxName),
+      Hive.openBox<InventoryTransactionModel>(inventoryTransactionBoxName),
+      Hive.openBox<HealthTreatmentModel>(treatmentBoxName),
+      Hive.openBox<StaffMemberModel>(staffBoxName),
       Hive.openBox(settingsBoxName),
     ]);
   }
@@ -110,6 +160,14 @@ class HiveService {
     return taskBox.values.where((t) => t.batchId == batchId).toList();
   }
 
+  static List<ShedEnvironmentReadingModel> getEnvironmentReadingsForShed(
+      String shedId) {
+    return environmentBox.values
+        .where((r) => r.shedId == shedId)
+        .toList()
+      ..sort((a, b) => b.recordedAt.compareTo(a.recordedAt));
+  }
+
   // Backup: export all data to JSON Map
   static Map<String, dynamic> exportToJson() {
     return {
@@ -123,6 +181,14 @@ class HiveService {
       'growth': growthBox.values.map((g) => g.toJson()).toList(),
       'sales': saleBox.values.map((s) => s.toJson()).toList(),
       'tasks': taskBox.values.map((t) => t.toJson()).toList(),
+      'environmentReadings':
+          environmentBox.values.map((r) => r.toJson()).toList(),
+      'inventoryItems': inventoryBox.values.map((i) => i.toJson()).toList(),
+      'inventoryTransactions':
+          inventoryTransactionBox.values.map((t) => t.toJson()).toList(),
+      'healthTreatments':
+          treatmentBox.values.map((t) => t.toJson()).toList(),
+      'staffMembers': staffBox.values.map((s) => s.toJson()).toList(),
     };
   }
 }

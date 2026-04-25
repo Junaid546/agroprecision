@@ -1,12 +1,15 @@
-import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:path_provider/path_provider.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
-import '../../../services/hive_service.dart';
+import '../../../features/batch/providers/batch_providers.dart';
+import '../../../shared/providers/app_state_provider.dart';
+import '../../../shared/providers/repository_providers.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
 
 class DataExportScreen extends ConsumerWidget {
@@ -23,7 +26,7 @@ class DataExportScreen extends ConsumerWidget {
           children: [
             Text('Data Export', style: AppTypography.headlineLg),
             Text(
-              'Download reports and historical data.',
+              'Download legacy financial data plus the new shed operations records.',
               style: AppTypography.bodyMd
                   .copyWith(color: AppColors.onSurfaceVariant),
             ),
@@ -33,7 +36,7 @@ class DataExportScreen extends ConsumerWidget {
               icon: Icons.backup,
               title: 'Export as JSON',
               subtitle: 'Full backup of all farm data',
-              onTap: () => _exportAsJSON(context),
+              onTap: () => _exportAsJSON(context, ref),
             ),
             const SizedBox(height: 12),
             _buildExportOption(
@@ -48,8 +51,8 @@ class DataExportScreen extends ConsumerWidget {
               context,
               icon: Icons.table_chart,
               title: 'Export CSV',
-              subtitle: 'Expenses and mortality tables',
-              onTap: () => _exportAsCSV(context),
+              subtitle: 'Combined operations, production, and finance tables',
+              onTap: () => _exportAsCSV(context, ref),
             ),
           ],
         ),
@@ -84,9 +87,11 @@ class DataExportScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title,
-                        style: AppTypography.bodyLg
-                            .copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                      title,
+                      style: AppTypography.bodyLg
+                          .copyWith(fontWeight: FontWeight.bold),
+                    ),
                     Text(subtitle, style: AppTypography.bodyMd),
                   ],
                 ),
@@ -99,21 +104,17 @@ class DataExportScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _exportAsJSON(BuildContext context) async {
+  Future<void> _exportAsJSON(BuildContext context, WidgetRef ref) async {
     try {
-      final data = HiveService.exportToJson();
-      final jsonString = jsonEncode(data);
-
-      final directory = await getApplicationDocumentsDirectory();
-      final file = File(
-          '${directory.path}/agro_precision_backup_${DateTime.now().millisecondsSinceEpoch}.json');
-      await file.writeAsString(jsonString);
+      final file = await ref.read(backupRestoreServiceProvider).exportBackupFile();
+      final jsonString = await file.readAsString();
 
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                'Data exported to ${file.path.split('/').last}. Size: ${(jsonString.length / 1024).toStringAsFixed(2)} KB'),
+              'Data exported to ${file.path.split('/').last}. Size: ${(jsonString.length / 1024).toStringAsFixed(2)} KB',
+            ),
             action: SnackBarAction(label: 'OK', onPressed: () {}),
           ),
         );
@@ -127,10 +128,37 @@ class DataExportScreen extends ConsumerWidget {
     }
   }
 
-  Future<void> _exportAsCSV(BuildContext context) async {
-    // Placeholder for CSV export
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('CSV export functionality coming soon!')),
-    );
+  Future<void> _exportAsCSV(BuildContext context, WidgetRef ref) async {
+    try {
+      final farm = ref.read(currentFarmProvider);
+      if (farm == null) {
+        throw Exception('No active farm found');
+      }
+
+      final sheds = await ref.read(shedListProvider.future);
+      final csv = await ref.read(csvExportServiceProvider).buildFarmCsv(
+            farm.id,
+            shedIds: sheds.map((shed) => shed.id).toList(),
+          );
+      final directory = await getApplicationDocumentsDirectory();
+      final file = File(
+        '${directory.path}/agro_precision_export_${DateTime.now().millisecondsSinceEpoch}.csv',
+      );
+      await file.writeAsString(csv);
+
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('CSV exported to ${file.path.split('/').last}'),
+          ),
+        );
+      }
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('CSV export failed: $e')),
+        );
+      }
+    }
   }
 }

@@ -8,8 +8,8 @@ import '../../../core/constants/app_typography.dart';
 import '../../../core/utils/seed_data.dart';
 import '../../../shared/widgets/agro_app_bar.dart';
 import '../../batch/providers/batch_providers.dart';
-import '../../../data/models/shed_model.dart';
 import '../../../shared/providers/notification_providers.dart';
+import '../../shed_control/providers/shed_control_providers.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -68,8 +68,9 @@ class SettingsScreen extends ConsumerWidget {
                         iconBg: const Color(0xFFFFF3E0),
                         iconColor: AppColors.secondary,
                         title: '${shed.name} Configurations',
-                        subtitle: 'Climate targets, hardware setup',
-                        onTap: () => _showShedConfigSheet(context, shed),
+                        subtitle: 'Climate targets, readings, and shed control',
+                        onTap: () =>
+                            context.push('/home/settings/sheds/${shed.id}/control'),
                       )),
                   _SettingRow(
                     icon: Icons.add,
@@ -86,6 +87,34 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 24),
             _SettingsSection(
+              title: 'OPERATIONS',
+              rows: [
+                _SettingRow(
+                  icon: Icons.inventory_2_outlined,
+                  iconBg: const Color(0xFFE8F5E9),
+                  iconColor: AppColors.primary,
+                  title: 'Inventory',
+                  subtitle: ref.watch(lowStockItemsProvider).when(
+                        data: (items) => items.isEmpty
+                            ? 'Feed, medicine, vaccine, and supply stock'
+                            : '${items.length} item(s) below reorder level',
+                        loading: () => 'Loading inventory...',
+                        error: (_, __) => 'Feed, medicine, vaccine, and supply stock',
+                      ),
+                  onTap: () => context.push('/home/settings/inventory'),
+                ),
+                _SettingRow(
+                  icon: Icons.vaccines_outlined,
+                  iconBg: const Color(0xFFE3F2FD),
+                  iconColor: const Color(0xFF1565C0),
+                  title: 'Health & Treatments',
+                  subtitle: 'Vaccination, medication, and shed care records',
+                  onTap: () => context.push('/home/settings/health'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            _SettingsSection(
               title: 'ACCESS & SECURITY',
               rows: [
                 _SettingRow(
@@ -94,15 +123,15 @@ class SettingsScreen extends ConsumerWidget {
                   iconColor: AppColors.onSurfaceVariant,
                   title: 'User Permissions',
                   subtitle: 'Manage staff roles and access',
-                  onTap: () {},
+                  onTap: () => context.push('/home/settings/staff'),
                 ),
                 _SettingRow(
                   icon: Icons.security,
                   iconBg: AppColors.surfaceContainerLow,
                   iconColor: AppColors.onSurfaceVariant,
                   title: 'Security Settings',
-                  subtitle: 'Two-factor authentication, sessions',
-                  onTap: () {},
+                  subtitle: 'Local PIN lock and access protection',
+                  onTap: () => context.push('/home/settings/security'),
                 ),
               ],
             ),
@@ -191,50 +220,6 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showShedConfigSheet(BuildContext context, ShedModel shed) {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => Container(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('${shed.name} Configuration', style: AppTypography.headlineMd),
-            const SizedBox(height: 16),
-            const Text('Shed configuration settings will be available soon.'),
-            const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Close'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showLogOutConfirmDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Log Out'),
-        content: const Text('Are you sure you want to log out?'),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Cancel')),
-          TextButton(
-            onPressed: () {
-              // Implementation for logout
-              Navigator.pop(context);
-            },
-            child:
-                const Text('Log Out', style: TextStyle(color: AppColors.error)),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _SettingsSection extends StatelessWidget {

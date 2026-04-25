@@ -32,6 +32,12 @@ class ShedModel extends HiveObject {
   @HiveField(8)
   bool isActive;
 
+  @HiveField(9)
+  Map<String, dynamic>? controlProfile;
+
+  @HiveField(10)
+  DateTime? updatedAt;
+
   ShedModel({
     required this.id,
     required this.farmId,
@@ -42,6 +48,8 @@ class ShedModel extends HiveObject {
     required this.createdAt,
     this.notes,
     this.isActive = true,
+    this.controlProfile,
+    this.updatedAt,
   });
 
   factory ShedModel.create({
@@ -59,6 +67,7 @@ class ShedModel extends HiveObject {
       areaSqMeters: areaSqMeters,
       createdAt: DateTime.now(),
       notes: notes,
+      updatedAt: DateTime.now(),
     );
   }
 
@@ -73,6 +82,8 @@ class ShedModel extends HiveObject {
       'createdAt': createdAt.toIso8601String(),
       'notes': notes,
       'isActive': isActive,
+      'controlProfile': controlProfile,
+      'updatedAt': updatedAt?.toIso8601String(),
     };
   }
 
@@ -89,6 +100,12 @@ class ShedModel extends HiveObject {
       createdAt: DateTime.parse(json['createdAt']),
       notes: json['notes'],
       isActive: json['isActive'] ?? true,
+      controlProfile: json['controlProfile'] != null
+          ? Map<String, dynamic>.from(json['controlProfile'])
+          : null,
+      updatedAt: json['updatedAt'] != null
+          ? DateTime.parse(json['updatedAt'])
+          : null,
     );
   }
 
@@ -102,6 +119,8 @@ class ShedModel extends HiveObject {
     DateTime? createdAt,
     String? notes,
     bool? isActive,
+    Map<String, dynamic>? controlProfile,
+    DateTime? updatedAt,
   }) {
     return ShedModel(
       id: id ?? this.id,
@@ -113,6 +132,8 @@ class ShedModel extends HiveObject {
       createdAt: createdAt ?? this.createdAt,
       notes: notes ?? this.notes,
       isActive: isActive ?? this.isActive,
+      controlProfile: controlProfile ?? this.controlProfile,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

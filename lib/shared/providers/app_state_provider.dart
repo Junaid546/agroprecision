@@ -12,12 +12,12 @@ final currentFarmProvider =
 class CurrentFarmNotifier extends StateNotifier<FarmModel?> {
   final FarmRepository _repo;
   CurrentFarmNotifier(this._repo) : super(null) {
-    _loadFarm();
+    reloadFarm();
   }
 
-  Future<void> _loadFarm() async {
+  Future<void> reloadFarm() async {
     final farms = await _repo.getAll();
-    if (farms.isNotEmpty) state = farms.first;
+    state = farms.isNotEmpty ? farms.first : null;
   }
 
   Future<void> createFarm(FarmModel farm) async {

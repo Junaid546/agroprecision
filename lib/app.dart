@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
 import 'core/navigation/app_router.dart';
+import 'features/security/widgets/security_gate.dart';
 
 class PoultryPathApp extends ConsumerWidget {
   const PoultryPathApp({super.key});
@@ -15,6 +16,9 @@ class PoultryPathApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       themeMode: ThemeMode.light,
       routerConfig: router,
+      builder: (context, child) => SecurityGate(
+        child: child ?? const SizedBox.shrink(),
+      ),
       debugShowCheckedModeBanner: false,
     );
   }

@@ -6,6 +6,7 @@ import '../../../data/models/batch_model.dart';
 import '../../../data/models/task_model.dart';
 import '../../batch/providers/batch_providers.dart';
 import '../../tasks/providers/task_providers.dart';
+import '../../../services/shed_operations_service.dart';
 
 class DashboardSummary {
   final BatchModel? activeBatch;
@@ -14,6 +15,7 @@ class DashboardSummary {
   final int todaysMortality;
   final List<TaskModel> todaysTasks;
   final List<double> last5BatchesProfit;
+  final ShedOperationsSnapshot? shedSnapshot;
 
   DashboardSummary({
     this.activeBatch,
@@ -22,6 +24,7 @@ class DashboardSummary {
     this.todaysMortality = 0,
     this.todaysTasks = const [],
     this.last5BatchesProfit = const [],
+    this.shedSnapshot,
   });
 }
 
@@ -43,11 +46,28 @@ final dashboardSummaryProvider = FutureProvider<DashboardSummary>((ref) async {
   final mortalityRepo = ref.watch(mortalityRepositoryProvider);
   final taskRepo = ref.watch(taskRepositoryProvider);
   final batchRepo = ref.watch(batchRepositoryProvider);
+  final prefsService = ref.watch(farmPreferencesServiceProvider);
+  final shedRepo = ref.watch(shedRepositoryProvider);
+  final shedOpsService = ref.watch(shedOperationsServiceProvider);
 
   final financials = await engine.computeForBatch(activeBatch.id);
-  final alerts = await engine.analyzeAndAlert(activeBatch.id);
+  final batchAlerts = await engine.analyzeAndAlert(activeBatch.id);
   final todaysMortality =
       await mortalityRepo.getTodaysMortality(activeBatch.id);
+  final shed = await shedRepo.getById(activeBatch.shedId);
+  final shedSnapshot = shed == null
+      ? null
+      : await shedOpsService.buildSnapshot(
+          shed,
+          activeBatch: activeBatch,
+        );
+  final alerts = [
+    ...batchAlerts.where((alert) => prefsService.isAlertEnabled(alert.metric)),
+    ...(shedSnapshot?.alerts.where(
+          (alert) => prefsService.isAlertEnabled(alert.metric),
+        ) ??
+        const <ActionAlert>[]),
+  ];
 
   // Use the tasks provider
   final todaysTasks = await taskRepo.getByDate(DateTime.now());
@@ -77,6 +97,7 @@ final dashboardSummaryProvider = FutureProvider<DashboardSummary>((ref) async {
     todaysMortality: todaysMortality,
     todaysTasks: todaysTasks,
     last5BatchesProfit: last5Profit,
+    shedSnapshot: shedSnapshot,
   );
 });
 

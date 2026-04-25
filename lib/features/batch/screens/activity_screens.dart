@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_typography.dart';
-import '../../../core/constants/app_spacing.dart';
 import '../../../data/models/expense_model.dart';
 import '../../../data/models/mortality_model.dart';
 import '../../../data/models/growth_model.dart';
@@ -35,16 +33,16 @@ class _ActivityHeader extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.05),
+        color: color.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: color.withOpacity(0.1)),
+        border: Border.all(color: color.withValues(alpha: 0.1)),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(icon, color: color, size: 32),
@@ -315,7 +313,7 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 8,
-                  shadowColor: AppColors.primary.withOpacity(0.4),
+                  shadowColor: AppColors.primary.withValues(alpha: 0.4),
                 ),
                 child: _isLoading 
                   ? const CircularProgressIndicator(color: Colors.white)
@@ -462,7 +460,7 @@ class _AddMortalityScreenState extends ConsumerState<AddMortalityScreen> {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 8,
-                  shadowColor: AppColors.error.withOpacity(0.4),
+                  shadowColor: AppColors.error.withValues(alpha: 0.4),
                 ),
                 child: _isLoading 
                   ? const CircularProgressIndicator(color: Colors.white)
@@ -639,7 +637,7 @@ class _AddSaleScreenState extends ConsumerState<AddSaleScreen> {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 8,
-                  shadowColor: Colors.orange.withOpacity(0.4),
+                  shadowColor: Colors.orange.withValues(alpha: 0.4),
                 ),
                 child: _isLoading 
                   ? const CircularProgressIndicator(color: Colors.white)
@@ -762,7 +760,7 @@ class _AddGrowthScreenState extends ConsumerState<AddGrowthScreen> {
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   elevation: 8,
-                  shadowColor: Colors.blue.withOpacity(0.4),
+                  shadowColor: Colors.blue.withValues(alpha: 0.4),
                 ),
                 child: _isLoading 
                   ? const CircularProgressIndicator(color: Colors.white)

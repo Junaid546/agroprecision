@@ -49,7 +49,7 @@ class _OnboardingPainter extends CustomPainter {
   void _paintFarmDigitized(Canvas canvas, Size size) {
     final paint = Paint()
       ..style = PaintingStyle.fill
-      ..color = AppColors.primaryContainer.withOpacity(0.1);
+      ..color = AppColors.primaryContainer.withValues(alpha: 0.1);
 
     final strokePaint = Paint()
       ..style = PaintingStyle.stroke
@@ -93,7 +93,7 @@ class _OnboardingPainter extends CustomPainter {
 
     // Connection lines
     final connectionPaint = Paint()
-      ..color = AppColors.primaryContainer.withOpacity(0.3)
+      ..color = AppColors.primaryContainer.withValues(alpha: 0.3)
       ..strokeWidth = 1.5
       ..style = PaintingStyle.stroke;
 
@@ -105,7 +105,7 @@ class _OnboardingPainter extends CustomPainter {
   void _paintOffline(Canvas canvas, Size size) {
     final paint = Paint()
       ..style = PaintingStyle.fill
-      ..color = AppColors.secondaryContainer.withOpacity(0.1);
+      ..color = AppColors.secondaryContainer.withValues(alpha: 0.1);
 
     final strokePaint = Paint()
       ..style = PaintingStyle.stroke
@@ -167,7 +167,7 @@ class _OnboardingPainter extends CustomPainter {
   void _paintSmartInsights(Canvas canvas, Size size) {
     final paint = Paint()
       ..style = PaintingStyle.fill
-      ..color = AppColors.tertiaryContainer.withOpacity(0.1);
+      ..color = AppColors.tertiaryContainer.withValues(alpha: 0.1);
 
     final strokePaint = Paint()
       ..style = PaintingStyle.stroke

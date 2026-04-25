@@ -165,6 +165,28 @@ class NotificationService {
     );
   }
 
+  static Future<void> showImmediateAlert({
+    required String title,
+    required String body,
+  }) async {
+    await _plugin.show(
+      title.hashCode.abs() % 100000,
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'instant_alerts',
+          'Instant Alerts',
+          channelDescription: 'Immediate environmental and stock alerts',
+          importance: Importance.high,
+          priority: Priority.high,
+          color: Color(0xFF003B1B),
+        ),
+        iOS: DarwinNotificationDetails(sound: 'default.aiff'),
+      ),
+    );
+  }
+
   static void _onNotificationTapped(NotificationResponse response) {
     // Navigate to tasks screen when notification tapped
     // This usually requires a global navigator key or a deep link
