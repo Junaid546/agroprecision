@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../data/models/expense_model.dart';
 import '../../../shared/providers/repository_providers.dart';
 import '../../../shared/providers/app_state_provider.dart';
+import '../../reports/models/report_models.dart';
 import '../../reports/providers/report_providers.dart';
 import '../../../data/models/growth_model.dart';
 

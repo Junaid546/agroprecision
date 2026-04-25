@@ -12,6 +12,7 @@ import '../../features/batch/screens/create_batch_screen.dart';
 import '../../features/batch/screens/batch_detail_screen.dart';
 import '../../features/tasks/screens/tasks_screen.dart';
 import '../../features/reports/screens/reports_screen.dart';
+import '../../features/reports/screens/report_pdf_preview_screen.dart';
 import '../../features/analytics/screens/analytics_screen.dart';
 import '../../features/settings/screens/settings_screen.dart';
 import '../../features/settings/screens/farm_profile_screen.dart';
@@ -19,13 +20,13 @@ import '../../features/settings/screens/shed_management_screen.dart';
 import '../../features/settings/screens/alert_preferences_screen.dart';
 import '../../features/settings/screens/data_export_screen.dart';
 import '../../features/settings/screens/backup_screen.dart';
+import '../../features/reports/models/report_models.dart';
 
 import '../../features/batch/screens/activity_screens.dart';
 import 'package:flutter/services.dart';
 import '../../shared/providers/app_state_provider.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
-final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 // Custom transitions helper
 class AppTransitions {
@@ -287,6 +288,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                   child: const ReportsScreen(),
                 ),
                 routes: [
+                  GoRoute(
+                    path: 'preview',
+                    parentNavigatorKey: _rootNavigatorKey,
+                    pageBuilder: (context, state) => AppTransitions.slideRight(
+                      key: state.pageKey,
+                      child: ReportPdfPreviewScreen(
+                        args: state.extra as ReportPreviewArgs,
+                      ),
+                    ),
+                  ),
                   GoRoute(
                     path: 'analytics',
                     pageBuilder: (context, state) => AppTransitions.slideRight(

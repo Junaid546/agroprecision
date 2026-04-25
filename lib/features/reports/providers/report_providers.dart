@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../services/calculation_engine.dart';
 import '../../../shared/providers/repository_providers.dart';
 import '../../../shared/providers/app_state_provider.dart';
+import '../models/report_models.dart';
+import '../services/report_export_assembler.dart';
 
 // Farm-wide summary for reports screen
 final farmSummaryProvider = FutureProvider<FarmSummaryFinancials>((ref) async {
@@ -47,24 +49,13 @@ final batchPerformanceListProvider =
   return rows;
 });
 
-class BatchPerformanceRow {
-  final String batchId;
-  final String batchNumber;
-  final DateTime startDate;
-  final DateTime? endDate;
-  final double revenue;
-  final double costs;
-  final double netProfit;
-  final double roi;
-
-  BatchPerformanceRow({
-    required this.batchId,
-    required this.batchNumber,
-    required this.startDate,
-    this.endDate,
-    required this.revenue,
-    required this.costs,
-    required this.netProfit,
-    required this.roi,
-  });
-}
+final reportExportAssemblerProvider = Provider<ReportExportAssembler>((ref) {
+  return DefaultReportExportAssembler(
+    batchRepository: ref.watch(batchRepositoryProvider),
+    expenseRepository: ref.watch(expenseRepositoryProvider),
+    mortalityRepository: ref.watch(mortalityRepositoryProvider),
+    growthRepository: ref.watch(growthRepositoryProvider),
+    saleRepository: ref.watch(saleRepositoryProvider),
+    calculationEngine: ref.watch(calculationEngineProvider),
+  );
+});

@@ -42,6 +42,6 @@ class DateFormatter {
   static String toDateRange(DateTime start, DateTime end) {
     final startStr = DateFormat('MMM dd').format(start);
     final endStr = DateFormat('MMM dd').format(end);
-    return '$startStr – $endStr';
+    return '$startStr - $endStr';
   }
 }

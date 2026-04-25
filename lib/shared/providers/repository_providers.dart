@@ -8,6 +8,7 @@ import '../../data/repositories/sale_repository.dart';
 import '../../data/repositories/task_repository.dart';
 import '../../data/repositories/shed_repository.dart';
 import '../../services/calculation_engine.dart';
+import '../../services/pdf_service.dart';
 
 // Repository providers — singleton instances
 final farmRepositoryProvider =
@@ -26,6 +27,8 @@ final taskRepositoryProvider =
     Provider<TaskRepository>((ref) => TaskRepository());
 final shedRepositoryProvider =
     Provider<ShedRepository>((ref) => ShedRepository());
+final pdfServiceProvider =
+    Provider<PDFService>((ref) => const DefaultPDFService());
 
 // Calculation engine provider
 final calculationEngineProvider = Provider<CalculationEngine>((ref) {
