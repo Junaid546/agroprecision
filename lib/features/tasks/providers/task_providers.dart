@@ -3,6 +3,7 @@ import '../../../data/models/task_model.dart';
 import '../../../data/repositories/task_repository.dart';
 import '../../../shared/providers/repository_providers.dart';
 import '../../../services/notification_service.dart';
+import '../../dashboard/providers/dashboard_providers.dart';
 
 // Selected date for task screen (default today)
 final taskSelectedDateProvider =
@@ -58,6 +59,7 @@ class TaskActionNotifier extends StateNotifier<AsyncValue<void>> {
       }
       _ref.invalidate(tasksForDateProvider);
       _ref.invalidate(taskProgressProvider);
+      _ref.invalidate(dashboardSummaryProvider);
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -76,6 +78,7 @@ class TaskActionNotifier extends StateNotifier<AsyncValue<void>> {
       await _repo.markAllDoneForDate(date);
       _ref.invalidate(tasksForDateProvider);
       _ref.invalidate(taskProgressProvider);
+      _ref.invalidate(dashboardSummaryProvider);
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -110,6 +113,7 @@ class TaskActionNotifier extends StateNotifier<AsyncValue<void>> {
       await _repo.create(task);
       _ref.invalidate(tasksForDateProvider);
       _ref.invalidate(taskProgressProvider);
+      _ref.invalidate(dashboardSummaryProvider);
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
@@ -126,6 +130,7 @@ class TaskActionNotifier extends StateNotifier<AsyncValue<void>> {
       await _repo.delete(taskId);
       _ref.invalidate(tasksForDateProvider);
       _ref.invalidate(taskProgressProvider);
+      _ref.invalidate(dashboardSummaryProvider);
       state = const AsyncValue.data(null);
     } catch (e, st) {
       state = AsyncValue.error(e, st);

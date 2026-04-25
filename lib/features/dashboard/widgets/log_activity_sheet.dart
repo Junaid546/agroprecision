@@ -252,16 +252,26 @@ class _AddFeedForm extends ConsumerStatefulWidget {
 class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
   final _formKey = GlobalKey<FormState>();
   BatchModel? _selectedBatch;
-  String? _feedType;
+  final _feedTypeController = TextEditingController();
   int _quantity = 0;
   final _notesController = TextEditingController();
   final _quantityController = TextEditingController(text: '0');
+  final _costPerKgController = TextEditingController();
   bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
     _selectedBatch = ref.read(autoSelectedBatchProvider);
+  }
+
+  @override
+  void dispose() {
+    _feedTypeController.dispose();
+    _notesController.dispose();
+    _quantityController.dispose();
+    _costPerKgController.dispose();
+    super.dispose();
   }
 
   @override
@@ -344,29 +354,11 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
           Text('FEED FORMULATION', 
             style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
           const SizedBox(height: 12),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: ['Starter', 'Grower', 'Finisher', 'Supplement'].map((type) {
-              final isSelected = _feedType == type;
-              return FilterChip(
-                label: Text(type),
-                selected: isSelected,
-                onSelected: (val) => setState(() => _feedType = type),
-                selectedColor: AppColors.primary.withValues(alpha: 0.1),
-                checkmarkColor: AppColors.primary,
-                labelStyle: AppTypography.labelBold.copyWith(
-                  color: isSelected ? AppColors.primary : AppColors.onSurface,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(
-                    color: isSelected ? AppColors.primary : AppColors.surfaceContainerHigh,
-                  ),
-                ),
-                backgroundColor: Colors.white,
-              );
-            }).toList(),
+          TextFormField(
+            controller: _feedTypeController,
+            decoration: _inputDecoration('e.g. Starter, Grower, Custom Mix...', Icons.eco_outlined),
+            style: AppTypography.bodyMd,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Feed formulation is required' : null,
           ),
 
           const SizedBox(height: 24),
@@ -375,6 +367,24 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
             style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
           const SizedBox(height: 12),
           _buildStepper(),
+          
+          const SizedBox(height: 24),
+
+          Text('COST PER KG (\$)', 
+            style: AppTypography.labelBold.copyWith(color: AppColors.onSurfaceVariant, letterSpacing: 1.2)),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _costPerKgController,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d{0,2}'))],
+            decoration: _inputDecoration('0.00', Icons.attach_money_rounded),
+            style: AppTypography.bodyMd,
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) return 'Cost is required';
+              if (double.tryParse(v) == null) return 'Invalid amount';
+              return null;
+            },
+          ),
           
           const SizedBox(height: 24),
           
@@ -473,13 +483,16 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
     }
     setState(() => _isLoading = true);
     try {
+      final costPerKg = double.tryParse(_costPerKgController.text.trim()) ?? 0.0;
+      final totalAmount = costPerKg * _quantity;
+
       final expense = ExpenseModel.create(
         batchId: _selectedBatch!.id,
         farmId: _selectedBatch!.farmId,
-        amount: 0,
+        amount: totalAmount,
         category: ExpenseCategory.feed,
         description:
-            'Feed: $_feedType, Qty: $_quantity kg. ${_notesController.text}',
+            'Feed: ${_feedTypeController.text.trim()}, Qty: $_quantity kg. ${_notesController.text}',
         date: DateTime.now(),
         quantity: _quantity.toDouble(),
         unit: 'kg',
