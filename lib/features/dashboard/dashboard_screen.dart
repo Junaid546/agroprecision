@@ -58,20 +58,7 @@ class DashboardScreen extends ConsumerWidget {
         if (batch == null) {
           return Scaffold(
             appBar: AgroAppBar(
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.storage_rounded, color: AppColors.primary),
-                  onPressed: () async {
-                    await SeedDataGenerator.seedDemoData(ref);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Demo data seeded successfully!')),
-                      );
-                    }
-                  },
-                  tooltip: 'Seed Demo Data',
-                ),
-              ],
+              actions: const [],
             ),
             body: EmptyState(
               title: 'No Active Batch',
@@ -87,20 +74,7 @@ class DashboardScreen extends ConsumerWidget {
         return Scaffold(
           backgroundColor: AppColors.surface,
           appBar: AgroAppBar(
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.storage_rounded, color: AppColors.primary),
-                onPressed: () async {
-                  await SeedDataGenerator.seedDemoData(ref);
-                  if (context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Demo data seeded successfully!')),
-                    );
-                  }
-                },
-                tooltip: 'Seed Demo Data',
-              ),
-            ],
+            actions: const [],
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -113,7 +87,7 @@ class DashboardScreen extends ConsumerWidget {
                   children: [
                     Text('Dashboard', style: AppTypography.headlineLg),
                     Text(
-                      '${batch.batchNumber} â€¢ Day ${batch.ageInDays}',
+                      '${batch.batchNumber} \u2022 Day ${batch.ageInDays}',
                       style: AppTypography.bodyMd.copyWith(
                         color: AppColors.onSurfaceVariant,
                         fontWeight: FontWeight.w600,
@@ -391,7 +365,7 @@ class DashboardScreen extends ConsumerWidget {
               spacing: 12,
               runSpacing: 8,
               children: [
-                _buildOpsPill('Temp', '${reading.temperatureC.toStringAsFixed(1)}Â°C'),
+                _buildOpsPill('Temp', '${reading.temperatureC.toStringAsFixed(1)}\u00B0C'),
                 _buildOpsPill(
                     'Humidity', '${reading.humidityPercent.toStringAsFixed(0)}%'),
                 _buildOpsPill(
@@ -403,8 +377,8 @@ class DashboardScreen extends ConsumerWidget {
             ),
           const SizedBox(height: 12),
           Text(
-            'Target ${profile.targetTempMinC.toStringAsFixed(1)}-${profile.targetTempMaxC.toStringAsFixed(1)}Â°C â€¢ '
-            '${shedSnapshot.lowStockItems.length} low-stock item(s) â€¢ '
+            'Target ${profile.targetTempMinC.toStringAsFixed(1)}-${profile.targetTempMaxC.toStringAsFixed(1)}\u00B0C \u2022 '
+            '${shedSnapshot.lowStockItems.length} low-stock item(s) \u2022 '
             '${shedSnapshot.treatmentCount} open treatment(s)',
             style: AppTypography.bodyMd,
           ),

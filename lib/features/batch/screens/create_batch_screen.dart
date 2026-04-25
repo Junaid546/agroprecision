@@ -568,8 +568,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
             margin: const EdgeInsets.all(16),
           ),
         );
-        context.pop();
-        context.push('/home/batches/$batchId');
+        context.pushReplacement('/home/batches/$batchId');
       }
     } catch (e) {
       _showError('Failed to create batch: $e');
@@ -695,7 +694,7 @@ class _CreateBatchScreenState extends ConsumerState<CreateBatchScreen> {
         farmId: farmId,
         batchId: batchId,
         title: 'Vaccination: $name',
-        description: '$batchName â€” Day $day vaccination due today',
+        description: '$batchName \u2014 Day $day vaccination due today',
         priority: TaskPriority.priority,
         status: TaskStatus.pending,
         scheduledDate: vaxDate,
@@ -814,7 +813,7 @@ class _VaccinationRow extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Text("$day â€” $vaccine",
+          Text("$day \u2014 $vaccine",
               style: AppTypography.bodyMd
                   .copyWith(color: AppColors.onSurfaceVariant)),
         ],

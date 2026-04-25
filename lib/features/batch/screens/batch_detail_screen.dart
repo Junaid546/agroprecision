@@ -96,9 +96,63 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
         ],
       ),
       actions: [
-        IconButton(
+        PopupMenuButton<String>(
           icon: const Icon(Icons.more_vert_rounded, color: AppColors.onSurface),
-          onPressed: () {},
+          onSelected: (value) async {
+            if (value == 'delete') {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Delete Batch?'),
+                  content: const Text(
+                      'Are you sure you want to delete this batch? All associated records will be lost. This cannot be undone.'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: const Text('Delete', style: TextStyle(color: AppColors.error)),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                try {
+                  await ref.read(batchRepositoryProvider).delete(batch.id);
+                  ref.invalidate(allBatchesProvider);
+                  // Ignore undefined names since we don't need dashboardSummaryProvider invalidation here, or we can just invalidate activeBatchesProvider as well
+                  ref.invalidate(activeBatchesProvider);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Batch deleted successfully')),
+                    );
+                    context.pop();
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to delete batch: $e')),
+                    );
+                  }
+                }
+              }
+            }
+          },
+          itemBuilder: (context) => [
+            const PopupMenuItem(
+              value: 'delete',
+              child: Row(
+                children: [
+                  Icon(Icons.delete_outline, color: AppColors.error, size: 20),
+                  SizedBox(width: 12),
+                  Text('Delete Batch', style: TextStyle(color: AppColors.error)),
+                ],
+              ),
+            ),
+          ],
         ),
       ],
     );

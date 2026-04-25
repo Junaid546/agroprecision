@@ -157,62 +157,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            if (kDebugMode) ...[
-              const SizedBox(height: 24),
-              _SettingsSection(
-                title: 'DEVELOPER OPTIONS',
-                rows: [
-                  _SettingRow(
-                    icon: Icons.bug_report,
-                    iconBg: AppColors.errorContainer,
-                    iconColor: AppColors.error,
-                    title: 'Load Demo Data',
-                    subtitle: 'Wipe all data and seed realistic demo records',
-                    onTap: () async {
-                      final confirmed = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Load Demo Data?'),
-                          content: const Text(
-                              'This will DELETE all current data and replace it with demo records. This cannot be undone.'),
-                          actions: [
-                            TextButton(
-                                onPressed: () => Navigator.pop(context, false),
-                                child: const Text('Cancel')),
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              child: const Text('Load',
-                                  style: TextStyle(color: AppColors.error)),
-                            ),
-                          ],
-                        ),
-                      );
 
-                      if (confirmed == true) {
-                        try {
-                          await SeedDataGenerator.seedDemoData(ref);
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                  content: Text('Demo data loaded successfully')),
-                            );
-                            // Refresh all providers
-                            ref.invalidate(shedListProvider);
-                            // Add more invalidations if needed, or just restart app
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Error loading data: $e')),
-                            );
-                          }
-                        }
-                      }
-                    },
-                  ),
-                ],
-              ),
-            ],
             const SizedBox(height: 100),
           ],
         ),

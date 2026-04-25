@@ -310,7 +310,7 @@ class _Chip extends StatelessWidget {
           ] : [],
         ),
         child: Text(
-          count > 0 ? '${label.toUpperCase()} â€¢ $count' : label.toUpperCase(),
+          count > 0 ? '${label.toUpperCase()} \u2022 $count' : label.toUpperCase(),
           style: AppTypography.labelBold.copyWith(
             color: isSelected ? Colors.white : AppColors.onSurfaceVariant,
             fontSize: 12,
