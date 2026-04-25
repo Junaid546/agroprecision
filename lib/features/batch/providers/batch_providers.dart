@@ -4,6 +4,10 @@ import '../../../data/models/shed_model.dart';
 import '../../../services/calculation_engine.dart';
 import '../../../shared/providers/repository_providers.dart';
 import '../../../shared/providers/app_state_provider.dart';
+import '../../../data/models/expense_model.dart';
+import '../../../data/models/mortality_model.dart';
+import '../../../data/models/sale_model.dart';
+import '../../../data/models/growth_model.dart';
 
 // --- CORE BATCH LIST ---
 
@@ -92,4 +96,31 @@ final batchAlertsProvider = FutureProvider.autoDispose
     .family<List<ActionAlert>, String>((ref, batchId) async {
   final engine = ref.watch(calculationEngineProvider);
   return engine.analyzeAndAlert(batchId);
+});
+
+final batchProvider =
+    FutureProvider.autoDispose.family<BatchModel?, String>((ref, id) async {
+  return ref.watch(batchRepositoryProvider).getById(id);
+});
+
+// --- LIST PROVIDERS (FAMILY) ---
+
+final batchExpensesProvider = FutureProvider.autoDispose
+    .family<List<ExpenseModel>, String>((ref, batchId) async {
+  return ref.read(expenseRepositoryProvider).getByBatch(batchId);
+});
+
+final batchMortalityProvider = FutureProvider.autoDispose
+    .family<List<MortalityModel>, String>((ref, batchId) async {
+  return ref.read(mortalityRepositoryProvider).getByBatch(batchId);
+});
+
+final batchSalesProvider = FutureProvider.autoDispose
+    .family<List<SaleModel>, String>((ref, batchId) async {
+  return ref.read(saleRepositoryProvider).getByBatch(batchId);
+});
+
+final batchGrowthProvider = FutureProvider.autoDispose
+    .family<List<GrowthModel>, String>((ref, batchId) async {
+  return ref.read(growthRepositoryProvider).getByBatch(batchId);
 });

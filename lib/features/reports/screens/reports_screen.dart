@@ -164,8 +164,10 @@ class ReportsScreen extends ConsumerWidget {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                Text('Batch Performance Breakdown',
-                    style: AppTypography.headlineMd),
+                Expanded(
+                  child: Text('Batch Performance Breakdown',
+                      style: AppTypography.headlineMd),
+                ),
                 const Spacer(),
                 const Icon(Icons.filter_list),
               ],

@@ -222,6 +222,8 @@ class _AddExpenseScreenState extends ConsumerState<AddExpenseScreen> {
       );
       await ref.read(expenseRepositoryProvider).create(expense);
       ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(batchFinancialsProvider(widget.batchId));
+      ref.invalidate(batchExpensesProvider(widget.batchId));
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -367,6 +369,9 @@ class _AddMortalityScreenState extends ConsumerState<AddMortalityScreen> {
       );
       await ref.read(mortalityRepositoryProvider).create(record);
       ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(batchFinancialsProvider(widget.batchId));
+      ref.invalidate(batchMortalityProvider(widget.batchId));
+      ref.invalidate(batchAliveCountProvider(widget.batchId));
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -493,6 +498,8 @@ class _AddSaleScreenState extends ConsumerState<AddSaleScreen> {
       );
       await ref.read(saleRepositoryProvider).create(sale);
       ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(batchFinancialsProvider(widget.batchId));
+      ref.invalidate(batchSalesProvider(widget.batchId));
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -636,6 +643,8 @@ class _AddGrowthScreenState extends ConsumerState<AddGrowthScreen> {
       );
       await ref.read(growthRepositoryProvider).create(record);
       ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(batchFinancialsProvider(widget.batchId));
+      ref.invalidate(batchGrowthProvider(widget.batchId));
       if (mounted) context.pop();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));

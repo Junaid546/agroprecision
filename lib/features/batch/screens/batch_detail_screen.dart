@@ -11,6 +11,7 @@ import '../../../data/models/batch_model.dart';
 import '../../../data/models/expense_model.dart';
 import '../../../data/models/mortality_model.dart';
 import '../../../data/models/sale_model.dart';
+import '../../../data/models/growth_model.dart';
 import '../../../data/repositories/growth_repository.dart';
 import '../../../data/repositories/mortality_repository.dart';
 import '../../../services/calculation_engine.dart';
@@ -34,17 +35,12 @@ class _BatchDetailScreenState extends ConsumerState<BatchDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final batchAsync =
-        ref.watch(batchRepositoryProvider).getById(widget.batchId);
+    final batchAsync = ref.watch(batchProvider(widget.batchId));
 
-    return FutureBuilder<BatchModel?>(
-      future: batchAsync,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Scaffold(
-              body: Center(child: CircularProgressIndicator()));
-        }
-        final batch = snapshot.data;
+    return batchAsync.when(
+      loading: () => const Scaffold(body: Center(child: CircularProgressIndicator())),
+      error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
+      data: (batch) {
         if (batch == null) {
           return const Scaffold(body: Center(child: Text('Batch not found')));
         }
@@ -492,13 +488,13 @@ class _GrowthLineChart extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return FutureBuilder<List<GrowthChartPoint>>(
-      future: ref.read(growthRepositoryProvider).getChartData(batchId),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return const Center(child: CircularProgressIndicator());
-        }
-        final points = snapshot.data!;
+    final growthAsync = ref.watch(batchGrowthProvider(batchId));
+
+    return growthAsync.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (e, _) => Center(child: Text('Error: $e')),
+      data: (logs) {
+        final points = logs.map((g) => GrowthChartPoint(day: g.batchDay, weightKg: g.averageWeightKg)).toList();
 
         // Use dummy data for demonstration if empty
         final spots = points.isEmpty
@@ -598,6 +594,8 @@ class _MortalityBarChart extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final mortalityAsync = ref.watch(batchMortalityProvider(batchId));
+
     return FutureBuilder<List<WeeklyMortalityData>>(
       future: ref.read(mortalityRepositoryProvider).getWeeklyBreakdown(batchId),
       builder: (context, snapshot) {
@@ -666,18 +664,14 @@ class _ExpensesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final expensesAsync =
-        ref.watch(expenseRepositoryProvider).getByBatch(batch.id);
+    final expensesAsync = ref.watch(batchExpensesProvider(batch.id));
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: FutureBuilder<List<ExpenseModel>>(
-        future: expensesAsync,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final expenses = snapshot.data!;
+      body: expensesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
+        data: (expenses) {
           if (expenses.isEmpty) {
             return Center(
                 child:
@@ -744,6 +738,7 @@ class _ExpensesTab extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'expenses_fab',
         onPressed: () {
           HapticFeedback.lightImpact();
           context.push('/home/batches/${batch.id}/add-expense');
@@ -762,18 +757,14 @@ class _MortalityTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logsAsync =
-        ref.watch(mortalityRepositoryProvider).getByBatch(batch.id);
+    final logsAsync = ref.watch(batchMortalityProvider(batch.id));
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: FutureBuilder<List<MortalityModel>>(
-        future: logsAsync,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final logs = snapshot.data!;
+      body: logsAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
+        data: (logs) {
           if (logs.isEmpty) {
             return Center(
                 child: Text('No mortality logs recorded',
@@ -833,6 +824,7 @@ class _MortalityTab extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'mortality_fab',
         onPressed: () {
           HapticFeedback.lightImpact();
           context.push('/home/batches/${batch.id}/add-mortality');
@@ -851,18 +843,14 @@ class _SalesTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final salesAsync = ref.watch(saleRepositoryProvider).getByBatch(batch.id);
+    final salesAsync = ref.watch(batchSalesProvider(batch.id));
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: FutureBuilder<List<SaleModel>>(
-        future: salesAsync,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          final sales = snapshot.data!;
-
+      body: salesAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => Center(child: Text('Error: $e')),
+        data: (sales) {
           return Column(
             children: [
               if (sales.isNotEmpty) _buildSalesSummary(sales),
@@ -924,6 +912,7 @@ class _SalesTab extends ConsumerWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'sales_fab',
         onPressed: () {
           HapticFeedback.lightImpact();
           context.push('/home/batches/${batch.id}/add-sale');

@@ -44,6 +44,7 @@ class _BatchListScreenState extends ConsumerState<BatchListScreen> {
         padding: const EdgeInsets.only(bottom: 16, right: 8),
         child: FloatingActionButton(
           backgroundColor: AppColors.primary,
+          heroTag: 'batch_list_fab',
           onPressed: () {
             HapticFeedback.mediumImpact();
             context.push('/home/batches/new');

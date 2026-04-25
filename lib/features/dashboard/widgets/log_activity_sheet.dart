@@ -486,6 +486,8 @@ class _AddFeedFormState extends ConsumerState<_AddFeedForm> {
       );
       await ref.read(expenseRepositoryProvider).create(expense);
       ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(batchFinancialsProvider(_selectedBatch!.id));
+      ref.invalidate(batchExpensesProvider(_selectedBatch!.id));
       if (mounted) Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context)
@@ -705,6 +707,9 @@ class _LogDeathsFormState extends ConsumerState<_LogDeathsForm> {
       );
       await ref.read(mortalityRepositoryProvider).create(log);
       ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(batchFinancialsProvider(_selectedBatch!.id));
+      ref.invalidate(batchMortalityProvider(_selectedBatch!.id));
+      ref.invalidate(batchAliveCountProvider(_selectedBatch!.id));
       if (mounted) Navigator.pop(context);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -1008,6 +1013,8 @@ class _RecordGrowthFormState extends ConsumerState<_RecordGrowthForm> {
       );
       await ref.read(growthRepositoryProvider).create(growth);
       ref.invalidate(dashboardSummaryProvider);
+      ref.invalidate(batchFinancialsProvider(_selectedBatch!.id));
+      ref.invalidate(batchGrowthProvider(_selectedBatch!.id));
       if (mounted) Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context)
