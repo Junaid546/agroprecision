@@ -357,6 +357,19 @@ class _AddMortalityScreenState extends ConsumerState<AddMortalityScreen> {
       return;
     }
 
+    final aliveCountAsync = ref.read(batchAliveCountProvider(widget.batchId));
+    final currentAliveCount = aliveCountAsync.value ?? 0;
+
+    if (count > currentAliveCount) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cannot log $count deaths. Only $currentAliveCount birds remaining in shed.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       final farm = ref.read(currentFarmProvider);
@@ -406,6 +419,20 @@ class _AddMortalityScreenState extends ConsumerState<AddMortalityScreen> {
               color: AppColors.error,
             ),
             const SizedBox(height: 32),
+            ref.watch(batchAliveCountProvider(widget.batchId)).when(
+              data: (aliveCount) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  'AVAILABLE IN SHED: $aliveCount BIRDS',
+                  style: AppTypography.labelBold.copyWith(
+                    color: aliveCount > 0 ? AppColors.primary : AppColors.error,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            ),
             _ActivityInputField(
               label: 'NUMBER OF BIRDS',
               controller: _countController,
@@ -484,6 +511,19 @@ class _AddSaleScreenState extends ConsumerState<AddSaleScreen> {
       return;
     }
 
+    final aliveCountAsync = ref.read(batchAliveCountProvider(widget.batchId));
+    final currentAliveCount = aliveCountAsync.value ?? 0;
+
+    if (count > currentAliveCount) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Cannot sell $count birds. Only $currentAliveCount birds remaining in shed.'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
     try {
       final farm = ref.read(currentFarmProvider);
@@ -534,6 +574,20 @@ class _AddSaleScreenState extends ConsumerState<AddSaleScreen> {
               color: Colors.orange,
             ),
             const SizedBox(height: 32),
+            ref.watch(batchAliveCountProvider(widget.batchId)).when(
+              data: (aliveCount) => Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: Text(
+                  'AVAILABLE IN SHED: $aliveCount BIRDS',
+                  style: AppTypography.labelBold.copyWith(
+                    color: aliveCount > 0 ? AppColors.primary : AppColors.error,
+                    fontSize: 10,
+                  ),
+                ),
+              ),
+              loading: () => const SizedBox.shrink(),
+              error: (_, __) => const SizedBox.shrink(),
+            ),
             _ActivityInputField(
               label: 'NUMBER OF BIRDS SOLD',
               controller: _countController,

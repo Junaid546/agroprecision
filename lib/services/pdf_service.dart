@@ -1,4 +1,4 @@
-import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -10,6 +10,11 @@ import '../core/utils/currency_formatter.dart';
 import 'calculation_engine.dart';
 
 class PDFService {
+  static const PdfColor primaryColor = PdfColor.fromInt(0xFF003B1B);
+  static const PdfColor secondaryColor = PdfColor.fromInt(0xFFFEA619);
+  static const PdfColor surfaceColor = PdfColor.fromInt(0xFFF8FAF4);
+  static const PdfColor textColor = PdfColor.fromInt(0xFF191C19);
+
   static Future<void> generateFinancialReport({
     required String farmName,
     required String ownerName,
@@ -17,172 +22,366 @@ class PDFService {
     required List<BatchPerformanceRow> batches,
     required List<BatchFinancials> detailedBatches,
   }) async {
-    final Uint8List pdfData = await compute(_buildPdfDocument, {
-      'farmName': farmName,
-      'ownerName': ownerName,
-      'summary': summary,
-      'batches': batches,
-      'detailedBatches': detailedBatches,
-    });
+    final pdf = pw.Document(
+      title: '$farmName - Financial Report',
+      author: 'AgroPrecision',
+    );
 
-    await Printing.layoutPdf(onLayout: (PdfPageFormat format) async => pdfData);
-  }
-
-  static Future<Uint8List> _buildPdfDocument(Map<String, dynamic> data) async {
-    final farmName = data['farmName'] as String;
-    final ownerName = data['ownerName'] as String;
-    final summary = data['summary'] as FarmSummaryFinancials;
-    final batches = data['batches'] as List<BatchPerformanceRow>;
-    final detailedBatches = data['detailedBatches'] as List<BatchFinancials>;
-
-    final pdf = pw.Document();
-
-    // 1. Cover Page
+    // Cover Page
     pdf.addPage(
       pw.Page(
-        build: (context) => pw.Center(
-          child: pw.Column(
-            mainAxisAlignment: pw.MainAxisAlignment.center,
-            children: [
-              pw.Text(farmName,
-                  style: pw.TextStyle(
-                      fontSize: 40, fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 20),
-              pw.Text('Financial Performance Report',
-                  style: const pw.TextStyle(fontSize: 24)),
-              pw.SizedBox(height: 40),
-              pw.Text('Owner: $ownerName',
-                  style: const pw.TextStyle(fontSize: 18)),
-              pw.Text(
-                  'Date: ${DateFormat('MMMM dd, yyyy').format(DateTime.now())}',
-                  style: const pw.TextStyle(fontSize: 16)),
-            ],
-          ),
-        ),
+        pageFormat: PdfPageFormat.a4,
+        build: (context) => _buildCoverPage(farmName, ownerName),
       ),
     );
 
-    // 2. Financial Summary Page
+    // Summary Page
     pdf.addPage(
-      pw.Page(
-        build: (context) => pw.Column(
-          crossAxisAlignment: pw.CrossAxisAlignment.start,
-          children: [
-            pw.Header(level: 0, text: 'Financial Summary'),
-            pw.SizedBox(height: 20),
-            _buildSummaryRow(
-                'Total Profit', CurrencyFormatter.format(summary.totalProfit)),
-            _buildSummaryRow(
-                'Overall ROI', '${summary.overallROI.toStringAsFixed(1)}%'),
-            _buildSummaryRow('Avg. Cost / Chicken',
-                CurrencyFormatter.format(summary.avgCostPerBird)),
-            pw.SizedBox(height: 40),
-            pw.Header(level: 1, text: 'Batch Performance Breakdown'),
-            pw.SizedBox(height: 10),
-            pw.Table(
-              border: pw.TableBorder.all(),
-              children: [
-                pw.TableRow(
-                  decoration: const pw.BoxDecoration(color: PdfColors.grey300),
-                  children: [
-                    _tableCell('Batch ID', isHeader: true),
-                    _tableCell('Revenue', isHeader: true),
-                    _tableCell('Costs', isHeader: true),
-                    _tableCell('Net Profit', isHeader: true),
-                  ],
-                ),
-                ...batches.map((b) => pw.TableRow(
-                      children: [
-                        _tableCell(b.batchNumber),
-                        _tableCell(CurrencyFormatter.format(b.revenue)),
-                        _tableCell(CurrencyFormatter.format(b.costs)),
-                        _tableCell(CurrencyFormatter.format(b.netProfit)),
-                      ],
-                    )),
-              ],
-            ),
-          ],
-        ),
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        header: (context) => _buildHeader(farmName),
+        footer: (context) => _buildFooter(context),
+        build: (context) => [
+          _buildSectionTitle('Executive Summary'),
+          _buildSummaryGrid(summary),
+          pw.SizedBox(height: 30),
+          _buildSectionTitle('Batch Performance Overview'),
+          _buildBatchTable(batches),
+        ],
       ),
     );
 
-    // 3. Detailed Batch Reports
+    // Detailed Pages
     for (final batch in detailedBatches) {
       pdf.addPage(
-        pw.Page(
-          build: (context) => pw.Column(
-            crossAxisAlignment: pw.CrossAxisAlignment.start,
-            children: [
-              pw.Header(level: 0, text: 'Batch Report: ${batch.batchId}'),
-              pw.SizedBox(height: 10),
-              pw.Row(
-                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
-                children: [
-                  pw.Text('Status: ${batch.status.name.toUpperCase()}'),
-                  pw.Text('Initial Count: ${batch.initialCount}'),
-                ],
-              ),
-              pw.SizedBox(height: 20),
-              pw.Text('Expense Breakdown',
-                  style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
-              pw.SizedBox(height: 10),
-              pw.Table(
-                border: pw.TableBorder.all(),
-                children: [
-                  pw.TableRow(
-                    decoration:
-                        const pw.BoxDecoration(color: PdfColors.grey200),
-                    children: [
-                      _tableCell('Category', isHeader: true),
-                      _tableCell('Amount', isHeader: true),
-                    ],
-                  ),
-                  ...batch.categoryBreakdown.entries.map((e) => pw.TableRow(
-                        children: [
-                          _tableCell(e.key.name),
-                          _tableCell(CurrencyFormatter.format(e.value)),
-                        ],
-                      )),
-                ],
-              ),
-              pw.SizedBox(height: 20),
-              _buildSummaryRow('Mortality Summary',
-                  '${batch.totalMortality} birds (${batch.mortalityRate.toStringAsFixed(1)}%)'),
-              _buildSummaryRow('Total Sold', '${batch.totalSold} birds'),
-              _buildSummaryRow(
-                  'Net Profit', CurrencyFormatter.format(batch.netProfit)),
-              _buildSummaryRow('Batch ROI', '${batch.roi.toStringAsFixed(1)}%'),
-            ],
-          ),
+        pw.MultiPage(
+          pageFormat: PdfPageFormat.a4,
+          header: (context) => _buildHeader(farmName),
+          footer: (context) => _buildFooter(context),
+          build: (context) => [
+            _buildBatchHeader(batch),
+            pw.SizedBox(height: 20),
+            _buildBatchDetails(batch),
+            pw.SizedBox(height: 20),
+            _buildExpenseTable(batch),
+          ],
         ),
       );
     }
 
-    return pdf.save();
+    final Uint8List bytes = await pdf.save();
+    final sanitizedFarmName = farmName.replaceAll(RegExp(r'[<>:"/\\|?*]'), '_');
+    
+    await Printing.sharePdf(
+      bytes: bytes,
+      filename: '${sanitizedFarmName}_Report_${DateFormat('yyyyMMdd').format(DateTime.now())}.pdf',
+    );
   }
 
-  static pw.Widget _buildSummaryRow(String label, String value) {
-    return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 4),
-      child: pw.Row(
-        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+  static pw.Widget _buildCoverPage(String farmName, String ownerName) {
+    return pw.Container(
+      decoration: pw.BoxDecoration(
+        border: pw.Border.all(color: primaryColor, width: 2),
+      ),
+      padding: const pw.EdgeInsets.all(40),
+      child: pw.Column(
+        mainAxisAlignment: pw.MainAxisAlignment.center,
         children: [
-          pw.Text(label),
-          pw.Text(value, style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+          pw.Divider(color: secondaryColor, thickness: 5),
+          pw.SizedBox(height: 40),
+          pw.Text('AGROPRECISION',
+              style: pw.TextStyle(
+                  fontSize: 14,
+                  fontWeight: pw.FontWeight.bold,
+                  letterSpacing: 5,
+                  color: secondaryColor)),
+          pw.SizedBox(height: 20),
+          pw.Text(farmName.toUpperCase(),
+              textAlign: pw.TextAlign.center,
+              style: pw.TextStyle(
+                  fontSize: 36,
+                  fontWeight: pw.FontWeight.bold,
+                  color: primaryColor)),
+          pw.SizedBox(height: 10),
+          pw.Text('FINANCIAL PERFORMANCE REPORT',
+              style: pw.TextStyle(
+                  fontSize: 18,
+                  letterSpacing: 2,
+                  color: PdfColors.grey700)),
+          pw.SizedBox(height: 80),
+          pw.Container(height: 2, width: 100, color: secondaryColor),
+          pw.SizedBox(height: 40),
+          pw.Text('PREPARED FOR',
+              style: pw.TextStyle(
+                  fontSize: 10,
+                  fontWeight: pw.FontWeight.bold,
+                  color: PdfColors.grey500)),
+          pw.Text(ownerName,
+              style: pw.TextStyle(
+                  fontSize: 20,
+                  fontWeight: pw.FontWeight.bold,
+                  color: primaryColor)),
+          pw.SizedBox(height: 20),
+          pw.Text(DateFormat('MMMM dd, yyyy').format(DateTime.now()),
+              style: pw.TextStyle(fontSize: 14, color: PdfColors.grey600)),
+          pw.Spacer(),
+          pw.Text('Confidential Report • Generated by Poultry Path Engine',
+              style: pw.TextStyle(fontSize: 8, color: PdfColors.grey)),
         ],
       ),
     );
   }
 
-  static pw.Widget _tableCell(String text, {bool isHeader = false}) {
+  static pw.Widget _buildHeader(String farmName) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.only(bottom: 10),
+      margin: const pw.EdgeInsets.only(bottom: 20),
+      decoration: const pw.BoxDecoration(
+        border: pw.Border(bottom: pw.BorderSide(color: secondaryColor, width: 0.5)),
+      ),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text(farmName,
+              style: pw.TextStyle(
+                  color: primaryColor,
+                  fontWeight: pw.FontWeight.bold,
+                  fontSize: 12)),
+          pw.Text('Financial Report',
+              style: pw.TextStyle(color: PdfColors.grey, fontSize: 10)),
+        ],
+      ),
+    );
+  }
+
+  static pw.Widget _buildFooter(pw.Context context) {
+    return pw.Container(
+      margin: const pw.EdgeInsets.only(top: 20),
+      padding: const pw.EdgeInsets.only(top: 10),
+      decoration: const pw.BoxDecoration(
+        border: pw.Border(top: pw.BorderSide(color: PdfColors.grey200, width: 0.5)),
+      ),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Text('Generated by AgroPrecision',
+              style: pw.TextStyle(color: PdfColors.grey, fontSize: 8)),
+          pw.Text('Page ${context.pageNumber} of ${context.pagesCount}',
+              style: pw.TextStyle(color: PdfColors.grey, fontSize: 8)),
+        ],
+      ),
+    );
+  }
+
+  static pw.Widget _buildSectionTitle(String title) {
     return pw.Padding(
-      padding: const pw.EdgeInsets.all(5),
-      child: pw.Text(
-        text,
-        style: pw.TextStyle(
-          fontWeight: isHeader ? pw.FontWeight.bold : pw.FontWeight.normal,
+      padding: const pw.EdgeInsets.only(bottom: 15),
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(title.toUpperCase(),
+              style: pw.TextStyle(
+                  fontSize: 14,
+                  fontWeight: pw.FontWeight.bold,
+                  color: primaryColor,
+                  letterSpacing: 1.2)),
+          pw.Container(height: 2, width: 30, color: secondaryColor),
+        ],
+      ),
+    );
+  }
+
+  static pw.Widget _buildSummaryGrid(FarmSummaryFinancials summary) {
+    return pw.Row(
+      children: [
+        _buildStatCard('Total Profit',
+            CurrencyFormatter.format(summary.totalProfit), primaryColor),
+        pw.SizedBox(width: 10),
+        _buildStatCard('Overall ROI', '${summary.overallROI.toStringAsFixed(1)}%',
+            secondaryColor),
+        pw.SizedBox(width: 10),
+        _buildStatCard('Avg. Cost/Bird',
+            CurrencyFormatter.format(summary.avgCostPerBird), PdfColors.blueGrey700),
+      ],
+    );
+  }
+
+  static pw.Widget _buildStatCard(String label, String value, PdfColor color) {
+    return pw.Expanded(
+      child: pw.Container(
+        padding: const pw.EdgeInsets.all(15),
+        decoration: pw.BoxDecoration(
+          color: PdfColors.grey100,
+          borderRadius: const pw.BorderRadius.all(pw.Radius.circular(8)),
+          border: pw.Border.all(color: PdfColors.grey200),
+        ),
+        child: pw.Column(
+          crossAxisAlignment: pw.CrossAxisAlignment.start,
+          children: [
+            pw.Text(label.toUpperCase(),
+                style: pw.TextStyle(fontSize: 8, color: PdfColors.grey)),
+            pw.SizedBox(height: 5),
+            pw.Text(value,
+                style: pw.TextStyle(
+                    fontSize: 16,
+                    fontWeight: pw.FontWeight.bold,
+                    color: color)),
+          ],
         ),
       ),
+    );
+  }
+
+  static pw.Widget _buildBatchTable(List<BatchPerformanceRow> batches) {
+    return pw.Table(
+      columnWidths: {
+        0: const pw.FlexColumnWidth(2),
+        1: const pw.FlexColumnWidth(2),
+        2: const pw.FlexColumnWidth(2),
+        3: const pw.FlexColumnWidth(2),
+      },
+      children: [
+        pw.TableRow(
+          decoration: const pw.BoxDecoration(
+            color: primaryColor,
+            borderRadius: pw.BorderRadius.vertical(top: pw.Radius.circular(4)),
+          ),
+          children: [
+            _headerCell('BATCH ID'),
+            _headerCell('REVENUE'),
+            _headerCell('COSTS'),
+            _headerCell('NET PROFIT'),
+          ],
+        ),
+        ...batches.asMap().entries.map((entry) {
+          final i = entry.key;
+          final b = entry.value;
+          final isEven = i % 2 == 0;
+          return pw.TableRow(
+            decoration: pw.BoxDecoration(
+                color: isEven ? PdfColors.white : PdfColors.grey50),
+            children: [
+              _dataCell(b.batchNumber),
+              _dataCell(CurrencyFormatter.format(b.revenue)),
+              _dataCell(CurrencyFormatter.format(b.costs)),
+              _dataCell(CurrencyFormatter.format(b.netProfit),
+                  color: b.netProfit >= 0 ? PdfColors.green : PdfColors.red),
+            ],
+          );
+        }),
+      ],
+    );
+  }
+
+  static pw.Widget _buildBatchHeader(BatchFinancials batch) {
+    return pw.Container(
+      padding: const pw.EdgeInsets.all(15),
+      decoration: const pw.BoxDecoration(
+        color: primaryColor,
+        borderRadius: pw.BorderRadius.all(pw.Radius.circular(8)),
+      ),
+      child: pw.Row(
+        mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+        children: [
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Text('BATCH PERFORMANCE REPORT',
+                  style: pw.TextStyle(color: PdfColors.grey300, fontSize: 8)),
+              pw.Text(batch.batchId,
+                  style: pw.TextStyle(
+                      color: PdfColors.white,
+                      fontSize: 18,
+                      fontWeight: pw.FontWeight.bold)),
+            ],
+          ),
+          pw.Container(
+            padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+            decoration: pw.BoxDecoration(
+              color: secondaryColor,
+              borderRadius: const pw.BorderRadius.all(pw.Radius.circular(4)),
+            ),
+            child: pw.Text(batch.status.name.toUpperCase(),
+                style: pw.TextStyle(
+                    color: PdfColors.white,
+                    fontWeight: pw.FontWeight.bold,
+                    fontSize: 10)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  static pw.Widget _buildBatchDetails(BatchFinancials batch) {
+    return pw.Row(
+      children: [
+        _detailItem('Initial Count', batch.initialCount.toString()),
+        _detailItem('Mortality', '${batch.totalMortality} (${batch.mortalityRate.toStringAsFixed(1)}%)'),
+        _detailItem('Survival Rate', '${batch.survivalRate.toStringAsFixed(1)}%'),
+        _detailItem('ROI', '${batch.roi.toStringAsFixed(1)}%', color: secondaryColor),
+      ],
+    );
+  }
+
+  static pw.Widget _detailItem(String label, String value, {PdfColor? color}) {
+    return pw.Expanded(
+      child: pw.Column(
+        crossAxisAlignment: pw.CrossAxisAlignment.start,
+        children: [
+          pw.Text(label, style: pw.TextStyle(fontSize: 8, color: PdfColors.grey)),
+          pw.Text(value, style: pw.TextStyle(fontSize: 12, fontWeight: pw.FontWeight.bold, color: color ?? textColor)),
+        ],
+      ),
+    );
+  }
+
+  static pw.Widget _buildExpenseTable(BatchFinancials batch) {
+    return pw.Column(
+      crossAxisAlignment: pw.CrossAxisAlignment.start,
+      children: [
+        pw.Text('EXPENSE BREAKDOWN',
+            style: pw.TextStyle(
+                fontSize: 10, fontWeight: pw.FontWeight.bold, color: primaryColor)),
+        pw.SizedBox(height: 10),
+        pw.Table(
+          children: [
+            pw.TableRow(
+              decoration: const pw.BoxDecoration(
+                border: pw.Border(bottom: pw.BorderSide(color: primaryColor, width: 1)),
+              ),
+              children: [
+                _headerCell('Category', color: primaryColor),
+                _headerCell('Amount', color: primaryColor, align: pw.TextAlign.right),
+              ],
+            ),
+            ...batch.categoryBreakdown.entries.map((e) => pw.TableRow(
+                  children: [
+                    _dataCell(e.key.name.toUpperCase()),
+                    _dataCell(CurrencyFormatter.format(e.value), align: pw.TextAlign.right),
+                  ],
+                )),
+          ],
+        ),
+      ],
+    );
+  }
+
+  static pw.Widget _headerCell(String text, {PdfColor color = PdfColors.white, pw.TextAlign align = pw.TextAlign.left}) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(10),
+      child: pw.Text(text,
+          textAlign: align,
+          style: pw.TextStyle(
+              color: color, fontWeight: pw.FontWeight.bold, fontSize: 10)),
+    );
+  }
+
+  static pw.Widget _dataCell(String text, {PdfColor? color, pw.TextAlign align = pw.TextAlign.left}) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.all(10),
+      child: pw.Text(text,
+          textAlign: align,
+          style: pw.TextStyle(color: color ?? textColor, fontSize: 10)),
     );
   }
 }

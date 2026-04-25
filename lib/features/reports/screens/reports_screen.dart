@@ -282,6 +282,7 @@ class ReportsScreen extends ConsumerWidget {
   }
 
   Future<void> _generatePDFReport(BuildContext context, WidgetRef ref) async {
+    bool dialogPopped = false;
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -300,7 +301,11 @@ class ReportsScreen extends ConsumerWidget {
         detailedBatches.add(await engine.computeForBatch(row.batchId));
       }
 
-      if (context.mounted) Navigator.pop(context);
+      if (context.mounted) {
+        Navigator.pop(context);
+        dialogPopped = true;
+      }
+      await Future.delayed(const Duration(milliseconds: 100));
 
       await PDFService.generateFinancialReport(
         farmName: farm?.name ?? 'Poultry Path Farm',
@@ -313,17 +318,23 @@ class ReportsScreen extends ConsumerWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Report ready — tap to share'),
+            content: Text('Report generated successfully'),
             backgroundColor: AppColors.successText,
             behavior: SnackBarBehavior.floating,
           ),
         );
       }
     } catch (e) {
-      if (context.mounted) Navigator.pop(context);
+      if (context.mounted && !dialogPopped) {
+        Navigator.pop(context);
+        dialogPopped = true;
+      }
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error generating report: $e')),
+          SnackBar(
+            content: Text('Error generating report: $e'),
+            backgroundColor: AppColors.error,
+          ),
         );
       }
     }
